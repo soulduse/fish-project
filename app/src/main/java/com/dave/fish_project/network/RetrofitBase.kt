@@ -6,6 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by soul on 2017. 8. 23..
@@ -55,4 +56,3 @@ class RetrofitBase {
         val BASE_URL = "http://www.khoa.go.kr/swtc/"
     }
 }
-
