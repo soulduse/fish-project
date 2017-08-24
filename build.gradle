@@ -4,13 +4,18 @@ buildscript {
     ext.kotlin_version = '1.1.4'
     ext.retrofit_version = '2.3.0'
     ext.okhttp3_version = '3.8.1'
+    ext.retrolambda_version = "3.6.0"
+    ext.rxAndroidVersion = '2.0.1'
+    ext.rxJavaVersion = '2.1.2'
+
     repositories {
         jcenter()
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-alpha8'
+        classpath 'com.android.tools.build:gradle:2.3.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "me.tatarka:gradle-retrolambda:$retrolambda_version"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
