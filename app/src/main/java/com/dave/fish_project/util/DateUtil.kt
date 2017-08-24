@@ -29,7 +29,7 @@ class DateUtil {
     }
 
     companion object {
-        val instance : DateUtil by lazy{ Holder.INSTANCE }
+        val INSTANCE: DateUtil by lazy{ Holder.INSTANCE }
         val DATE_PATTERN_YEAR_MONTH_DAY = "yyyyMMdd"
         val DATE_PATTERN_YEAR_MONTH_DAY_ADD_DASH = "yyyy-MM-dd"
         val DATE_PATTERN_ALL = "yyyy-MM-dd hh:mm:ss"

@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
  */
 class RetrofitBase {
 
-    var retrofit: Retrofit
+    private var retrofit: Retrofit
     var apiService : TideApi
 
     init {
@@ -30,7 +30,7 @@ class RetrofitBase {
                 .build()
     }
 
-    private fun createAPI(): TideApi {
+    fun createAPI(): TideApi {
         return retrofit.create(TideApi::class.java)
     }
 
@@ -53,6 +53,6 @@ class RetrofitBase {
 
     companion object {
         val INSTANCE: RetrofitBase by lazy { Holder.INSTANCE }
-        val BASE_URL = "http://www.khoa.go.kr/swtc/"
+        private val BASE_URL = "http://www.khoa.go.kr/swtc/"
     }
 }

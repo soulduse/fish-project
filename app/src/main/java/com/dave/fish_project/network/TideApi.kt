@@ -13,7 +13,7 @@ import java.util.*
 interface TideApi {
 
     @GET("getChartData.do")
-    fun getTrends(@Query("obsPostId")obsPostId:String, @Query("date") date:Date): Observable<TideModel>
+    fun getChartData(@Query("obsPostId")obsPostId:String, @Query("date") date:String): Observable<TideModel>
 
 //    @POST("getWeeklyData.do")
 //    fun getWeeklyData(@Query("stDate") stDate:Date, @Query("obsPostId") obsPostId: String): Observable<T>
