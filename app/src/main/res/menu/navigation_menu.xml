@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/ic_directions_car_cyan_400_24dp"
+        android:title="@string/navigation_menu_first"/>
+    <item
+        android:id="@+id/navigation_reserved"
+        android:icon="@drawable/ic_assignment_cyan_400_24dp"
+        android:title="@string/navigation_menu_second"/>
+</menu>
