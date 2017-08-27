@@ -17,7 +17,7 @@ import android.databinding.adapters.CompoundButtonBindingAdapter.setChecked
 
 
 
-class MainActivity : LifecycleActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener {
         menu ->
@@ -39,12 +39,11 @@ class MainActivity : LifecycleActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        setSupportActionBar(toolbar)
         navigation_menu.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         setupViewPager()
         RetrofitController().getChartData()
     }
-
-
 
     private fun setupViewPager(){
         main_viewpager.adapter = ViewPagerAdapter(supportFragmentManager).apply {
