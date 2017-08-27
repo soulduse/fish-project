@@ -16,15 +16,15 @@ class RetrofitController {
     }
 
     fun getChartData() {
-        var chartObservable : Observable<TideModel> = getRetrofit()
-                .getChartData("DT_0001", "20170825")
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-
-        chartObservable.subscribe {
-            onNext->
-                Log.d(TAG, "comming here")
-        }
+//        var chartObservable : Observable<TideModel> = getRetrofit()
+//                .getChartData("DT_0001", "20170825")
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribeOn(Schedulers.io())
+//
+//        chartObservable.subscribe {
+//            onNext->
+//                Log.d(TAG, "comming here")
+//        }
     }
 
     fun getWeeklyData() {
