@@ -1,11 +1,10 @@
 package com.dave.fish_project.network
 
-import com.dave.fish_project.model.TideModel
+import com.dave.fish_project.model.WeeklyModel
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
-import rx.Observable
-import java.util.*
+import io.reactivex.Observable
 
 /**
  * Created by soul on 2017. 8. 21..
@@ -13,8 +12,8 @@ import java.util.*
 interface TideApi {
 
     @GET("getChartData.do")
-    fun getChartData(@Query("obsPostId")obsPostId:String, @Query("date") date:String): Observable<TideModel>
+    fun getChartData(@Query("obsPostId")obsPostId:String, @Query("date") date:String): Observable<WeeklyModel>
 
-//    @POST("getWeeklyData.do")
-//    fun getWeeklyData(@Query("stDate") stDate:Date, @Query("obsPostId") obsPostId: String): Observable<T>
+    @POST("getWeeklyData.do")
+    fun getWeeklyData(@Query("obsPostId") obsPostId: String, @Query("stDate") stDate:String): Observable<WeeklyModel>
 }

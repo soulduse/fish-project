@@ -1,10 +1,9 @@
 package com.dave.fish_project.network
 
 import android.util.Log
-import com.dave.fish_project.model.TideModel
+import com.dave.fish_project.model.WeeklyModel
 import io.reactivex.android.schedulers.AndroidSchedulers
-import rx.Observable
-import rx.schedulers.Schedulers
+import io.reactivex.schedulers.Schedulers
 
 /**
  * Created by soul on 2017. 8. 25..
@@ -16,19 +15,26 @@ class RetrofitController {
     }
 
     fun getChartData() {
-//        var chartObservable : Observable<TideModel> = getRetrofit()
-//                .getChartData("DT_0001", "20170825")
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribeOn(Schedulers.io())
-//
-//        chartObservable.subscribe {
-//            onNext->
-//                Log.d(TAG, "comming here")
-//        }
+
     }
 
-    fun getWeeklyData() {
+    fun getWeeklyData() : WeeklyModel?{
+        var data : WeeklyModel?= null
+        getRetrofit()
+                .getWeeklyData("DT_0001", "20170829")
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe({
+                    tideModel->
+                    data = tideModel
+                    Log.d(TAG, "used api")
+                }, {
+                    erorr ->
+                    Log.d(TAG, "Something wrong")
+                    data = null
+                })
 
+        return data
     }
 
     fun getSidePanelData() {

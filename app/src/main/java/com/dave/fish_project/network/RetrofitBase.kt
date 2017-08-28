@@ -1,7 +1,7 @@
 package com.dave.fish_project.network
 
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -24,7 +24,7 @@ class RetrofitBase {
     private fun createRetrofit(): Retrofit {
         return Retrofit.Builder()
                 .baseUrl(BASE_URL)
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(createOkHttpClient())
                 .build()
@@ -36,7 +36,7 @@ class RetrofitBase {
 
     private fun createOkHttpClient(): OkHttpClient {
         val logging = HttpLoggingInterceptor()
-        logging.level = Level.BODY
+        logging.level = Level.BASIC
 
         val client = OkHttpClient.Builder()
         client.retryOnConnectionFailure(true)
