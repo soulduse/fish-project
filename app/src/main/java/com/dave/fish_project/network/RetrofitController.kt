@@ -1,7 +1,9 @@
 package com.dave.fish_project.network
 
 import android.util.Log
+import com.dave.fish_project.model.SidePanelModel
 import com.dave.fish_project.model.WeeklyModel
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
@@ -18,27 +20,18 @@ class RetrofitController {
 
     }
 
-    fun getWeeklyData() : WeeklyModel?{
-        var data : WeeklyModel?= null
-        getRetrofit()
+    fun getWeeklyData() : Observable<WeeklyModel>{
+        return getRetrofit()
                 .getWeeklyData("DT_0001", "20170829")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe({
-                    tideModel->
-                    data = tideModel
-                    Log.d(TAG, "used api")
-                }, {
-                    erorr ->
-                    Log.d(TAG, "Something wrong")
-                    data = null
-                })
-
-        return data
     }
 
-    fun getSidePanelData() {
-
+    fun getSidePanelData() : Observable<SidePanelModel> {
+        return getRetrofit()
+                .getSidePanelData("DT_0001")
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
     }
 
     fun getWeatherAndWave() {

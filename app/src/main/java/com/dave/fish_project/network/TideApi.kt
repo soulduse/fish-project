@@ -1,5 +1,6 @@
 package com.dave.fish_project.network
 
+import com.dave.fish_project.model.SidePanelModel
 import com.dave.fish_project.model.WeeklyModel
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -16,4 +17,7 @@ interface TideApi {
 
     @POST("getWeeklyData.do")
     fun getWeeklyData(@Query("obsPostId") obsPostId: String, @Query("stDate") stDate:String): Observable<WeeklyModel>
+
+    @POST("getSidePanelData.do")
+    fun getSidePanelData(@Query("obsPostId") obsPostId: String) : Observable<SidePanelModel>
 }

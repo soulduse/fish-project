@@ -1,20 +1,15 @@
 package com.dave.fish_project.view.activity
 
-import android.arch.lifecycle.LifecycleActivity
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.MenuItem
 import com.dave.fish_project.R
-import com.dave.fish_project.network.RetrofitController
 import com.dave.fish_project.view.adapter.ViewPagerAdapter
 import com.dave.fish_project.view.fragment.FragmentMenuOne
 import com.dave.fish_project.view.fragment.FragmentMenuTwo
 import kotlinx.android.synthetic.main.activity_main.*
-import android.databinding.adapters.CompoundButtonBindingAdapter.setChecked
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -42,7 +37,6 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         navigation_menu.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         setupViewPager()
-        RetrofitController().getChartData()
     }
 
     private fun setupViewPager(){
