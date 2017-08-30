@@ -1,8 +1,6 @@
 package com.dave.fish_project.network
 
-import android.util.Log
-import com.dave.fish_project.model.SidePanelModel
-import com.dave.fish_project.model.WeeklyModel
+import com.dave.fish_project.model.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -16,8 +14,11 @@ class RetrofitController {
         return RetrofitBase.INSTANCE.apiService
     }
 
-    fun getChartData() {
-
+    fun getChartData() : Observable<ChartModel>{
+        return getRetrofit()
+                .getChartData("DT_0001", "20170829")
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
     }
 
     fun getWeeklyData() : Observable<WeeklyModel>{
@@ -34,12 +35,18 @@ class RetrofitController {
                 .subscribeOn(Schedulers.io())
     }
 
-    fun getWeatherAndWave() {
-
+    fun getWeatherAndWave() : Observable<WeatherAndWaveModel> {
+        return getRetrofit()
+                .getWeatherAndWave("DT_0001", "20170829")
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
     }
 
-    fun gisDataList() {
-
+    fun getGisData() : Observable<GisModel>{
+        return getRetrofit()
+                .getGisData()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
     }
 
     companion object {
