@@ -3,19 +3,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <TextView
-        android:id="@+id/info_tide"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="A Fragment"
-        android:textSize="30dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="A Fragment"
-        android:textSize="30dp" />
+    <com.sickmartian.calendarview.MonthView xmlns:calendar_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/monthView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        calendar_view:activeBackgroundColor="@color/colorCalendarDayBackground"
+        calendar_view:activeTextColor="@color/colorPrimaryText"
+        calendar_view:currentDayDecorationDrawable="@drawable/current_day_drawable"
+        calendar_view:currentDayDecorationSize="24dp"
+        calendar_view:currentDayTextColor="@color/colorInvertedText"
+        calendar_view:inactiveBackgroundColor="@color/notThisMonthDayBackground"
+        calendar_view:inactiveTextColor="@color/colorSecondaryText"
+        calendar_view:overflowColor="@color/colorPrimary"
+        calendar_view:overflowHeight="2dp"
+        calendar_view:selectedBackgroundColor="@color/selectedDayBackground"
+        calendar_view:separatorColor="@color/colorCalendarDivider"
+        calendar_view:showOverflow="false"
+        calendar_view:textSize="12sp" />
 
 </RelativeLayout>

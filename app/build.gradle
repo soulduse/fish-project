@@ -73,6 +73,9 @@ dependencies {
     // Joda-time
     compile 'joda-time:joda-time:2.9.9'
 
+    // Calendar Lib
+    compile 'com.sickmartian.calendarview:calendarview:1.0.0'
+
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     testCompile 'junit:junit:4.12'
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
