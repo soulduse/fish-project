@@ -10,7 +10,7 @@ import io.reactivex.schedulers.Schedulers
  */
 class RetrofitController {
 
-    fun getRetrofit(): TideApi {
+    private fun getRetrofit(): TideApi {
         return RetrofitBase.INSTANCE.apiService
     }
 

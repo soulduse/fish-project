@@ -5,47 +5,47 @@ package com.dave.fish_project.model
  */
 class GisModel {
 
-    private var data : List<Data> ?= null
-    private var areaList : List<Area> ?= null
-    private var gisDataDTO : List<Gis> ?= null
+    val data : List<Data> ?= null
+    val areaList : List<Area> ?= null
+    val gisDataDTO : List<Gis> ?= null
 
     data class Data(
-            var obsPostId : String,
-            var oldId : String,
-            var obsPostName : String,
-            var obsLat : Double,
-            var obsLon : Double,
-            var doNm : String,
-            var address : String,
-            var obsStartDate : String,
-            var keyword : String,
-            var useYn : String
+            val obsPostId : String,
+            val oldId : String,
+            val obsPostName : String,
+            val obsLat : Double,
+            val obsLon : Double,
+            val doNm : String,
+            val address : String,
+            val obsStartDate : String,
+            val keyword : String,
+            val useYn : String
     )
 
     data class Area(
-            var doNm : String
+            val doNm : String
     )
 
     data class Gis(
-            var obsPostId : String,
-            var oldId : String,
-            var obsPostName : String,
-            var obsLat : Double,
-            var obsLon : Double,
-            var doNm : String,
-            var address : String,
-            var obsStartDate : String,
-            var keyword : String,
-            var useYn : String,
-            var searchValue : String,
-            var date : String,
-            var downYear : String,
-            var fileType : String,
-            var timeInterval : String,
-            var moonCode : String,
-            var hillowDate : String,
-            var lvl1 : String,
-            var lvl2 : String,
-            var lvl3 : String
+            val obsPostId : String,
+            val oldId : String,
+            val obsPostName : String,
+            val obsLat : Double,
+            val obsLon : Double,
+            val doNm : String,
+            val address : String,
+            val obsStartDate : String,
+            val keyword : String,
+            val useYn : String,
+            val searchValue : String,
+            val date : String,
+            val downYear : String,
+            val fileType : String,
+            val timeInterval : String,
+            val moonCode : String,
+            val hillowDate : String,
+            val lvl1 : String,
+            val lvl2 : String,
+            val lvl3 : String
     )
 }
