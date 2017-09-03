@@ -7,7 +7,7 @@ class GisModel {
 
     val data : List<Data> ?= null
     val areaList : List<Area> ?= null
-    val gisDataDTO : List<Gis> ?= null
+    val gisDataDTO : Gis ?= null
 
     data class Data(
             val obsPostId : String,

@@ -3,6 +3,7 @@ package com.dave.fish_project.view.activity
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.widget.ArrayAdapter
 import com.dave.fish_project.R
 import com.dave.fish_project.model.GisModel
@@ -10,6 +11,7 @@ import com.dave.fish_project.network.RetrofitController
 import com.dave.fish_project.view.adapter.ViewPagerAdapter
 import com.dave.fish_project.view.fragment.FragmentMenuOne
 import com.dave.fish_project.view.fragment.FragmentMenuTwo
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -25,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         tabs.setupWithViewPager(main_viewpager)
         setupTabIcons()
         setupSpnnier()
+        getGisList()
     }
 
     private fun setupViewPager(){
@@ -41,6 +44,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupSpnnier(){
+//        var spinnerAdapter : ArrayAdapter<Map<String, List<GisModel.Data>>> = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, countryList)
+
+
+
         var spinnerLocAdapter = ArrayAdapter.createFromResource(this, R.array.loc_array, android.R.layout.simple_spinner_item)
         spinnerLocAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner_loc.adapter = spinnerLocAdapter
@@ -48,7 +55,6 @@ class MainActivity : AppCompatActivity() {
         var spinnerMapAdapter = ArrayAdapter.createFromResource(this, R.array.map_array, android.R.layout.simple_spinner_item)
         spinnerMapAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner_map.adapter = spinnerMapAdapter
-
     }
 
     private fun getGisList(){
@@ -56,22 +62,25 @@ class MainActivity : AppCompatActivity() {
                 .getGisData()
                 .subscribe({
                     gisModel->
+                    gisModel
                     var dataList = gisModel.data
-                    var areaList = gisModel.areaList
 
-                    dataList?.let {
-                        for (data : GisModel.Data in dataList){
-                            data.doNm
+                    var gisMap = dataList?.let {
+                        dataList.groupBy {
+                            it.doNm
                         }
                     }
-
-
-
+                    Log.e(TAG, """
+                        result API response
+                            ㄴsize : ${gisMap?.size}
+                            ㄴkey : ${gisMap?.keys}
+                            ㄴvalue : ${gisMap?.values}
+                        """)
+                    gisMap?.keys?.distinct()
                 },{
                     e ->
-
-                }
-                )
+                    Log.e(TAG, "result API response ===> error ${e.localizedMessage}")
+                })
     }
 
     /*
