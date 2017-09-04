@@ -48,10 +48,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        var spinnerLocAdapter = ArrayAdapter.createFromResource(this, R.array.loc_array, android.R.layout.simple_spinner_item)
-        spinnerLocAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner_loc.adapter = spinnerLocAdapter
-
         var spinnerMapAdapter = ArrayAdapter.createFromResource(this, R.array.map_array, android.R.layout.simple_spinner_item)
         spinnerMapAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner_map.adapter = spinnerMapAdapter
@@ -76,7 +72,12 @@ class MainActivity : AppCompatActivity() {
                             ㄴkey : ${gisMap?.keys}
                             ㄴvalue : ${gisMap?.values}
                         """)
-                    gisMap?.keys?.distinct()
+                    var data = gisMap?.keys?.distinct()?.filter { d->d!=null }
+                    Log.d(TAG, "list data ===> ${data.orEmpty().toString()}")
+
+                    val adapter = ArrayAdapter(
+                            applicationContext, android.R.layout.simple_spinner_item, data)
+                    spinner_loc.adapter = adapter
                 },{
                     e ->
                     Log.e(TAG, "result API response ===> error ${e.localizedMessage}")
