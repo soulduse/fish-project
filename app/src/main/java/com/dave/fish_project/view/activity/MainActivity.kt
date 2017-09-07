@@ -8,6 +8,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import com.dave.fish_project.R
+import com.dave.fish_project.model.GisModel
 import com.dave.fish_project.network.RetrofitController
 import com.dave.fish_project.view.adapter.ViewPagerAdapter
 import com.dave.fish_project.view.fragment.FragmentMenuOne
@@ -15,6 +16,8 @@ import com.dave.fish_project.view.fragment.FragmentMenuTwo
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+
+    
 
     private val tabIcons = intArrayOf(
             R.drawable.ic_date_range_white_24dp, R.drawable.ic_cloud_white_24dp, R.drawable.ic_toys_white_24dp)
@@ -65,12 +68,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getGisList(){
+
+        var spinnerAList = ArrayList<String>()
         RetrofitController()
                 .getGisData()
                 .subscribe({
                     gisModel->
-                    gisModel
                     var dataList = gisModel.data
+
+                    for(data : GisModel.Data in dataList!!){
+                        if(data.address != " "){
+                            Log.d(TAG, "doNm ==> ${data?.doNm}")
+                            Log.d(TAG, "postName ==> ${data?.obsPostName}")
+                            spinnerAList.add(data?.doNm)
+                        }
+                    }
+
+
 
                     var gisMap = dataList?.let {
                         dataList.groupBy {
@@ -87,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                     Log.d(TAG, "list data ===> ${data.orEmpty().toString()}")
 
                     val adapter = ArrayAdapter(
-                            applicationContext, android.R.layout.simple_spinner_item, data)
+                            applicationContext, android.R.layout.simple_spinner_item, spinnerAList.distinct())
                     spinner_loc.adapter = adapter
                 },{
                     e ->
