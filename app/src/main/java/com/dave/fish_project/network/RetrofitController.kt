@@ -4,6 +4,7 @@ import com.dave.fish_project.model.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.joda.time.DateTime
 
 /**
  * Created by soul on 2017. 8. 25..
@@ -16,14 +17,14 @@ class RetrofitController {
 
     fun getChartData() : Observable<ChartModel>{
         return getRetrofit()
-                .getChartData("DT_0001", "20170829")
+                .getChartData("DT_0001", DateTime().toString(DATE_FORMAT))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
     }
 
     fun getWeeklyData() : Observable<WeeklyModel>{
         return getRetrofit()
-                .getWeeklyData("DT_0001", "20170829")
+                .getWeeklyData("DT_0034", DateTime().toString(DATE_FORMAT))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
     }
@@ -37,7 +38,7 @@ class RetrofitController {
 
     fun getWeatherAndWave() : Observable<WeatherAndWaveModel> {
         return getRetrofit()
-                .getWeatherAndWave("DT_0001", "20170829")
+                .getWeatherAndWave("DT_0001", DateTime().toString(DATE_FORMAT))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
     }
@@ -51,5 +52,6 @@ class RetrofitController {
 
     companion object {
         private val TAG = RetrofitController.javaClass.simpleName
+        private val DATE_FORMAT = "yyyyMMdd"
     }
 }

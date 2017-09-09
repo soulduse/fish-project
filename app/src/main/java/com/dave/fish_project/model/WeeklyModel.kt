@@ -8,6 +8,9 @@ import java.util.*
  */
 class WeeklyModel {
     //getWeeklyData.do?stDate=20170913&obsPostId=DT_0001
+
+    var getWeeklyData : WeeklyData ?= null
+
     @SerializedName("weeklyDataDTO")
     var weeklyDataDTO :WeeklyDataDTO ?= null
 
@@ -16,15 +19,15 @@ class WeeklyModel {
 
     data class WeeklyDataDTO(
             var obsPostId : String,
-            var stDate : Date,
-            var enDate : Date,
+            var stDate : String,
+            var enDate : String,
             var year : String,
             var addDays : String,
             var lunarCode : String
     )
 
     data class WeeklyData(
-            var searchDate:Date,
+            var searchDate:String,
             var obsPostName:String,
             var obsLat:String,
             var obsLon:String,
@@ -33,8 +36,8 @@ class WeeklyModel {
             var lvl3:String,
             var lvl4:String,
             var flgView:String,
-            var dateSun:Date,
-            var dateMoon:Date,
+            var dateSun:String,
+            var dateMoon:String,
             var moonState:String,
             var moolNormal:String,
             var mool7:String,

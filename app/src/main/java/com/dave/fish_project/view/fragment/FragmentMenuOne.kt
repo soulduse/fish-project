@@ -1,17 +1,25 @@
 package com.dave.fish_project.view.fragment
 
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.dave.fish_project.R
 import com.dave.fish_project.model.WeeklyModel
 import com.dave.fish_project.network.RetrofitController
 import com.sickmartian.calendarview.CalendarView
 import kotlinx.android.synthetic.main.fragment_menu_one.*
+import org.joda.time.DateTime
 import java.util.*
+import android.graphics.Color.parseColor
+import android.widget.LinearLayout
+import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.view_item_add_calendar.view.*
+
 
 /**
  * Created by soul on 2017. 8. 27..
@@ -58,6 +66,7 @@ class FragmentMenuOne : Fragment(){
         setDateByStateDependingOnView()
         monthView.firstDayOfTheWeek = CalendarView.MONDAY_SHIFT
         monthView.setCurrentDay(getCalendarForState())
+        initData()
     }
 
     private fun initData(){
@@ -66,12 +75,63 @@ class FragmentMenuOne : Fragment(){
                     tideModel->
                     var weeklyDataList = tideModel.weeklyDataList
                     for(item : WeeklyModel.WeeklyData in weeklyDataList!!){
+                        Log.d(TAG, item.toString())
+                        val testView = layoutInflater.inflate(R.layout.view_item_add_calendar, null)
+//                        testView.tv_tide_level.text = "1234"
+                        var dateTextView = TextView(context)
+//                        dateTextView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+//                        dateTextView.setBackgroundColor(Color.parseColor("#00FFFFFF"))
+//                        dateTextView.setTextColor(Color.parseColor("#FF7200"))
+                        dateTextView.textSize = 6f
+                        dateTextView.text = """
+                            ${getSplitListItem(item.lvl1)}
+                            ${getSplitListItem(item.lvl2)}
+                            ${getSplitListItem(item.lvl3)}
+                            ${getSplitListItem(item.lvl4)}
+                                            """
+
+                        Glide.with(context)
+                                .load(R.drawable.ic_sentiment_dissatisfied_cyan_400_24dp)
+                                .into(testView.iv_tide_state)
+
+                        item.lvl1
+                        item.lvl2
+                        item.lvl3
+                        item.lvl4
+
+
+                        testView.tv_tide_level.text = getSplitListItem(item.lvl1)
+                        testView.tv_tide_level2.text = getSplitListItem(item.lvl3)
+
+                        Log.d(TAG, """
+                            (저)lvl1 - ${getSplitListItem(item.lvl1)}
+                            (고)lvl2 - ${getSplitListItem(item.lvl2)}
+                            (저)lvl3 - ${getSplitListItem(item.lvl3)}
+                            (고)lvl4 - ${getSplitListItem(item.lvl4)}
+                                            """)
+
+                        var tideDate = DateTime(item.searchDate)
+                        Log.d(TAG, """
+                            ㄴ year ---> ${tideDate.year}
+                            ㄴ month ---> ${tideDate.monthOfYear}
+                            ㄴ day ---> ${tideDate.dayOfMonth}
+                            """)
+                        monthView.addViewToDay(CalendarView.DayMetadata(tideDate.year, tideDate.monthOfYear, tideDate.dayOfMonth),
+                                testView)
                     }
                     Log.d(TAG, "used api")
                 }, {
-                    erorr ->
-                    Log.d(TAG, "Something wrong")
+                    e ->
+                    Log.d(TAG, "Something wrong --> ${e.localizedMessage}")
                 })
+    }
+
+    fun getContainLowTide() : String{
+
+    }
+
+    fun getSplitListItem(lvlItem : String) : String{
+        return lvlItem.split("/").last()
     }
 
     fun setStateByCalendar(cal: Calendar) {

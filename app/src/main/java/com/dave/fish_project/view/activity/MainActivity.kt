@@ -16,7 +16,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    var spinnerDataList : List<String> ?= null
     var mapData : Map<String, List<GisModel.Data>> ?= null
 
     private val tabIcons = intArrayOf(
@@ -56,14 +55,11 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, "Map data ==> ${mapData?.values}")
 
             var dddd : List<List<GisModel.Data>> = mapData?.values!!.distinct()
-            Log.d(TAG, dddd.toString())
-//
             var cccc = dddd[p2+1]
             var dataList : MutableList<String> = ArrayList()
             for(aaaa : GisModel.Data in cccc){
                 dataList.add(aaaa.obsPostName)
             }
-            Log.d(TAG, "result second ==> ${dataList.toString()}")
 
             val adapter = ArrayAdapter(
                     applicationContext, android.R.layout.simple_spinner_item, dataList)
@@ -72,23 +68,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupSpnnier(){
-//        var spinnerAdapter : ArrayAdapter<Map<String, List<GisModel.Data>>> = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, countryList)
-
         spinner_loc.onItemSelectedListener = spinnerListener
-//        spinner_map.onItemSelectedListener = spinnerListener
-//
-//        var spinnerMapAdapter = ArrayAdapter.createFromResource(this, R.array.map_array, android.R.layout.simple_spinner_item)
-//        spinnerMapAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-//        spinner_map.adapter = spinnerMapAdapter
     }
 
     private fun getGisList(){
-
-        var spinnerAList = ArrayList<String>()
+        var spinnerDataList : List<String> = ArrayList()
         RetrofitController()
                 .getGisData()
                 .subscribe({
                     gisModel->
+
+                    Log.d(TAG, "gisModel -- ${gisModel.data.toString()}")
                     var dataList = gisModel.data
                     var gisMap = dataList?.let {
                         dataList.groupBy {
@@ -98,14 +88,14 @@ class MainActivity : AppCompatActivity() {
 
                     mapData = gisMap
 
-                    Log.e(TAG, """
-                        result API response
-                            ㄴsize : ${gisMap?.size}
-                            ㄴkey : ${gisMap?.keys}
-                            ㄴvalue : ${gisMap?.values}
-                            ㄴentries : ${gisMap?.entries}
-                        """)
-                    spinnerDataList = gisMap?.keys?.distinct()?.filter { d->d!=null }
+                    Log.d(TAG,"""
+                            map data --> " +
+                            size : ${mapData?.size}"
+                            keys : ${mapData?.keys}"
+                            values : ${mapData?.values}"
+                            """)
+
+                    var spinnerDataList : List<String> = gisMap?.keys?.toList()?.filter { d->d!=null }!!
                     Log.d(TAG, "list data ===> ${spinnerDataList.orEmpty().toString()}")
                     val adapter = ArrayAdapter(
                             applicationContext, android.R.layout.simple_spinner_item, spinnerDataList)
@@ -118,23 +108,11 @@ class MainActivity : AppCompatActivity() {
                             secondList.add(gisModel.obsPostName)
                         }
                     }
-
                 },{
                     e ->
                     Log.e(TAG, "result API response ===> error ${e.localizedMessage}")
                 })
     }
-
-    /*
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-        R.array.planets_array, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-     */
 
     companion object {
         private val TAG = MainActivity.javaClass.simpleName
