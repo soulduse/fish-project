@@ -77,38 +77,22 @@ class FragmentMenuOne : Fragment(){
                     for(item : WeeklyModel.WeeklyData in weeklyDataList!!){
                         Log.d(TAG, item.toString())
                         val testView = layoutInflater.inflate(R.layout.view_item_add_calendar, null)
-//                        testView.tv_tide_level.text = "1234"
-                        var dateTextView = TextView(context)
-//                        dateTextView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-//                        dateTextView.setBackgroundColor(Color.parseColor("#00FFFFFF"))
-//                        dateTextView.setTextColor(Color.parseColor("#FF7200"))
-                        dateTextView.textSize = 6f
-                        dateTextView.text = """
-                            ${getSplitListItem(item.lvl1)}
-                            ${getSplitListItem(item.lvl2)}
-                            ${getSplitListItem(item.lvl3)}
-                            ${getSplitListItem(item.lvl4)}
-                                            """
+
+                        var lowTide = getContainLowTide(item)
+                        testView.tv_tide_level.text = getSplitListItem(lowTide[0])
+                        testView.tv_tide_level.setTextColor(Color.RED)
+                        testView.tv_tide_level2.text = getSplitListItem(lowTide[1])
+                        testView.tv_tide_level2.setTextColor(Color.BLUE)
+
+                        if(lowTide[0].toInt() <= 100 || lowTide[1].toInt() <= 100){
+//                            Glide.with(context)
+//                                    .load(R.drawable.ic_wb_sunny_orange_700_24dp)
+//                                    .into(testView.iv_tide_state)
+                        }
 
                         Glide.with(context)
-                                .load(R.drawable.ic_sentiment_dissatisfied_cyan_400_24dp)
+                                .load(R.drawable.ic_wb_sunny_orange_700_24dp)
                                 .into(testView.iv_tide_state)
-
-                        item.lvl1
-                        item.lvl2
-                        item.lvl3
-                        item.lvl4
-
-
-                        testView.tv_tide_level.text = getSplitListItem(item.lvl1)
-                        testView.tv_tide_level2.text = getSplitListItem(item.lvl3)
-
-                        Log.d(TAG, """
-                            (저)lvl1 - ${getSplitListItem(item.lvl1)}
-                            (고)lvl2 - ${getSplitListItem(item.lvl2)}
-                            (저)lvl3 - ${getSplitListItem(item.lvl3)}
-                            (고)lvl4 - ${getSplitListItem(item.lvl4)}
-                                            """)
 
                         var tideDate = DateTime(item.searchDate)
                         Log.d(TAG, """
@@ -126,8 +110,59 @@ class FragmentMenuOne : Fragment(){
                 })
     }
 
-    fun getContainLowTide() : String{
+    fun getContainLowTide(item : WeeklyModel.WeeklyData) : Array<String> {
+        val lowItem = Array(2){"";""}
+        val CONTAIN_STR = "저"
+        var count = 0
+        if(item.lvl1.contains(CONTAIN_STR)){
+            var waterHeight = getSplitListItem(item.lvl1)
+            Log.d(TAG, "height lvl1 --> ${waterHeight}")
+            if(lowItem[count].isEmpty()){
+                lowItem[count] = waterHeight
+            }else{
+                lowItem[count++] = waterHeight
+            }
 
+        }
+        if(item.lvl2.contains(CONTAIN_STR)){
+            var waterHeight = getSplitListItem(item.lvl2)
+            Log.d(TAG, "height lvl2 --> ${waterHeight}")
+            if(lowItem[count].isEmpty()){
+                lowItem[count] = waterHeight
+            }else{
+                lowItem[++count] = waterHeight
+            }
+        }
+        if(item.lvl3.contains(CONTAIN_STR)){
+            var waterHeight = getSplitListItem(item.lvl3)
+            Log.d(TAG, "height lvl3 --> ${waterHeight}")
+            if(lowItem[count].isEmpty()){
+                lowItem[count] = waterHeight
+            }else{
+                lowItem[++count] = waterHeight
+            }
+        }
+        if(item.lvl4.contains(CONTAIN_STR)){
+            var waterHeight = getSplitListItem(item.lvl4)
+            Log.d(TAG, "height lvl4 --> ${waterHeight}")
+            if(lowItem[count].isEmpty()){
+                lowItem[count] = waterHeight
+            }else{
+                lowItem[++count] = waterHeight
+            }
+        }
+
+        return lowItem
+    }
+
+    fun getContainLowTide(tideItem : String): String{
+        val CONTAIN_STR = "저"
+        var waterHeight = ""
+
+        if(tideItem.contains(CONTAIN_STR)){
+            waterHeight = getSplitListItem(tideItem)
+        }
+        return waterHeight
     }
 
     fun getSplitListItem(lvlItem : String) : String{
