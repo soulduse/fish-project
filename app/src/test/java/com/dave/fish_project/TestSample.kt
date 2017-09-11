@@ -12,4 +12,5 @@ class TestSample {
     fun sum(){
         assertEquals(1+2, 4)
     }
+
 }

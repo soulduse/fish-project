@@ -110,6 +110,32 @@ class FragmentMenuOne : Fragment(){
                 })
     }
 
+    fun setTextColor(tideHeight : Int){
+        when {
+            tideHeight > 250 -> {
+
+            }
+            tideHeight in 200..249 -> {
+
+            }
+            tideHeight in 150..199 -> {
+
+            }
+            tideHeight in 100..149 -> {
+
+            }
+            tideHeight in 50..99 -> {
+
+            }
+            tideHeight in 0.. 49 -> {
+
+            }
+            tideHeight in -50.. -1->{
+
+            }
+        }
+    }
+
     fun getContainLowTide(item : WeeklyModel.WeeklyData) : Array<String> {
         val lowItem = Array(2){"";""}
         val CONTAIN_STR = "저"
