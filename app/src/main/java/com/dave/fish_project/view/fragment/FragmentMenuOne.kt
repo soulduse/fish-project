@@ -18,6 +18,7 @@ import java.util.*
 import android.graphics.Color.parseColor
 import android.widget.LinearLayout
 import com.bumptech.glide.Glide
+import com.sickmartian.calendarview.MonthView
 import kotlinx.android.synthetic.main.view_item_add_calendar.view.*
 
 
@@ -64,7 +65,7 @@ class FragmentMenuOne : Fragment(){
         super.onViewCreated(view, savedInstanceState)
 
         setDateByStateDependingOnView()
-        monthView.firstDayOfTheWeek = CalendarView.MONDAY_SHIFT
+        monthView.firstDayOfTheWeek = CalendarView.SUNDAY_SHIFT
         monthView.setCurrentDay(getCalendarForState())
         initData()
     }
@@ -79,15 +80,17 @@ class FragmentMenuOne : Fragment(){
                         val testView = layoutInflater.inflate(R.layout.view_item_add_calendar, null)
 
                         var lowTide = getContainLowTide(item)
-                        testView.tv_tide_level.text = getSplitListItem(lowTide[0])
-                        testView.tv_tide_level.setTextColor(Color.RED)
-                        testView.tv_tide_level2.text = getSplitListItem(lowTide[1])
-                        testView.tv_tide_level2.setTextColor(Color.BLUE)
+                        var firstTideHeight = getSplitListItem(lowTide[0])
+                        var secondTideHeight = getSplitListItem(lowTide[1])
 
-                        if(lowTide[0].toInt() <= 100 || lowTide[1].toInt() <= 100){
-//                            Glide.with(context)
-//                                    .load(R.drawable.ic_wb_sunny_orange_700_24dp)
-//                                    .into(testView.iv_tide_state)
+                        testView.tv_tide_level.text = firstTideHeight
+                        testView.tv_tide_level2.text = secondTideHeight
+
+                        if(firstTideHeight.toInt() <= 100){
+                            testView.tv_tide_level.setTextColor(Color.RED)
+                        }
+                        if(secondTideHeight.toInt() <= 100){
+                            testView.tv_tide_level2.setTextColor(Color.RED)
                         }
 
                         Glide.with(context)
@@ -108,32 +111,6 @@ class FragmentMenuOne : Fragment(){
                     e ->
                     Log.d(TAG, "Something wrong --> ${e.localizedMessage}")
                 })
-    }
-
-    fun setTextColor(tideHeight : Int){
-        when {
-            tideHeight > 250 -> {
-
-            }
-            tideHeight in 200..249 -> {
-
-            }
-            tideHeight in 150..199 -> {
-
-            }
-            tideHeight in 100..149 -> {
-
-            }
-            tideHeight in 50..99 -> {
-
-            }
-            tideHeight in 0.. 49 -> {
-
-            }
-            tideHeight in -50.. -1->{
-
-            }
-        }
     }
 
     fun getContainLowTide(item : WeeklyModel.WeeklyData) : Array<String> {

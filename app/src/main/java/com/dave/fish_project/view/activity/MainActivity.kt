@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         tabs.getTabAt(2)?.icon = resources.getDrawable(tabIcons[2])
     }
 
-    var spinnerListener = object : AdapterView.OnItemSelectedListener{
+    var firstSpinnerListener = object : AdapterView.OnItemSelectedListener{
         override fun onNothingSelected(p0: AdapterView<*>?) {
             Log.d(TAG, "onNothingSelected $p0")
         }
@@ -67,8 +67,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    var secondSpinnerListener = object : AdapterView.OnItemSelectedListener{
+        override fun onNothingSelected(p0: AdapterView<*>?) {
+            Log.w(TAG, "onNothingSelected $p0")
+        }
+
+        override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+            Log.w(TAG, "onItemSelected $p1, \n view data : $p1 \n int : $p2 \n long : $p3")
+        }
+    }
+
     private fun setupSpnnier(){
-        spinner_loc.onItemSelectedListener = spinnerListener
+        spinner_loc.onItemSelectedListener = firstSpinnerListener
+        spinner_map.onItemSelectedListener = secondSpinnerListener
     }
 
     private fun getGisList(){

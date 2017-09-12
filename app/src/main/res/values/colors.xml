@@ -35,4 +35,13 @@
     <color name="add_widget_icon_tint">#72727272</color>
     <color name="tab_background_color">#AAAAAA</color>
     <color name="fab_tutorial_target_color">#9ACB28</color>
+
+    <!-- Material Color -->
+    <color name="tide_red">#D50000</color>
+    <color name="tide_orange">#FFAB00</color>
+    <color name="tide_yellow">#CDDC39</color>
+    <color name="tide_green">#388E3C</color>
+    <color name="tide_blue">#0091EA</color>
+    <color name="tide_dark_blue">#2962FF</color>
+    <color name="tide_navy">#1A237E</color>
 </resources>
