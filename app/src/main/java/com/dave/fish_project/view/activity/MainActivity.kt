@@ -13,6 +13,7 @@ import com.dave.fish_project.view.adapter.ViewPagerAdapter
 import com.dave.fish_project.view.fragment.FragmentMenuOne
 import com.dave.fish_project.view.fragment.FragmentMenuTwo
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -74,6 +75,17 @@ class MainActivity : AppCompatActivity() {
 
         override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
             Log.w(TAG, "onItemSelected $p1, \n view data : $p1 \n int : $p2 \n long : $p3")
+            Log.w(TAG, "second Spinner value ---> ${spinner_map.selectedItem.toString()}")
+
+            mapData?.values?.forEach {
+                e ->
+                e.forEach {
+                    result->
+                    if(result.obsPostName == spinner_map.selectedItem.toString()){
+
+                    }
+                }
+            }
         }
     }
 
