@@ -22,9 +22,9 @@ class RetrofitController {
                 .subscribeOn(Schedulers.io())
     }
 
-    fun getWeeklyData() : Observable<WeeklyModel>{
+    fun getWeeklyData(postId:String) : Observable<WeeklyModel>{
         return getRetrofit()
-                .getWeeklyData("DT_0034", DateTime().toString(DATE_FORMAT))
+                .getWeeklyData(postId, DateTime().toString(DATE_FORMAT))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
     }

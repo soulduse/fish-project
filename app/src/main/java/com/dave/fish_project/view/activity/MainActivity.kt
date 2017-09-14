@@ -81,8 +81,15 @@ class MainActivity : AppCompatActivity() {
                 e ->
                 e.forEach {
                     result->
-                    if(result.obsPostName == spinner_map.selectedItem.toString()){
 
+                    if(result.obsPostName == spinner_map.selectedItem.toString()){
+                        Log.e(TAG, """
+                            result.obsPostId --> ${result.obsPostId}
+                            """)
+                        var bundle = Bundle()
+                        bundle.putString("KEY_POST_ID", result.obsPostId)
+                        FragmentMenuOne().arguments = bundle
+                        main_viewpager.adapter.notifyDataSetChanged()
                     }
                 }
             }

@@ -57,7 +57,6 @@ class FragmentMenuOne : Fragment(){
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // The two views can't have the same id, or the state won't be preserved
         // correctly and they will throw an exception
-
         return inflater?.inflate(R.layout.fragment_menu_one, container, false)
     }
 
@@ -67,11 +66,15 @@ class FragmentMenuOne : Fragment(){
         setDateByStateDependingOnView()
         monthView.firstDayOfTheWeek = CalendarView.SUNDAY_SHIFT
         monthView.setCurrentDay(getCalendarForState())
-        initData()
+
+        var postId = arguments?.getString("KEY_POST_ID")
+        postId?.let {
+            initData(postId)
+        }
     }
 
-    private fun initData(){
-        RetrofitController().getWeeklyData()
+    fun initData(postId : String){
+        RetrofitController().getWeeklyData(postId)
                 .subscribe({
                     tideModel->
                     var weeklyDataList = tideModel.weeklyDataList
