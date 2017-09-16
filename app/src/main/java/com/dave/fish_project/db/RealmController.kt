@@ -1,5 +1,7 @@
 package com.dave.fish_project.db
 
+import com.dave.fish_project.model.GisModel
+import com.dave.fish_project.model.spinner.SecondSpinnerModel
 import io.realm.Realm
 
 /**
@@ -7,12 +9,17 @@ import io.realm.Realm
  */
 class RealmController {
 
-    fun selectedSpinner(realm : Realm){
 
-    }
 
-    fun set(realm : Realm){
-
+    fun setSpinnerItem(realm : Realm, data:GisModel.Data){
+        realm.executeTransactionAsync {
+            db->
+            var selectedSpinnerModel = db.createObject(SecondSpinnerModel::class.java)
+            selectedSpinnerModel.obsPostId = data.obsPostId
+            selectedSpinnerModel.obsPostName = data.obsPostName
+            selectedSpinnerModel.obsLat = data.obsLat
+            selectedSpinnerModel.obsLon = data.obsLon
+        }
     }
 
     private object Holder { val INSTANCE = RealmController() }

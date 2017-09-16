@@ -7,16 +7,19 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.dave.fish_project.R
+import com.dave.fish_project.db.RealmController
 import com.dave.fish_project.model.GisModel
 import com.dave.fish_project.network.RetrofitController
 import com.dave.fish_project.view.adapter.ViewPagerAdapter
 import com.dave.fish_project.view.fragment.FragmentMenuOne
 import com.dave.fish_project.view.fragment.FragmentMenuTwo
+import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var realm : Realm
     var mapData : Map<String, List<GisModel.Data>> ?= null
 
     private val tabIcons = intArrayOf(
@@ -26,6 +29,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
+
+        realm = Realm.getDefaultInstance()
         setupViewPager()
         tabs.setupWithViewPager(main_viewpager)
         setupTabIcons()
@@ -86,10 +91,7 @@ class MainActivity : AppCompatActivity() {
                         Log.e(TAG, """
                             result.obsPostId --> ${result.obsPostId}
                             """)
-                        var bundle = Bundle()
-                        bundle.putString("KEY_POST_ID", result.obsPostId)
-                        FragmentMenuOne().arguments = bundle
-                        main_viewpager.adapter.notifyDataSetChanged()
+                        RealmController.instance.setSpinnerItem(realm, result)
                     }
                 }
             }
