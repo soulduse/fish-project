@@ -127,6 +127,8 @@ class MainActivity : AppCompatActivity() {
                             values : ${mapData?.values}"
                             """)
 
+                    Log.w(TAG, "map key is 부산광역시 --> ${mapData!!["부산광역시"]}")
+
                     var spinnerDataList : List<String> = gisMap?.keys?.toList()?.filter { d->d!=null }!!
                     Log.d(TAG, "list data ===> ${spinnerDataList.orEmpty().toString()}")
                     val adapter = ArrayAdapter(
