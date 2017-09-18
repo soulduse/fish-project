@@ -1,5 +1,6 @@
 package com.dave.fish_project.model.spinner
 
+import io.realm.RealmList
 import io.realm.RealmObject
 
 /**
@@ -8,5 +9,5 @@ import io.realm.RealmObject
 
 open class FirstSpinnerModel : RealmObject(){
     var areaName :String = ""
-    var secondSpinnerItems : SecondSpinnerModel ?= null
+    var secondSpinnerItems : RealmList<SecondSpinnerModel> ?= RealmList()
 }

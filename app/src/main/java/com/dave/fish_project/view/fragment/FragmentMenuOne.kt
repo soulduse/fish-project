@@ -41,7 +41,6 @@ class FragmentMenuOne : Fragment(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        initData()
         firstDayOfWeek = CalendarView.MONDAY_SHIFT
         if (savedInstanceState == null) {
             val cal = Calendar.getInstance()

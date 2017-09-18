@@ -60,11 +60,12 @@ class MainActivity : AppCompatActivity() {
             Log.d(TAG, "onItemSelected $p1, \n view data : $p1 \n int : $p2 \n long : $p3")
             Log.d(TAG, "Map data ==> ${mapData?.values}")
 
-            var dddd : List<List<GisModel.Data>> = mapData?.values!!.distinct()
-            var cccc = dddd[p2+1]
+
             var dataList : MutableList<String> = ArrayList()
-            for(aaaa : GisModel.Data in cccc){
-                dataList.add(aaaa.obsPostName)
+            var selectedItemArray = mapData!![spinner_loc.selectedItem]
+            selectedItemArray?.forEach {
+                item->
+                dataList.add(item.obsPostName)
             }
 
             val adapter = ArrayAdapter(
@@ -75,24 +76,13 @@ class MainActivity : AppCompatActivity() {
 
     var secondSpinnerListener = object : AdapterView.OnItemSelectedListener{
         override fun onNothingSelected(p0: AdapterView<*>?) {
-            Log.w(TAG, "onNothingSelected $p0")
         }
 
         override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-            Log.w(TAG, "onItemSelected $p1, \n view data : $p1 \n int : $p2 \n long : $p3")
-            Log.w(TAG, "second Spinner value ---> ${spinner_map.selectedItem.toString()}")
-
-            mapData?.values?.forEach {
-                e ->
-                e.forEach {
-                    result->
-
-                    if(result.obsPostName == spinner_map.selectedItem.toString()){
-                        Log.e(TAG, """
-                            result.obsPostId --> ${result.obsPostId}
-                            """)
-                        RealmController.instance.setSpinnerItem(realm, result)
-                    }
+            mapData!![spinner_map.selectedItem]?.forEach {
+                result->
+                if(result.obsPostName == spinner_map.selectedItem){
+                    RealmController.instance.setSpinnerItem(realm, result)
                 }
             }
         }
@@ -126,22 +116,10 @@ class MainActivity : AppCompatActivity() {
                             keys : ${mapData?.keys}"
                             values : ${mapData?.values}"
                             """)
-
-                    Log.w(TAG, "map key is 부산광역시 --> ${mapData!!["부산광역시"]}")
-
-                    var spinnerDataList : List<String> = gisMap?.keys?.toList()?.filter { d->d!=null }!!
-                    Log.d(TAG, "list data ===> ${spinnerDataList.orEmpty().toString()}")
+                    var spinnerDataList : List<String> = gisMap?.keys?.toList()?.filter { d-> d!=null && d!="황해남도" }!!.sorted()
                     val adapter = ArrayAdapter(
                             applicationContext, android.R.layout.simple_spinner_item, spinnerDataList)
                     spinner_loc.adapter = adapter
-
-                    var secondList = ArrayList<String>()
-
-                    for(data : String in spinnerDataList!!){
-                        for(gisModel :GisModel.Data in gisMap?.get(data)!!){
-                            secondList.add(gisModel.obsPostName)
-                        }
-                    }
                 },{
                     e ->
                     Log.e(TAG, "result API response ===> error ${e.localizedMessage}")

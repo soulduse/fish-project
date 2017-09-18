@@ -1,6 +1,7 @@
 package com.dave.fish_project.db
 
 import com.dave.fish_project.model.GisModel
+import com.dave.fish_project.model.spinner.FirstSpinnerModel
 import com.dave.fish_project.model.spinner.SecondSpinnerModel
 import io.realm.Realm
 
@@ -8,8 +9,6 @@ import io.realm.Realm
  * Created by soul on 2017. 9. 14..
  */
 class RealmController {
-
-
 
     fun setSpinnerItem(realm : Realm, data:GisModel.Data){
         realm.executeTransactionAsync {
@@ -19,6 +18,23 @@ class RealmController {
             selectedSpinnerModel.obsPostName = data.obsPostName
             selectedSpinnerModel.obsLat = data.obsLat
             selectedSpinnerModel.obsLon = data.obsLon
+        }
+    }
+
+    fun setSpinner(realm : Realm, data : GisModel.Data){
+        realm.executeTransactionAsync {
+            db->
+            db.createObject(FirstSpinnerModel::class.java).apply {
+                areaName = data.doNm
+
+                var selectedSpinnerModel = db.createObject(SecondSpinnerModel::class.java)
+                selectedSpinnerModel.obsPostId = data.obsPostId
+                selectedSpinnerModel.obsPostName = data.obsPostName
+                selectedSpinnerModel.obsLat = data.obsLat
+                selectedSpinnerModel.obsLon = data.obsLon
+
+
+            }
         }
     }
 
