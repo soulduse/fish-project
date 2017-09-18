@@ -29,13 +29,21 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-
         realm = Realm.getDefaultInstance()
         setupViewPager()
         tabs.setupWithViewPager(main_viewpager)
         setupTabIcons()
         setupSpnnier()
-        getGisList()
+
+
+
+
+        if(isEmptySpinnerItemByDB()){
+            getGisList()
+        }else{
+
+        }
+
     }
 
     private fun setupViewPager(){
@@ -79,18 +87,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-            mapData!![spinner_map.selectedItem]?.forEach {
-                result->
-                if(result.obsPostName == spinner_map.selectedItem){
-                    RealmController.instance.setSpinnerItem(realm, result)
-                }
-            }
         }
     }
 
     private fun setupSpnnier(){
         spinner_loc.onItemSelectedListener = firstSpinnerListener
         spinner_map.onItemSelectedListener = secondSpinnerListener
+    }
+
+    private fun isEmptySpinnerItemByDB() : Boolean{
+        if(RealmController.instance.getSpinnerItems(realm).isEmpty()){
+            return true
+        }
+
+        return false
     }
 
     private fun getGisList(){
@@ -117,6 +127,16 @@ class MainActivity : AppCompatActivity() {
                             values : ${mapData?.values}"
                             """)
                     var spinnerDataList : List<String> = gisMap?.keys?.toList()?.filter { d-> d!=null && d!="황해남도" }!!.sorted()
+
+                    RealmController.instance.setSpinner(realm, mapData!!)
+
+                    var spinnerItemList = RealmController.instance.getSpinnerItems(realm)
+                    Log.w(TAG, "Realm data begin")
+                    spinnerItemList.forEach {
+                        data ->
+                        Log.w(TAG, "Realm data ---> ${data.toString()}")
+                    }
+                    Log.w(TAG, "Realm data after")
                     val adapter = ArrayAdapter(
                             applicationContext, android.R.layout.simple_spinner_item, spinnerDataList)
                     spinner_loc.adapter = adapter
