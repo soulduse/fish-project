@@ -4,7 +4,6 @@ import com.dave.fish_project.model.GisModel
 import com.dave.fish_project.model.spinner.FirstSpinnerModel
 import com.dave.fish_project.model.spinner.SecondSpinnerModel
 import io.realm.Realm
-import io.realm.RealmResults
 
 /**
  * Created by soul on 2017. 9. 14..
@@ -19,12 +18,12 @@ class RealmController {
                 db.createObject(FirstSpinnerModel::class.java).apply {
                     areaName = key
                     var dataList = dataMap[key]
-                    dataList?.forEach { result->
+                    dataList?.forEach { (obsPostId, _, obsPostName, obsLat, obsLon) ->
                         var selectedSpinnerModel = db.createObject(SecondSpinnerModel::class.java)
-                        selectedSpinnerModel.obsPostId = result.obsPostId
-                        selectedSpinnerModel.obsPostName = result.obsPostName
-                        selectedSpinnerModel.obsLat = result.obsLat
-                        selectedSpinnerModel.obsLon = result.obsLon
+                        selectedSpinnerModel.obsPostId = obsPostId
+                        selectedSpinnerModel.obsPostName = obsPostName
+                        selectedSpinnerModel.obsLat = obsLat
+                        selectedSpinnerModel.obsLon = obsLon
                         secondSpinnerItems?.add(selectedSpinnerModel)
                     }
                 }
@@ -32,8 +31,20 @@ class RealmController {
         }
     }
 
-    fun getSpinnerItems(realm : Realm) : RealmResults<FirstSpinnerModel>{
-        return realm.where(FirstSpinnerModel::class.java).findAll()
+    fun getSelectedSpinnerItem(realm: Realm, key : String): List<String>? {
+        return realm.where(FirstSpinnerModel::class.java)
+                .equalTo("areaName", key)
+                .findFirst().secondSpinnerItems?.map { it.obsPostName }
+    }
+
+    fun getPostId(realm : Realm, postName : String): String?{
+        return realm.where(SecondSpinnerModel::class.java)
+                .equalTo("obsPostName", postName)
+                .findFirst().obsPostId
+    }
+
+    fun getSpinnerItems(realm : Realm) : List<String>{
+        return realm.where(FirstSpinnerModel::class.java).findAll().map { result->result.areaName }
     }
 
     private object Holder { val INSTANCE = RealmController() }
