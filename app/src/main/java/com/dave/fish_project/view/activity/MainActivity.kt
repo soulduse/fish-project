@@ -6,21 +6,19 @@ import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Spinner
 import com.dave.fish_project.R
 import com.dave.fish_project.db.RealmController
-import com.dave.fish_project.model.GisModel
 import com.dave.fish_project.network.RetrofitController
 import com.dave.fish_project.view.adapter.ViewPagerAdapter
 import com.dave.fish_project.view.fragment.FragmentMenuOne
 import com.dave.fish_project.view.fragment.FragmentMenuTwo
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var realm : Realm
-    var mapData : Map<String, List<GisModel.Data>> ?= null
+    private lateinit var realm: Realm
 
     private val tabIcons = intArrayOf(
             R.drawable.ic_date_range_white_24dp, R.drawable.ic_cloud_white_24dp, R.drawable.ic_toys_white_24dp)
@@ -30,23 +28,38 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
         realm = Realm.getDefaultInstance()
-        setupViewPager()
-        tabs.setupWithViewPager(main_viewpager)
-        setupTabIcons()
-        setupSpnnier()
 
-
-
-
-        if(isEmptySpinnerItemByDB()){
-            getGisList()
-        }else{
-
-        }
+        initViewPager()
+        initTab()
+        initSpinner()
 
     }
 
-    private fun setupViewPager(){
+    private fun initTab() {
+        tabs.setupWithViewPager(main_viewpager)
+        setupTabIcons()
+    }
+
+    private fun initSpinner() {
+        if (isEmptyRealmSpinner()) {
+            initRealmForSpinner()
+        } else {
+            setSpinnerAdapter(spinner_loc, RealmController.instance.getSpinnerItems(realm))
+        }
+        spinner_loc.onItemSelectedListener = firstSpinnerListener
+        spinner_map.onItemSelectedListener = secondSpinnerListener
+    }
+
+    private fun setSpinnerAdapter(spinner : Spinner, items : List<String>){
+        spinner.adapter = ArrayAdapter(
+                applicationContext,
+                android.R.layout.simple_spinner_item,
+                items
+        )
+    }
+
+
+    private fun initViewPager() {
         main_viewpager.adapter = ViewPagerAdapter(supportFragmentManager).apply {
             addFragment(FragmentMenuOne())
             addFragment(FragmentMenuTwo())
@@ -59,58 +72,38 @@ class MainActivity : AppCompatActivity() {
         tabs.getTabAt(2)?.icon = resources.getDrawable(tabIcons[2])
     }
 
-    var firstSpinnerListener = object : AdapterView.OnItemSelectedListener{
-        override fun onNothingSelected(p0: AdapterView<*>?) {
-            Log.d(TAG, "onNothingSelected $p0")
-        }
-
-        override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-            Log.d(TAG, "onItemSelected $p1, \n view data : $p1 \n int : $p2 \n long : $p3")
-            Log.d(TAG, "Map data ==> ${mapData?.values}")
-
-
-            var dataList : MutableList<String> = ArrayList()
-            var selectedItemArray = mapData!![spinner_loc.selectedItem]
-            selectedItemArray?.forEach {
-                item->
-                dataList.add(item.obsPostName)
-            }
-
-            val adapter = ArrayAdapter(
-                    applicationContext, android.R.layout.simple_spinner_item, dataList)
-            spinner_map.adapter = adapter
-        }
-    }
-
-    var secondSpinnerListener = object : AdapterView.OnItemSelectedListener{
+    var firstSpinnerListener = object : AdapterView.OnItemSelectedListener {
         override fun onNothingSelected(p0: AdapterView<*>?) {
         }
 
         override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+            setSpinnerAdapter(spinner_map, RealmController.instance.getSelectedSpinnerItem(realm, spinner_loc.selectedItem.toString())!!)
         }
     }
 
-    private fun setupSpnnier(){
-        spinner_loc.onItemSelectedListener = firstSpinnerListener
-        spinner_map.onItemSelectedListener = secondSpinnerListener
+    var secondSpinnerListener = object : AdapterView.OnItemSelectedListener {
+        override fun onNothingSelected(p0: AdapterView<*>?) {
+        }
+
+        override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+
+            var idValue = RealmController.instance.getPostId(realm, spinner_map.selectedItem.toString())
+            Log.w(TAG, "second values are? ---> spinner : ${spinner_map.selectedItem}, id : $idValue")
+        }
     }
 
-    private fun isEmptySpinnerItemByDB() : Boolean{
-        if(RealmController.instance.getSpinnerItems(realm).isEmpty()){
+    private fun isEmptyRealmSpinner(): Boolean {
+        if (RealmController.instance.getSpinnerItems(realm).isEmpty()) {
             return true
         }
 
         return false
     }
 
-    private fun getGisList(){
-        var spinnerDataList : List<String> = ArrayList()
+    private fun initRealmForSpinner() {
         RetrofitController()
                 .getGisData()
-                .subscribe({
-                    gisModel->
-
-                    Log.d(TAG, "gisModel -- ${gisModel.data.toString()}")
+                .subscribe({ gisModel ->
                     var dataList = gisModel.data
                     var gisMap = dataList?.let {
                         dataList.groupBy {
@@ -118,30 +111,15 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
 
-                    mapData = gisMap
-
-                    Log.d(TAG,"""
-                            map data --> " +
-                            size : ${mapData?.size}"
-                            keys : ${mapData?.keys}"
-                            values : ${mapData?.values}"
+                    Log.d(TAG, """
+                            map data -->
+                            size : ${gisMap?.size}"
+                            keys : ${gisMap?.keys}"
+                            values : ${gisMap?.values}"
                             """)
-                    var spinnerDataList : List<String> = gisMap?.keys?.toList()?.filter { d-> d!=null && d!="황해남도" }!!.sorted()
-
-                    RealmController.instance.setSpinner(realm, mapData!!)
-
-                    var spinnerItemList = RealmController.instance.getSpinnerItems(realm)
-                    Log.w(TAG, "Realm data begin")
-                    spinnerItemList.forEach {
-                        data ->
-                        Log.w(TAG, "Realm data ---> ${data.toString()}")
-                    }
-                    Log.w(TAG, "Realm data after")
-                    val adapter = ArrayAdapter(
-                            applicationContext, android.R.layout.simple_spinner_item, spinnerDataList)
-                    spinner_loc.adapter = adapter
-                },{
-                    e ->
+                    RealmController.instance.setSpinner(realm, gisMap!!)
+                    setSpinnerAdapter(spinner_loc, RealmController.instance.getSpinnerItems(realm))
+                }, { e ->
                     Log.e(TAG, "result API response ===> error ${e.localizedMessage}")
                 })
     }
