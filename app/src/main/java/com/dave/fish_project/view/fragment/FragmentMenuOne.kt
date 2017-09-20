@@ -18,7 +18,9 @@ import java.util.*
 import android.graphics.Color.parseColor
 import android.widget.LinearLayout
 import com.bumptech.glide.Glide
+import com.dave.fish_project.db.RealmController
 import com.sickmartian.calendarview.MonthView
+import io.realm.Realm
 import kotlinx.android.synthetic.main.view_item_add_calendar.view.*
 
 
@@ -39,9 +41,12 @@ class FragmentMenuOne : Fragment(){
     private var mDay: Int = 0
     private var mMonth: Int = 0
 
+    private lateinit var realm : Realm
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         firstDayOfWeek = CalendarView.MONDAY_SHIFT
+        realm = Realm.getDefaultInstance()
         if (savedInstanceState == null) {
             val cal = Calendar.getInstance()
             setStateByCalendar(cal)
@@ -62,14 +67,17 @@ class FragmentMenuOne : Fragment(){
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setDateByStateDependingOnView()
-        monthView.firstDayOfTheWeek = CalendarView.SUNDAY_SHIFT
-        monthView.setCurrentDay(getCalendarForState())
 
-        var postId = arguments?.getString("KEY_POST_ID")
+
+        var selectedSpinnerItem = RealmController.instance.getSelectedSpinnerItem(realm)
+        var postId = RealmController.instance.getPostId(realm, selectedSpinnerItem)
         postId?.let {
             initData(postId)
         }
+
+        setDateByStateDependingOnView()
+        monthView.firstDayOfTheWeek = CalendarView.SUNDAY_SHIFT
+        monthView.setCurrentDay(getCalendarForState())
     }
 
     fun initData(postId : String){

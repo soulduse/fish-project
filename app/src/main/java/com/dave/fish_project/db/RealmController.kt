@@ -1,8 +1,10 @@
 package com.dave.fish_project.db
 
+import android.util.Log
 import com.dave.fish_project.model.GisModel
 import com.dave.fish_project.model.spinner.FirstSpinnerModel
 import com.dave.fish_project.model.spinner.SecondSpinnerModel
+import com.dave.fish_project.model.spinner.SelectItemModel
 import io.realm.Realm
 
 /**
@@ -41,6 +43,29 @@ class RealmController {
         return realm.where(SecondSpinnerModel::class.java)
                 .equalTo("obsPostName", postName)
                 .findFirst().obsPostId
+    }
+
+    fun setSelectedSpinnerItem(realm : Realm, key: String, postName: String){
+        realm.executeTransactionAsync {
+            var selectedItem = it.where(SelectItemModel::class.java).findFirst()
+            if(null == selectedItem){
+                it.createObject(SelectItemModel::class.java).apply {
+                    firstSpinner = key
+                    secondSpinner = postName
+                }
+            }else{
+                selectedItem.apply {
+                    firstSpinner = key
+                    secondSpinner = postName
+                }
+            }
+            Log.d(TAG, "selectedItem --> $selectedItem")
+        }
+    }
+
+    fun getSelectedSpinnerItem(realm: Realm) : String{
+        return realm.where(SelectItemModel::class.java)
+                .findFirst().secondSpinner
     }
 
     fun getSpinnerItems(realm : Realm) : List<String>{
