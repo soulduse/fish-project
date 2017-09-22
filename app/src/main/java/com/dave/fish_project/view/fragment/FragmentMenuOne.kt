@@ -66,10 +66,7 @@ class FragmentMenuOne : Fragment(){
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
-
-        var selectedSpinnerItem = RealmController.instance.getSelectedSpinnerItem(realm)
+        var selectedSpinnerItem = RealmController.instance.getSelectedSpinnerItemStr(realm)
         var postId = RealmController.instance.getPostId(realm, selectedSpinnerItem)
         postId?.let {
             initData(postId)

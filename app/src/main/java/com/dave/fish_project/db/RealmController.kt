@@ -45,27 +45,46 @@ class RealmController {
                 .findFirst().obsPostId
     }
 
-    fun setSelectedSpinnerItem(realm : Realm, key: String, postName: String){
+    fun setSelectedSpinnerItem(realm : Realm, key: String, postName: String, position : Int){
         realm.executeTransactionAsync {
             var selectedItem = it.where(SelectItemModel::class.java).findFirst()
             if(null == selectedItem){
                 it.createObject(SelectItemModel::class.java).apply {
                     firstSpinner = key
                     secondSpinner = postName
+                    this.position = position
                 }
             }else{
                 selectedItem.apply {
                     firstSpinner = key
                     secondSpinner = postName
+                    this.position = position
                 }
             }
             Log.d(TAG, "selectedItem --> $selectedItem")
         }
     }
 
-    fun getSelectedSpinnerItem(realm: Realm) : String{
+    fun getSelectedSpinnerItemStr(realm: Realm) : String{
         return realm.where(SelectItemModel::class.java)
                 .findFirst().secondSpinner
+    }
+
+    fun getSelectedSpinnerItem(realm: Realm) : Int{
+        return realm.where(SelectItemModel::class.java)
+                .findFirst().position
+    }
+
+    fun setSelectSecondItem(realm: Realm, position : Int){
+        realm.executeTransactionAsync { db->
+            var selectModel = db.where(SelectItemModel::class.java).findFirst()
+            if(null == selectModel){
+                var newSelectModel = db.createObject(SelectItemModel::class.java)
+                newSelectModel?.position = position
+            }else{
+                selectModel.position = position
+            }
+        }
     }
 
     fun getSpinnerItems(realm : Realm) : List<String>{

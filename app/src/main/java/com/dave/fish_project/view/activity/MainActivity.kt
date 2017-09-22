@@ -78,6 +78,11 @@ class MainActivity : AppCompatActivity() {
 
         override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
             setSpinnerAdapter(spinner_map, RealmController.instance.getSelectedSpinnerItem(realm, spinner_loc.selectedItem.toString())!!)
+            var secondPosition = RealmController.instance.getSelectedSpinnerItem(realm)
+            if(null == secondPosition){
+                secondPosition = 0
+            }
+            spinner_map.setSelection(secondPosition)
         }
     }
 
@@ -86,12 +91,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+            var idValue = RealmController.instance.getPostId(realm, spinner_map.selectedItem.toString())
+            Log.w(TAG, "second values are? ---> spinner : ${spinner_map.selectedItem}, id : $idValue")
             RealmController
                     .instance
                     .setSelectedSpinnerItem(
                             realm,
                             spinner_loc.selectedItem.toString(),
-                            spinner_map.selectedItem.toString()
+                            spinner_map.selectedItem.toString(),
+                            p2
                     )
         }
     }

@@ -8,4 +8,5 @@ import io.realm.RealmObject
 open class SelectItemModel : RealmObject(){
     var firstSpinner: String = ""
     var secondSpinner : String = ""
+    var position : Int = 0
 }
