@@ -63,9 +63,9 @@ class RealmController {
         }
     }
 
-    fun getSelectedSpinnerItem(realm: Realm) : String{
+    fun getSelectedSpinnerItem(realm: Realm) : SelectItemModel{
         return realm.where(SelectItemModel::class.java)
-                .findFirst().secondSpinner
+                .findFirst()
     }
 
     fun getSpinnerItems(realm : Realm) : List<String>{

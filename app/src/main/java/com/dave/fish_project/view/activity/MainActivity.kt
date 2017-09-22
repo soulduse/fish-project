@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         realm = Realm.getDefaultInstance()
 
-        initViewPager()
         initTab()
         initSpinner()
 
@@ -48,6 +47,8 @@ class MainActivity : AppCompatActivity() {
         }
         spinner_loc.onItemSelectedListener = firstSpinnerListener
         spinner_map.onItemSelectedListener = secondSpinnerListener
+
+
     }
 
     private fun setSpinnerAdapter(spinner : Spinner, items : List<String>){
@@ -77,7 +78,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-            setSpinnerAdapter(spinner_map, RealmController.instance.getSelectedSpinnerItem(realm, spinner_loc.selectedItem.toString())!!)
+            var selectedKey = RealmController.instance.getSelectedSpinnerItem(realm)?.firstSpinner
+            if(selectedKey == null){
+                selectedKey = spinner_loc.selectedItem.toString()
+            }
+            setSpinnerAdapter(spinner_map, RealmController.instance.getSelectedSpinnerItem(realm, selectedKey)!!)
         }
     }
 
@@ -93,6 +98,8 @@ class MainActivity : AppCompatActivity() {
                             spinner_loc.selectedItem.toString(),
                             spinner_map.selectedItem.toString()
                     )
+
+            initViewPager()
         }
     }
 
