@@ -9,6 +9,8 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import com.dave.fish_project.R
 import com.dave.fish_project.db.RealmController
+import com.dave.fish_project.db.RealmListener
+import com.dave.fish_project.model.spinner.FirstSpinnerModel
 import com.dave.fish_project.model.spinner.SelectItemModel
 import com.dave.fish_project.network.RetrofitController
 import com.dave.fish_project.view.adapter.ViewPagerAdapter
@@ -20,6 +22,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var realm: Realm
+    private lateinit var mRealmController : RealmController
     private var firstSpinnerPosition = 0
     private var selectedSpinner : SelectItemModel ?= null
     private val tabIcons = intArrayOf(
@@ -29,11 +32,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        realm = Realm.getDefaultInstance()
 
+        initRealm()
         initTab()
         initSpinner()
         initViewPager()
+    }
+
+    private fun initRealm() {
+        realm = Realm.getDefaultInstance()
+        mRealmController = RealmController.instance
+        mRealmController.setListener(realmListener)
     }
 
     private fun initTab() {
@@ -45,15 +54,14 @@ class MainActivity : AppCompatActivity() {
         if (isEmptyRealmSpinner()) {
             initRealmForSpinner()
         } else {
-            setSpinnerAdapter(spinner_loc, RealmController.instance.getSpinnerItems(realm))
+            setSpinnerAdapter(spinner_loc, mRealmController.getSpinnerItems(realm))
         }
 
         spinner_loc.onItemSelectedListener = spinnerListener
         spinner_map.onItemSelectedListener = spinnerListener
 
-        selectedSpinner = RealmController.instance.findSelectedSpinnerItem(realm)
+        selectedSpinner = mRealmController.findSelectedSpinnerItem(realm)
         selectedSpinner?.let {
-            Log.w(TAG, "1Position : ${selectedSpinner?.firstPosition}, 2Position : ${selectedSpinner?.secondPosition}")
             spinner_loc.setSelection(selectedSpinner?.firstPosition!!)
         }
     }
@@ -88,7 +96,7 @@ class MainActivity : AppCompatActivity() {
 
             when(spinner){
                 spinner_loc ->{
-                    setSpinnerAdapter(spinner_map, RealmController.instance.getSelectedSpinnerItem(realm, spinner_loc.selectedItem.toString())!!)
+                    setSpinnerAdapter(spinner_map, mRealmController.getSelectedSpinnerItem(realm, spinner_loc.selectedItem.toString())!!)
                     firstSpinnerPosition = pos
                     selectedSpinner?.let {
                         if(selectedSpinner?.doNm == spinner_loc.selectedItem.toString()){
@@ -100,9 +108,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 spinner_map ->{
-                    Log.e(TAG, "1Position : ${firstSpinnerPosition}, 2Position : ${spinner_map.selectedItemPosition}, 2selectItem : ${spinner_map.selectedItem}")
-                    RealmController
-                            .instance
+                    mRealmController
                             .setSelectedSpinnerItem(
                                     realm,
                                     spinner_loc.selectedItem.toString(),
@@ -110,18 +116,13 @@ class MainActivity : AppCompatActivity() {
                                     firstSpinnerPosition,
                                     pos
                             )
-                    main_viewpager.adapter.notifyDataSetChanged()
-//                    if(!firstExecute){
-//                        main_viewpager.adapter.notifyDataSetChanged()
-//                    }
-//                    firstExecute = false
                 }
             }
         }
     }
 
     private fun isEmptyRealmSpinner(): Boolean {
-        if (RealmController.instance.getSpinnerItems(realm).isEmpty()) {
+        if (mRealmController.getSpinnerItems(realm).isEmpty()) {
             return true
         }
 
@@ -145,11 +146,24 @@ class MainActivity : AppCompatActivity() {
                             keys : ${gisMap?.keys}"
                             values : ${gisMap?.values}"
                             """)
-                    RealmController.instance.setSpinner(realm, gisMap!!)
-                    setSpinnerAdapter(spinner_loc, RealmController.instance.getSpinnerItems(realm))
+                    mRealmController.setSpinner(realm, gisMap!!)
+
                 }, { e ->
                     Log.e(TAG, "result API response ===> error ${e.localizedMessage}")
                 })
+    }
+
+    private val realmListener = object : RealmListener{
+        override fun onSpinnerSuccess() {
+            setSpinnerAdapter(spinner_loc, RealmController.instance.getSpinnerItems(realm))
+        }
+
+        override fun onTransactionSuccess() {
+            if(!firstExecute){
+                main_viewpager.adapter.notifyDataSetChanged()
+            }
+            firstExecute = false
+        }
     }
 
     companion object {

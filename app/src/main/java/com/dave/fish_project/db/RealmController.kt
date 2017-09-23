@@ -15,9 +15,10 @@ import io.realm.Realm
  */
 class RealmController {
 
+    private lateinit var realmListener: RealmListener
+
     fun setSpinner(realm : Realm, dataMap : Map<String, List<GisModel.Data>>){
-        realm.executeTransactionAsync {
-            db->
+        realm.executeTransactionAsync({db->
             val spinnerDataList : List<String> = dataMap.keys.toList().filter { d -> d!=null && d != "황해남도" }.sorted()
             spinnerDataList.forEach { key->
                 db.createObject(FirstSpinnerModel::class.java).apply {
@@ -33,7 +34,12 @@ class RealmController {
                     }
                 }
             }
-        }
+        },{
+            // 트랜잭션이 성공하였습니다.
+            realmListener.onSpinnerSuccess()
+        },{
+            // 트랜잭션이 실패했고 자동으로 취소되었습니다.
+        })
     }
 
     fun getSelectedSpinnerItem(realm: Realm, key : String): List<String>? {
@@ -42,13 +48,7 @@ class RealmController {
                 .findFirst().secondSpinnerItems?.map { it.obsPostName }
     }
 
-    fun getPostId(realm : Realm, postName : String): String?{
-        return realm.where(SecondSpinnerModel::class.java)
-                .equalTo("obsPostName", postName)
-                .findFirst().obsPostId
-    }
-
-    fun setSelectedSpinnerItem(realm : Realm, key: String, postName: String, position1 : Int, position2 : Int, pagerAdapter : PagerAdapter){
+    fun setSelectedSpinnerItem(realm : Realm, key: String, postName: String, position1 : Int, position2 : Int){
         realm.executeTransactionAsync({ bgRealm ->
             var selectedItem = bgRealm.where(SelectItemModel::class.java).findFirst()
             if(null == selectedItem){
@@ -69,7 +69,7 @@ class RealmController {
             Log.d(TAG, "selectedItem --> $selectedItem")
         }, {
             // 트랜잭션이 성공하였습니다.
-            pagerAdapter.notifyDataSetChanged()
+            realmListener.onTransactionSuccess()
         }) {
             // 트랜잭션이 실패했고 자동으로 취소되었습니다.
         }
@@ -78,11 +78,6 @@ class RealmController {
     fun findSelectedSpinnerItem(realm : Realm) : SelectItemModel?{
         return realm.where(SelectItemModel::class.java)
                 ?.findFirst()
-    }
-
-    fun getSelectedSpinnerItem(realm: Realm) : SelectItemModel{
-        return realm.where(SelectItemModel::class.java)
-                .findFirst()
     }
 
     fun getSpinnerItems(realm : Realm) : List<String>{
@@ -96,10 +91,16 @@ class RealmController {
                 .secondSpinnerItems?.first{ second -> second.obsPostName == postName}
     }
 
+    fun setListener(realmListener: RealmListener) {
+        this.realmListener = realmListener
+    }
+
     private object Holder { val INSTANCE = RealmController() }
 
     companion object {
         private val TAG = javaClass.simpleName
         val instance: RealmController by lazy { Holder.INSTANCE }
     }
+
+
 }
