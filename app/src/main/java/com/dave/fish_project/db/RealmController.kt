@@ -1,11 +1,14 @@
 package com.dave.fish_project.db
 
+import android.support.v4.view.PagerAdapter
 import android.util.Log
 import com.dave.fish_project.model.GisModel
 import com.dave.fish_project.model.spinner.FirstSpinnerModel
 import com.dave.fish_project.model.spinner.SecondSpinnerModel
 import com.dave.fish_project.model.spinner.SelectItemModel
 import io.realm.Realm
+
+
 
 /**
  * Created by soul on 2017. 9. 14..
@@ -45,11 +48,11 @@ class RealmController {
                 .findFirst().obsPostId
     }
 
-    fun setSelectedSpinnerItem(realm : Realm, key: String, postName: String, position1 : Int, position2 : Int){
-        realm.executeTransactionAsync {
-            var selectedItem = it.where(SelectItemModel::class.java).findFirst()
+    fun setSelectedSpinnerItem(realm : Realm, key: String, postName: String, position1 : Int, position2 : Int, pagerAdapter : PagerAdapter){
+        realm.executeTransactionAsync({ bgRealm ->
+            var selectedItem = bgRealm.where(SelectItemModel::class.java).findFirst()
             if(null == selectedItem){
-                it.createObject(SelectItemModel::class.java).apply {
+                bgRealm.createObject(SelectItemModel::class.java).apply {
                     doNm = key
                     this.postName = postName
                     this.firstPosition = position1
@@ -64,6 +67,11 @@ class RealmController {
                 }
             }
             Log.d(TAG, "selectedItem --> $selectedItem")
+        }, {
+            // 트랜잭션이 성공하였습니다.
+            pagerAdapter.notifyDataSetChanged()
+        }) {
+            // 트랜잭션이 실패했고 자동으로 취소되었습니다.
         }
     }
 
