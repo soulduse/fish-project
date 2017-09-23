@@ -11,6 +11,15 @@ import kotlin.test.*
 class JodaTimeTest {
 
     @Test
+    fun changeDate(){
+        var minDayOfMonth =  DateTime().dayOfMonth().withMinimumValue()
+        println(minDayOfMonth.toString("yyyy.MM.dd"))
+        println(minDayOfMonth.plusDays(7).toString("yyyy.MM.dd"))
+        println(minDayOfMonth.plusDays(14).toString("yyyy.MM.dd"))
+        println(minDayOfMonth.plusDays(21).toString("yyyy.MM.dd"))
+    }
+
+    @Test
     fun shouldGetAfterOneMinute() {
         val seoul = DateTimeZone.forID("Asia/Seoul")
         val theTime = DateTime(1961, 8, 9, 23, 59, seoul)
