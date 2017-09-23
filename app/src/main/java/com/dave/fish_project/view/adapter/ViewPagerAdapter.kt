@@ -28,5 +28,4 @@ class ViewPagerAdapter(manager : FragmentManager) : FragmentStatePagerAdapter(ma
     override fun getItemPosition(`object`: Any?): Int {
         return PagerAdapter.POSITION_NONE
     }
-
 }

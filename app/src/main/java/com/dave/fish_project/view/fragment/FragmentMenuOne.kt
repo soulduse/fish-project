@@ -24,8 +24,6 @@ import java.util.*
  * Created by soul on 2017. 8. 27..
  */
 class FragmentMenuOne : Fragment(){
-
-    var tideData : WeeklyModel?= null
     var firstDayOfWeek : Int ?= null
 
     private val DAY_PARAMETER = "day"
@@ -54,11 +52,10 @@ class FragmentMenuOne : Fragment(){
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        // The two views can't have the same id, or the state won't be preserved
-        // correctly and they will throw an exception
-        return inflater?.inflate(R.layout.fragment_menu_one, container, false)
-    }
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+            // The two views can't have the same id, or the state won't be preserved
+            // correctly and they will throw an exception
+            inflater?.inflate(R.layout.fragment_menu_one, container, false)
 
     override fun onPause() {
         super.onPause()
@@ -67,10 +64,10 @@ class FragmentMenuOne : Fragment(){
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.e(TAG, "onViewCreated")
-        var selectedSpinnerItem = RealmController.instance.findSelectedSpinnerItem(realm)
+        val selectedSpinnerItem = RealmController.instance.findSelectedSpinnerItem(realm)
         Log.w(TAG, "doNm : ${selectedSpinnerItem?.doNm}, postNm : ${selectedSpinnerItem?.postName}")
         selectedSpinnerItem?.let {
-            var postId = RealmController
+            val postId = RealmController
                     .instance
                     .findByPostName(
                             realm,
@@ -78,7 +75,7 @@ class FragmentMenuOne : Fragment(){
                             selectedSpinnerItem.postName
                     )?.obsPostId
             postId?.let {
-                var minDayOfMonth = DateTime().dayOfMonth().withMinimumValue()
+                val minDayOfMonth = DateTime().dayOfMonth().withMinimumValue()
                 initData(postId, minDayOfMonth)
                 initData(postId, minDayOfMonth.plusDays(7))
                 initData(postId, minDayOfMonth.plusDays(14))
@@ -98,14 +95,14 @@ class FragmentMenuOne : Fragment(){
         RetrofitController().getWeeklyData(postId, dateTime)
                 .subscribe({
                     tideModel->
-                    var weeklyDataList = tideModel.weeklyDataList
+                    val weeklyDataList = tideModel.weeklyDataList
                     for(item : WeeklyModel.WeeklyData in weeklyDataList!!){
                         Log.w(TAG, "What is data items --> ${item.toString()}")
                         val testView = layoutInflater.inflate(R.layout.view_item_add_calendar, null)
 
-                        var lowTide = getContainLowTide(item)
-                        var firstTideHeight = getSplitListItem(lowTide[0])
-                        var secondTideHeight = getSplitListItem(lowTide[1])
+                        val lowTide = getContainLowTide(item)
+                        val firstTideHeight = getSplitListItem(lowTide[0])
+                        val secondTideHeight = getSplitListItem(lowTide[1])
 
                         testView.tv_tide_level.text = firstTideHeight
                         testView.tv_tide_level2.text = secondTideHeight
@@ -183,16 +180,6 @@ class FragmentMenuOne : Fragment(){
         }
 
         return lowItem
-    }
-
-    fun getContainLowTide(tideItem : String): String{
-        val CONTAIN_STR = "저"
-        var waterHeight = ""
-
-        if(tideItem.contains(CONTAIN_STR)){
-            waterHeight = getSplitListItem(tideItem)
-        }
-        return waterHeight
     }
 
     fun getSplitListItem(lvlItem : String) : String{
