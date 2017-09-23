@@ -29,8 +29,8 @@ class WeeklyModel {
     data class WeeklyData(
             var searchDate:String,
             var obsPostName:String,
-            var obsLat:String,
-            var obsLon:String,
+            var obsLon:Double,
+            var obsLat:Double,
             var lvl1:String,
             var lvl2:String,
             var lvl3:String,
@@ -38,12 +38,11 @@ class WeeklyModel {
             var flgView:String,
             var dateSun:String,
             var dateMoon:String,
-            var moonState:String,
             var moolNormal:String,
             var mool7:String,
             var mool8:String,
-            var upTime:String,
-            var downTime:String,
+            var weatherChar:String,
+            var am:String,
             var temp:String
     )
 }
