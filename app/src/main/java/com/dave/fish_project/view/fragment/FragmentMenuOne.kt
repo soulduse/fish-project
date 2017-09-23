@@ -7,17 +7,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
 import com.dave.fish_project.R
+import com.dave.fish_project.db.RealmController
 import com.dave.fish_project.model.WeeklyModel
 import com.dave.fish_project.network.RetrofitController
 import com.sickmartian.calendarview.CalendarView
+import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_menu_one.*
+import kotlinx.android.synthetic.main.view_item_add_calendar.view.*
 import org.joda.time.DateTime
 import java.util.*
-import com.bumptech.glide.Glide
-import com.dave.fish_project.db.RealmController
-import io.realm.Realm
-import kotlinx.android.synthetic.main.view_item_add_calendar.view.*
 
 
 /**
@@ -66,7 +66,6 @@ class FragmentMenuOne : Fragment(){
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         Log.e(TAG, "onViewCreated")
         var selectedSpinnerItem = RealmController.instance.findSelectedSpinnerItem(realm)
         Log.w(TAG, "doNm : ${selectedSpinnerItem?.doNm}, postNm : ${selectedSpinnerItem?.postName}")
@@ -79,7 +78,12 @@ class FragmentMenuOne : Fragment(){
                             selectedSpinnerItem.postName
                     )?.obsPostId
             postId?.let {
-                initData(postId)
+                var minDayOfMonth = DateTime().dayOfMonth().withMinimumValue()
+                initData(postId, minDayOfMonth)
+                initData(postId, minDayOfMonth.plusDays(7))
+                initData(postId, minDayOfMonth.plusDays(14))
+                initData(postId, minDayOfMonth.plusDays(21))
+                initData(postId, minDayOfMonth.plusDays(28))
             }
         }
 
@@ -89,14 +93,14 @@ class FragmentMenuOne : Fragment(){
         monthView.setCurrentDay(getCalendarForState())
     }
 
-    fun initData(postId : String){
-        Log.d(TAG, "postID --> $postId")
-        RetrofitController().getWeeklyData(postId)
+    fun initData(postId : String, dateTime: DateTime){
+        Log.d(TAG, "postID --> $postId, dateTime : ${dateTime}")
+        RetrofitController().getWeeklyData(postId, dateTime)
                 .subscribe({
                     tideModel->
                     var weeklyDataList = tideModel.weeklyDataList
                     for(item : WeeklyModel.WeeklyData in weeklyDataList!!){
-                        Log.d(TAG, item.toString())
+                        Log.w(TAG, "What is data items --> ${item.toString()}")
                         val testView = layoutInflater.inflate(R.layout.view_item_add_calendar, null)
 
                         var lowTide = getContainLowTide(item)
@@ -106,10 +110,12 @@ class FragmentMenuOne : Fragment(){
                         testView.tv_tide_level.text = firstTideHeight
                         testView.tv_tide_level2.text = secondTideHeight
 
-                        if(firstTideHeight.toInt() <= 100){
+                        Log.w(TAG, "firstTideHeight : $firstTideHeight, secondTideHeight : $secondTideHeight")
+
+                        if(firstTideHeight.isNotEmpty() && firstTideHeight.toInt() <= 100){
                             testView.tv_tide_level.setTextColor(Color.RED)
                         }
-                        if(secondTideHeight.toInt() <= 100){
+                        if(secondTideHeight.isNotEmpty() && secondTideHeight.toInt() <= 100){
                             testView.tv_tide_level2.setTextColor(Color.RED)
                         }
 
@@ -125,6 +131,7 @@ class FragmentMenuOne : Fragment(){
                             """)
                         monthView.addViewToDay(CalendarView.DayMetadata(tideDate.year, tideDate.monthOfYear, tideDate.dayOfMonth),
                                 testView)
+
                     }
                     Log.d(TAG, "used api")
                 }, {
