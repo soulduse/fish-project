@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import com.dave.fish_project.R
 import com.dave.fish_project.model.WeeklyModel
 import com.dave.fish_project.network.RetrofitController
@@ -15,11 +14,8 @@ import com.sickmartian.calendarview.CalendarView
 import kotlinx.android.synthetic.main.fragment_menu_one.*
 import org.joda.time.DateTime
 import java.util.*
-import android.graphics.Color.parseColor
-import android.widget.LinearLayout
 import com.bumptech.glide.Glide
 import com.dave.fish_project.db.RealmController
-import com.sickmartian.calendarview.MonthView
 import io.realm.Realm
 import kotlinx.android.synthetic.main.view_item_add_calendar.view.*
 
@@ -64,14 +60,29 @@ class FragmentMenuOne : Fragment(){
         return inflater?.inflate(R.layout.fragment_menu_one, container, false)
     }
 
+    override fun onPause() {
+        super.onPause()
+    }
+
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var selectedSpinnerItem = RealmController.instance.getSelectedSpinnerItem(realm)?.secondSpinner
-        var postId = RealmController.instance.getPostId(realm, selectedSpinnerItem!!)
-        postId?.let {
-            initData(postId)
+        Log.e(TAG, "onViewCreated")
+        var selectedSpinnerItem = RealmController.instance.findSelectedSpinnerItem(realm)
+        Log.w(TAG, "doNm : ${selectedSpinnerItem?.doNm}, postNm : ${selectedSpinnerItem?.postName}")
+        selectedSpinnerItem?.let {
+            var postId = RealmController
+                    .instance
+                    .findByPostName(
+                            realm,
+                            selectedSpinnerItem.doNm,
+                            selectedSpinnerItem.postName
+                    )?.obsPostId
+            postId?.let {
+                initData(postId)
+            }
         }
+
 
         setDateByStateDependingOnView()
         monthView.firstDayOfTheWeek = CalendarView.SUNDAY_SHIFT
@@ -79,6 +90,7 @@ class FragmentMenuOne : Fragment(){
     }
 
     fun initData(postId : String){
+        Log.d(TAG, "postID --> $postId")
         RetrofitController().getWeeklyData(postId)
                 .subscribe({
                     tideModel->

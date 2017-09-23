@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import com.dave.fish_project.R
 import com.dave.fish_project.db.RealmController
+import com.dave.fish_project.model.spinner.SelectItemModel
 import com.dave.fish_project.network.RetrofitController
 import com.dave.fish_project.view.adapter.ViewPagerAdapter
 import com.dave.fish_project.view.fragment.FragmentMenuOne
@@ -19,7 +20,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var realm: Realm
-
+    private var firstSpinnerPosition = 0
+    private var selectedSpinner : SelectItemModel ?= null
     private val tabIcons = intArrayOf(
             R.drawable.ic_date_range_white_24dp, R.drawable.ic_cloud_white_24dp, R.drawable.ic_toys_white_24dp)
 
@@ -31,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         initTab()
         initSpinner()
-
+        initViewPager()
     }
 
     private fun initTab() {
@@ -45,10 +47,15 @@ class MainActivity : AppCompatActivity() {
         } else {
             setSpinnerAdapter(spinner_loc, RealmController.instance.getSpinnerItems(realm))
         }
-        spinner_loc.onItemSelectedListener = firstSpinnerListener
-        spinner_map.onItemSelectedListener = secondSpinnerListener
 
+        spinner_loc.onItemSelectedListener = spinnerListener
+        spinner_map.onItemSelectedListener = spinnerListener
 
+        selectedSpinner = RealmController.instance.findSelectedSpinnerItem(realm)
+        selectedSpinner?.let {
+            Log.w(TAG, "1Position : ${selectedSpinner?.firstPosition}, 2Position : ${selectedSpinner?.secondPosition}")
+            spinner_loc.setSelection(selectedSpinner?.firstPosition!!)
+        }
     }
 
     private fun setSpinnerAdapter(spinner : Spinner, items : List<String>){
@@ -58,7 +65,6 @@ class MainActivity : AppCompatActivity() {
                 items
         )
     }
-
 
     private fun initViewPager() {
         main_viewpager.adapter = ViewPagerAdapter(supportFragmentManager).apply {
@@ -73,33 +79,44 @@ class MainActivity : AppCompatActivity() {
         tabs.getTabAt(2)?.icon = resources.getDrawable(tabIcons[2])
     }
 
-    var firstSpinnerListener = object : AdapterView.OnItemSelectedListener {
+    var spinnerListener = object : AdapterView.OnItemSelectedListener{
         override fun onNothingSelected(p0: AdapterView<*>?) {
         }
 
-        override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-            var selectedKey = RealmController.instance.getSelectedSpinnerItem(realm)?.firstSpinner
-            if(selectedKey == null){
-                selectedKey = spinner_loc.selectedItem.toString()
+        override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
+            val spinner = parent as Spinner
+
+            when(spinner){
+                spinner_loc ->{
+                    setSpinnerAdapter(spinner_map, RealmController.instance.getSelectedSpinnerItem(realm, spinner_loc.selectedItem.toString())!!)
+                    firstSpinnerPosition = pos
+                    selectedSpinner?.let {
+                        if(selectedSpinner?.doNm == spinner_loc.selectedItem.toString()){
+                            spinner_map.setSelection(selectedSpinner?.secondPosition!!)
+                        }else{
+                            spinner_map.setSelection(0)
+                        }
+                    }
+                }
+
+                spinner_map ->{
+                    Log.e(TAG, "1Position : ${firstSpinnerPosition}, 2Position : ${spinner_map.selectedItemPosition}, 2selectItem : ${spinner_map.selectedItem}")
+                    RealmController
+                            .instance
+                            .setSelectedSpinnerItem(
+                                    realm,
+                                    spinner_loc.selectedItem.toString(),
+                                    spinner_map.selectedItem.toString(),
+                                    firstSpinnerPosition,
+                                    pos
+                            )
+                    main_viewpager.adapter.notifyDataSetChanged()
+//                    if(!firstExecute){
+//                        main_viewpager.adapter.notifyDataSetChanged()
+//                    }
+//                    firstExecute = false
+                }
             }
-            setSpinnerAdapter(spinner_map, RealmController.instance.getSelectedSpinnerItem(realm, selectedKey)!!)
-        }
-    }
-
-    var secondSpinnerListener = object : AdapterView.OnItemSelectedListener {
-        override fun onNothingSelected(p0: AdapterView<*>?) {
-        }
-
-        override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-            RealmController
-                    .instance
-                    .setSelectedSpinnerItem(
-                            realm,
-                            spinner_loc.selectedItem.toString(),
-                            spinner_map.selectedItem.toString()
-                    )
-
-            initViewPager()
         }
     }
 
@@ -137,5 +154,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private val TAG = MainActivity.javaClass.simpleName
+        private var firstExecute = true
     }
 }

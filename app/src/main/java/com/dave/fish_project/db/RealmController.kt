@@ -15,13 +15,13 @@ class RealmController {
     fun setSpinner(realm : Realm, dataMap : Map<String, List<GisModel.Data>>){
         realm.executeTransactionAsync {
             db->
-            var spinnerDataList : List<String> = dataMap?.keys?.toList()?.filter { d-> d!=null && d!="황해남도" }!!.sorted()
+            val spinnerDataList : List<String> = dataMap.keys.toList().filter { d -> d!=null && d != "황해남도" }.sorted()
             spinnerDataList.forEach { key->
                 db.createObject(FirstSpinnerModel::class.java).apply {
                     areaName = key
-                    var dataList = dataMap[key]
+                    val dataList = dataMap[key]
                     dataList?.forEach { (obsPostId, _, obsPostName, obsLat, obsLon) ->
-                        var selectedSpinnerModel = db.createObject(SecondSpinnerModel::class.java)
+                        val selectedSpinnerModel = db.createObject(SecondSpinnerModel::class.java)
                         selectedSpinnerModel.obsPostId = obsPostId
                         selectedSpinnerModel.obsPostName = obsPostName
                         selectedSpinnerModel.obsLat = obsLat
@@ -45,22 +45,31 @@ class RealmController {
                 .findFirst().obsPostId
     }
 
-    fun setSelectedSpinnerItem(realm : Realm, key: String, postName: String){
+    fun setSelectedSpinnerItem(realm : Realm, key: String, postName: String, position1 : Int, position2 : Int){
         realm.executeTransactionAsync {
             var selectedItem = it.where(SelectItemModel::class.java).findFirst()
             if(null == selectedItem){
                 it.createObject(SelectItemModel::class.java).apply {
-                    firstSpinner = key
-                    secondSpinner = postName
+                    doNm = key
+                    this.postName = postName
+                    this.firstPosition = position1
+                    this.secondPosition = position2
                 }
             }else{
-                selectedItem.apply {
-                    firstSpinner = key
-                    secondSpinner = postName
+                selectedItem.run {
+                    doNm = key
+                    this.postName = postName
+                    this.firstPosition = position1
+                    this.secondPosition = position2
                 }
             }
             Log.d(TAG, "selectedItem --> $selectedItem")
         }
+    }
+
+    fun findSelectedSpinnerItem(realm : Realm) : SelectItemModel?{
+        return realm.where(SelectItemModel::class.java)
+                ?.findFirst()
     }
 
     fun getSelectedSpinnerItem(realm: Realm) : SelectItemModel{
@@ -70,6 +79,13 @@ class RealmController {
 
     fun getSpinnerItems(realm : Realm) : List<String>{
         return realm.where(FirstSpinnerModel::class.java).findAll().map { result->result.areaName }
+    }
+
+    fun findByPostName(realm : Realm, doNm : String, postName: String) : SecondSpinnerModel?{
+        return realm.where(FirstSpinnerModel::class.java)
+                .equalTo("areaName", doNm)
+                .findFirst()
+                .secondSpinnerItems?.first{ second -> second.obsPostName == postName}
     }
 
     private object Holder { val INSTANCE = RealmController() }
