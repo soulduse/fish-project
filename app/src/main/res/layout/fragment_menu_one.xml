@@ -14,11 +14,12 @@
         calendar_view:currentDayTextColor="@color/colorInvertedText"
         calendar_view:inactiveBackgroundColor="@color/notThisMonthDayBackground"
         calendar_view:inactiveTextColor="@color/colorSecondaryText"
-        calendar_view:overflowColor="@color/colorPrimary"
-        calendar_view:overflowHeight="2dp"
+        calendar_view:overflowColor="@color/colorSecondaryText"
+        calendar_view:overflowHeight="0.1dp"
         calendar_view:selectedBackgroundColor="@color/selectedDayBackground"
-        calendar_view:separatorColor="@color/colorCalendarDivider"
-        calendar_view:showOverflow="false"
+        calendar_view:separatorColor="@color/colorSecondaryText"
+        calendar_view:showOverflow="true"
+        calendar_view:separateDaysVertically="true"
         calendar_view:textSize="12sp" />
 
 </RelativeLayout>
