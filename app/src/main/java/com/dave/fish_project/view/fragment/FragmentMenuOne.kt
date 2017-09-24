@@ -114,11 +114,12 @@ class FragmentMenuOne : Fragment(){
                             testView.tv_tide_level2.setTextColor(Color.RED)
                         }
 
-                        item.am
-
-                        Glide.with(context)
-                                .load(R.drawable.ic_wb_sunny_orange_700_24dp)
-                                .into(testView.iv_tide_state)
+                        val weatherIcon = getWeatherIcon(item.am)
+                        if(weatherIcon != 0){
+                            Glide.with(context)
+                                    .load(getWeatherIcon(item.am))
+                                    .into(testView.iv_tide_state)
+                        }
 
                         var tideDate = DateTime(item.searchDate)
                         Log.d(TAG, """
@@ -137,8 +138,15 @@ class FragmentMenuOne : Fragment(){
                 })
     }
 
-    private fun setWeatherIcon(weather : String){
-
+    private fun getWeatherIcon(weather : String) : Int{
+        return when(weather.toUpperCase()){
+            WeatherIcons.CLOUD.name -> R.drawable.icon_cloud_sun
+            WeatherIcons.MORECLOUD.name -> R.drawable.ic_cloud_grey_500_24dp
+            WeatherIcons.RAIN.name -> R.drawable.icon_rain
+            WeatherIcons.SUN.name -> R.drawable.ic_wb_sunny_grey_500_24dp
+            WeatherIcons.CLOUDRAIN.name -> R.drawable.icon_rain
+            else -> 0
+        }
     }
 
     fun getContainLowTide(item : WeeklyModel.WeeklyData) : Array<String> {
@@ -225,5 +233,9 @@ class FragmentMenuOne : Fragment(){
 
     companion object {
         private val TAG = FragmentMenuOne.javaClass.simpleName
+
+        enum class WeatherIcons{
+            SUN, RAIN, CLOUD, MORECLOUD, CLOUDRAIN
+        }
     }
 }
