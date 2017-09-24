@@ -53,8 +53,6 @@ class FragmentMenuOne : Fragment(){
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-            // The two views can't have the same id, or the state won't be preserved
-            // correctly and they will throw an exception
             inflater?.inflate(R.layout.fragment_menu_one, container, false)
 
     override fun onPause() {
@@ -116,6 +114,8 @@ class FragmentMenuOne : Fragment(){
                             testView.tv_tide_level2.setTextColor(Color.RED)
                         }
 
+                        item.am
+
                         Glide.with(context)
                                 .load(R.drawable.ic_wb_sunny_orange_700_24dp)
                                 .into(testView.iv_tide_state)
@@ -135,6 +135,10 @@ class FragmentMenuOne : Fragment(){
                     e ->
                     Log.d(TAG, "Something wrong --> ${e.localizedMessage}")
                 })
+    }
+
+    private fun setWeatherIcon(weather : String){
+
     }
 
     fun getContainLowTide(item : WeeklyModel.WeeklyData) : Array<String> {
