@@ -5,8 +5,8 @@ package com.dave.fish_project.model
  */
 class WeatherAndWaveModel {
 
-    var long : List<LongInfo> ?= null
-    var short : List<ShortInfo> ?= null
+    var long : List<LongInfo> = ArrayList()
+    var short : List<ShortInfo> = ArrayList()
 
     data class LongInfo(
             var am: String,

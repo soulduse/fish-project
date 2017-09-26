@@ -15,7 +15,7 @@ class WeeklyModel {
     var weeklyDataDTO :WeeklyDataDTO ?= null
 
     @SerializedName("weeklyData")
-    var weeklyDataList :List<WeeklyData> ?= null
+    var weeklyDataList :List<WeeklyData> = ArrayList()
 
     data class WeeklyDataDTO(
             var obsPostId : String,

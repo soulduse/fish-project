@@ -5,8 +5,8 @@ package com.dave.fish_project.model
  */
 class GisModel {
 
-    val data : List<Data> ?= null
-    val areaList : List<Area> ?= null
+    val data : List<Data> = ArrayList()
+    val areaList : List<Area> = ArrayList()
     val gisDataDTO : Gis ?= null
 
     data class Data(

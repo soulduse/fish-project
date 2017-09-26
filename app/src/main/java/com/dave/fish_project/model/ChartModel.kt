@@ -1,17 +1,18 @@
 package com.dave.fish_project.model
 
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Created by soul on 2017. 8. 27..
  */
 class ChartModel {
 
-    var currentTide : List<CurrentTide> ?= null
-    var tenMinTide : List<TenMinTide> ?= null
-    var highLowTide : List<HighLowTide> ?= null
-    var springRange : List<SpringRange> ?= null
-    var sunRiseSet : List<SunRiseSet> ?= null
+    var currentTide : List<CurrentTide> = ArrayList()
+    var tenMinTide : List<TenMinTide> = ArrayList()
+    var highLowTide : List<HighLowTide> = ArrayList()
+    var springRange : List<SpringRange> = ArrayList()
+    var sunRiseSet : List<SunRiseSet> = ArrayList()
 
     data class CurrentTide(
             var time : Date,
