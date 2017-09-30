@@ -70,7 +70,7 @@ class PersistentService : Service() {
     override fun onDestroy() {
         super.onDestroy()
 
-        Log.i("PersistentService", "onDestroy")
+        Log.i(TAG, "PersistentService onDestroy")
         countDownTimer!!.cancel()
 
         /**
@@ -94,12 +94,12 @@ class PersistentService : Service() {
         countDownTimer = object : CountDownTimer(MILLISINFUTURE.toLong(), COUNT_DOWN_INTERVAL.toLong()) {
             override fun onTick(millisUntilFinished: Long) {
 
-                Log.i("PersistentService", "onTick")
+                Log.i(TAG, "PersistentService onTick")
             }
 
             override fun onFinish() {
 
-                Log.i("PersistentService", "onFinish")
+                Log.i(TAG, "PersistentService onFinish")
             }
         }
     }
@@ -109,8 +109,7 @@ class PersistentService : Service() {
      * 알람 매니져에 서비스 등록
      */
     private fun registerRestartAlarm() {
-
-        Log.i("000 PersistentService", "registerRestartAlarm")
+        Log.i(TAG, "000 PersistentService registerRestartAlarm")
         val intent = Intent(this@PersistentService, AlarmBraodCastReciever::class.java)
         intent.action = "ACTION.RESTART.PersistentService"
         val sender = PendingIntent.getBroadcast(this@PersistentService, 0, intent, 0)
@@ -132,7 +131,7 @@ class PersistentService : Service() {
      */
     private fun unregisterRestartAlarm() {
 
-        Log.i("000 PersistentService", "unregisterRestartAlarm")
+        Log.i(TAG, "000 PersistentService unregisterRestartAlarm")
 
         val intent = Intent(this@PersistentService, AlarmBraodCastReciever::class.java)
         intent.action = "ACTION.RESTART.PersistentService"
@@ -148,7 +147,7 @@ class PersistentService : Service() {
     }
 
     companion object {
-
+        private val TAG = PersistentService::class.java.simpleName
         private val MILLISINFUTURE = 1000 * 1000
         private val COUNT_DOWN_INTERVAL = 1000
     }
