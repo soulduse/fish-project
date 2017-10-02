@@ -55,10 +55,6 @@ class FragmentMenuOne : Fragment(){
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? =
             inflater?.inflate(R.layout.fragment_menu_one, container, false)
 
-    override fun onPause() {
-        super.onPause()
-    }
-
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.e(TAG, "onViewCreated")
@@ -114,11 +110,13 @@ class FragmentMenuOne : Fragment(){
                             testView.tv_tide_level2.setTextColor(Color.RED)
                         }
 
-                        val weatherIcon = getWeatherIcon(item.am)
-                        if(weatherIcon != 0){
-                            Glide.with(context)
-                                    .load(getWeatherIcon(item.am))
-                                    .into(testView.iv_tide_state)
+                        item.am?.let {
+                            val weatherIcon = getWeatherIcon(item?.am)
+                            if(weatherIcon != 0){
+                                Glide.with(context)
+                                        .load(getWeatherIcon(item?.am))
+                                        .into(testView.iv_tide_state)
+                            }
                         }
 
                         var tideDate = DateTime(item.searchDate)
