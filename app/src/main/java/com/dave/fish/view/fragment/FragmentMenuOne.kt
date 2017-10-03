@@ -1,5 +1,6 @@
 package com.dave.fish.view.fragment
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -12,6 +13,8 @@ import com.dave.fish.R
 import com.dave.fish.db.RealmController
 import com.dave.fish.model.WeeklyModel
 import com.dave.fish.network.RetrofitController
+import com.dave.fish.util.Global
+import com.dave.fish.view.activity.TideDetailActivity
 import com.sickmartian.calendarview.CalendarView
 import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_menu_one.*
@@ -71,10 +74,23 @@ class FragmentMenuOne : Fragment() {
             }
         }
 
-
         setDateByStateDependingOnView()
         monthView.firstDayOfTheWeek = CalendarView.SUNDAY_SHIFT
         monthView.setCurrentDay(getCalendarForState())
+
+
+        monthView.setDaySelectedListener(object : CalendarView.DaySelectionListener {
+            override fun onLongClick(p0: CalendarView?, p1: CalendarView.DayMetadata?) {
+            }
+
+            override fun onTapEnded(p0: CalendarView, p1: CalendarView.DayMetadata) {
+                val date = p1.year.toString() + p1.month.toString() + p1.day.toString()
+                var intent = Intent(activity, TideDetailActivity::class.java)
+                Log.w(TAG, "date value > $date")
+                intent.putExtra(Global.INTENT_DATE, date)
+                activity.startActivity(intent)
+            }
+        })
     }
 
     fun initData(postId: String, dateTime: DateTime) {
@@ -204,7 +220,7 @@ class FragmentMenuOne : Fragment() {
     }
 
     private fun getCalendarForState(): Calendar {
-        val newDateTime = DateTime(mYear, mMonth, mDay, 0,0,0,0)
+        val newDateTime = DateTime(mYear, mMonth, mDay, 0, 0, 0, 0)
         return newDateTime.toCalendar(Locale.KOREA)
     }
 
