@@ -1,10 +1,12 @@
 package com.dave.fish.db
 
 import android.util.Log
-import com.dave.fish.model.GisModel
-import com.dave.fish.model.spinner.FirstSpinnerModel
-import com.dave.fish.model.spinner.SecondSpinnerModel
-import com.dave.fish.model.spinner.SelectItemModel
+import com.dave.fish.model.retrofit.GisModel
+import com.dave.fish.model.realm.SpinnerFirstModel
+import com.dave.fish.model.realm.SpinnerSecondModel
+import com.dave.fish.model.realm.SelectItemModel
+import com.dave.fish.model.realm.TideWeeklyModel
+import com.dave.fish.model.retrofit.WeeklyModel
 import io.realm.Realm
 
 
@@ -19,11 +21,11 @@ class RealmController {
         realm.executeTransactionAsync({db->
             val spinnerDataList : List<String> = dataMap.keys.toList().filter { d -> d!=null && d != "황해남도" }.sorted()
             spinnerDataList.forEach { key->
-                db.createObject(FirstSpinnerModel::class.java).apply {
+                db.createObject(SpinnerFirstModel::class.java).apply {
                     areaName = key
                     val dataList = dataMap[key]
                     dataList?.forEach { (obsPostId, _, obsPostName, obsLat, obsLon) ->
-                        val selectedSpinnerModel = db.createObject(SecondSpinnerModel::class.java)
+                        val selectedSpinnerModel = db.createObject(SpinnerSecondModel::class.java)
                         selectedSpinnerModel.obsPostId = obsPostId
                         selectedSpinnerModel.obsPostName = obsPostName
                         selectedSpinnerModel.obsLat = obsLat
@@ -41,7 +43,7 @@ class RealmController {
     }
 
     fun getSelectedSpinnerItem(realm: Realm, key : String): List<String>? {
-        return realm.where(FirstSpinnerModel::class.java)
+        return realm.where(SpinnerFirstModel::class.java)
                 .equalTo("areaName", key)
                 .findFirst().secondSpinnerItems?.map { it.obsPostName }
     }
@@ -79,14 +81,44 @@ class RealmController {
     }
 
     fun getSpinnerItems(realm : Realm) : List<String>{
-        return realm.where(FirstSpinnerModel::class.java).findAll().map { result->result.areaName }
+        return realm.where(SpinnerFirstModel::class.java).findAll().map { result->result.areaName }
     }
 
-    fun findByPostName(realm : Realm, doNm : String, postName: String) : SecondSpinnerModel?{
-        return realm.where(FirstSpinnerModel::class.java)
+    fun findByPostName(realm : Realm, doNm : String, postName: String) : SpinnerSecondModel?{
+        return realm.where(SpinnerFirstModel::class.java)
                 .equalTo("areaName", doNm)
                 .findFirst()
                 .secondSpinnerItems?.first{ second -> second.obsPostName == postName}
+    }
+
+    fun setTideWeekly(realm : Realm, weeklyData: WeeklyModel.WeeklyData){
+        val tideWeeklyModel = TideWeeklyModel()
+        tideWeeklyModel.key = weeklyData.obsPostName+"_"+weeklyData.searchDate
+        tideWeeklyModel.am = weeklyData.am
+        tideWeeklyModel.dateMoon = weeklyData.dateMoon
+        tideWeeklyModel.dateSun = weeklyData.dateSun
+        tideWeeklyModel.flgView = weeklyData.flgView
+        tideWeeklyModel.lvl1 = weeklyData.lvl1
+        tideWeeklyModel.lvl2 = weeklyData.lvl2
+        tideWeeklyModel.lvl3 = weeklyData.lvl3
+        tideWeeklyModel.lvl4 = weeklyData.lvl4
+        tideWeeklyModel.mool7 = weeklyData.mool7
+        tideWeeklyModel.mool8 = weeklyData.mool8
+        tideWeeklyModel.moolNormal = weeklyData.moolNormal
+        tideWeeklyModel.obsPostName = weeklyData.obsPostName
+        tideWeeklyModel.obsLat = weeklyData.obsLat
+        tideWeeklyModel.obsLon = weeklyData.obsLon
+        tideWeeklyModel.searchDate = weeklyData.searchDate
+        tideWeeklyModel.temp = weeklyData.temp
+        tideWeeklyModel.weatherChar = weeklyData.weatherChar
+
+        realm.executeTransactionAsync {
+            db->db.insertOrUpdate(tideWeeklyModel)
+        }
+    }
+
+    fun findSizeOfTideWeekly(realm : Realm) : Int{
+        return realm.where(TideWeeklyModel::class.java).findAllAsync().size
     }
 
     fun setListener(realmListener: RealmListener) {
