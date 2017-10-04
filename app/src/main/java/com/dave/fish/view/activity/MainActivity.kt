@@ -10,7 +10,7 @@ import android.widget.Spinner
 import com.dave.fish.R
 import com.dave.fish.db.RealmController
 import com.dave.fish.db.RealmListener
-import com.dave.fish.model.spinner.SelectItemModel
+import com.dave.fish.model.realm.SelectItemModel
 import com.dave.fish.network.RetrofitController
 import com.dave.fish.view.adapter.ViewPagerAdapter
 import com.dave.fish.view.fragment.FragmentMenuOne
@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var realm: Realm
     private lateinit var mRealmController : RealmController
     private var firstSpinnerPosition = 0
-    private var selectedSpinner : SelectItemModel ?= null
+    private var selectedSpinner : SelectItemModel?= null
     private val tabIcons = intArrayOf(
             R.drawable.ic_date_range_white_24dp, R.drawable.ic_cloud_white_24dp, R.drawable.ic_toys_white_24dp)
 

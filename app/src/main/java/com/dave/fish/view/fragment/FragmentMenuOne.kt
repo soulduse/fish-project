@@ -11,7 +11,7 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.dave.fish.R
 import com.dave.fish.db.RealmController
-import com.dave.fish.model.WeeklyModel
+import com.dave.fish.model.retrofit.WeeklyModel
 import com.dave.fish.network.RetrofitController
 import com.dave.fish.util.Global
 import com.dave.fish.view.activity.TideDetailActivity
@@ -86,7 +86,6 @@ class FragmentMenuOne : Fragment() {
             override fun onTapEnded(p0: CalendarView, p1: CalendarView.DayMetadata) {
                 val date = p1.year.toString() + p1.month.toString() + p1.day.toString()
                 var intent = Intent(activity, TideDetailActivity::class.java)
-                Log.w(TAG, "date value > $date")
                 intent.putExtra(Global.INTENT_DATE, date)
                 activity.startActivity(intent)
             }

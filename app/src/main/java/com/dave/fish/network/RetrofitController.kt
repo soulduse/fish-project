@@ -1,6 +1,6 @@
 package com.dave.fish.network
 
-import com.dave.fish.model.*
+import com.dave.fish.model.retrofit.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers

@@ -27,13 +27,8 @@ class TideDetailActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
-//        supportActionBar?.setIcon(resources.getDrawable(R.drawable.ic_arrow_back_white_24dp))
 
-//        toolbar.setNavigationOnClickListener {
-//            onSupportNavigateUp()
-//        }
         val selectedDate = intent.getStringExtra(Global.INTENT_DATE)
-        Log.d(TAG, "selectedDate : $selectedDate")
         title_temp.text = selectedDate
     }
 

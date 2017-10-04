@@ -1,6 +1,6 @@
 package com.dave.fish.network
 
-import com.dave.fish.model.*
+import com.dave.fish.model.retrofit.*
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query

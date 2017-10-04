@@ -45,8 +45,8 @@
             android:id="@+id/title_temp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="test"
-            android:textSize="30dp" />
+            android:text="test" />
+
     </android.support.constraint.ConstraintLayout>
 
 </android.support.design.widget.CoordinatorLayout>
