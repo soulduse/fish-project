@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Fish_project</string>
 
+    <string name="no_data_time">--:--</string>
+    <string name="no_data_height">--cm</string>
+    <string name="measure_cm">cm</string>
+
     <string-array name="loc_array">
         <item>Mercury</item>
         <item>Venus</item>
