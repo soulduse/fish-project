@@ -1,6 +1,7 @@
 package com.dave.fish.util
 
 import com.dave.fish.model.realm.TideWeeklyModel
+import com.dave.fish.model.retrofit.WeeklyModel
 import java.util.*
 
 /**
@@ -16,6 +17,14 @@ object TideUtil{
     private var lvlHighItemList: MutableList<String> = mutableListOf()
 
     fun setTide(tideWeekly : TideWeeklyModel){
+        clearTideList()
+        makeTideList(tideWeekly.lvl1)
+        makeTideList(tideWeekly.lvl2)
+        makeTideList(tideWeekly.lvl3)
+        makeTideList(tideWeekly.lvl4)
+    }
+
+    fun setTide(tideWeekly : WeeklyModel.WeeklyData){
         clearTideList()
         makeTideList(tideWeekly.lvl1)
         makeTideList(tideWeekly.lvl2)

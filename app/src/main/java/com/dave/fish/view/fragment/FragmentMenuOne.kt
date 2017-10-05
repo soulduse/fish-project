@@ -14,6 +14,7 @@ import com.dave.fish.db.RealmController
 import com.dave.fish.model.retrofit.WeeklyModel
 import com.dave.fish.network.RetrofitController
 import com.dave.fish.util.Global
+import com.dave.fish.util.TideUtil
 import com.dave.fish.view.activity.TideDetailActivity
 import com.sickmartian.calendarview.CalendarView
 import io.realm.Realm
@@ -106,22 +107,29 @@ class FragmentMenuOne : Fragment() {
                         mRealmController.setTideWeekly(realm, item)
                         Log.w(TAG, "tideWeekly size --> ${mRealmController.findSizeOfTideWeekly(realm)}")
                         Log.w(TAG, "What is data items --> ${item.toString()}")
-                        val testView = layoutInflater.inflate(R.layout.view_item_add_calendar, null)
+                        val calendarItemView = layoutInflater.inflate(R.layout.view_item_add_calendar, null)
 
-                        val lowTide = getContainLowTide(item)
-                        val firstTideHeight = getSplitListItem(lowTide[0])
-                        val secondTideHeight = getSplitListItem(lowTide[1])
+                        val lowTideList = getLowTide(item)
+                        for(i in 0 .. lowTideList.size){
+                            when(i){
+                                0->{
+                                    calendarItemView.tv_tide_level.text = TideUtil.getHeight(lowTideList[i])
+                                    if (TideUtil.getHeight(lowTideList[i]).toInt() <= 100) {
+                                        calendarItemView.tv_tide_level2.setTextColor(Color.RED)
+                                    }
+                                }
 
-                        testView.tv_tide_level.text = firstTideHeight
-                        testView.tv_tide_level2.text = secondTideHeight
-
-                        Log.w(TAG, "firstTideHeight : $firstTideHeight, secondTideHeight : $secondTideHeight")
-
-                        if (firstTideHeight.isNotEmpty() && firstTideHeight.toInt() <= 100) {
-                            testView.tv_tide_level.setTextColor(Color.RED)
-                        }
-                        if (secondTideHeight.isNotEmpty() && secondTideHeight.toInt() <= 100) {
-                            testView.tv_tide_level2.setTextColor(Color.RED)
+                                1->{
+                                    try{
+                                        calendarItemView.tv_tide_level2.text = TideUtil.getHeight(lowTideList[i])
+                                        if (TideUtil.getHeight(lowTideList[i]).toInt() <= 100) {
+                                            calendarItemView.tv_tide_level2.setTextColor(Color.RED)
+                                        }
+                                    }catch (e:IndexOutOfBoundsException){
+                                        calendarItemView.tv_tide_level2.text = ""
+                                    }
+                                }
+                            }
                         }
 
                         item.am?.let {
@@ -129,7 +137,7 @@ class FragmentMenuOne : Fragment() {
                             if (weatherIcon != 0) {
                                 Glide.with(context)
                                         .load(getWeatherIcon(item?.am))
-                                        .into(testView.iv_tide_state)
+                                        .into(calendarItemView.iv_tide_state)
                             }
                         }
 
@@ -140,7 +148,7 @@ class FragmentMenuOne : Fragment() {
                             ㄴ day ---> ${tideDate.dayOfMonth}
                             """)
                         monthView.addViewToDay(CalendarView.DayMetadata(tideDate.year, tideDate.monthOfYear, tideDate.dayOfMonth),
-                                testView)
+                                calendarItemView)
 
                     }
                     Log.d(TAG, "used api")
@@ -160,53 +168,9 @@ class FragmentMenuOne : Fragment() {
         }
     }
 
-    fun getContainLowTide(item: WeeklyModel.WeeklyData): Array<String> {
-        val lowItem = Array(2) { "";"" }
-        val CONTAIN_STR = "저"
-        var count = 0
-        if (item.lvl1.contains(CONTAIN_STR)) {
-            var waterHeight = getSplitListItem(item.lvl1)
-            Log.d(TAG, "height lvl1 --> ${waterHeight}")
-            if (lowItem[count].isEmpty()) {
-                lowItem[count] = waterHeight
-            } else {
-                lowItem[count++] = waterHeight
-            }
-
-        }
-        if (item.lvl2.contains(CONTAIN_STR)) {
-            var waterHeight = getSplitListItem(item.lvl2)
-            Log.d(TAG, "height lvl2 --> ${waterHeight}")
-            if (lowItem[count].isEmpty()) {
-                lowItem[count] = waterHeight
-            } else {
-                lowItem[++count] = waterHeight
-            }
-        }
-        if (item.lvl3.contains(CONTAIN_STR)) {
-            var waterHeight = getSplitListItem(item.lvl3)
-            Log.d(TAG, "height lvl3 --> ${waterHeight}")
-            if (lowItem[count].isEmpty()) {
-                lowItem[count] = waterHeight
-            } else {
-                lowItem[++count] = waterHeight
-            }
-        }
-        if (item.lvl4.contains(CONTAIN_STR)) {
-            var waterHeight = getSplitListItem(item.lvl4)
-            Log.d(TAG, "height lvl4 --> ${waterHeight}")
-            if (lowItem[count].isEmpty()) {
-                lowItem[count] = waterHeight
-            } else {
-                lowItem[++count] = waterHeight
-            }
-        }
-
-        return lowItem
-    }
-
-    fun getSplitListItem(lvlItem: String): String {
-        return lvlItem.split("/").last()
+    fun getLowTide(item: WeeklyModel.WeeklyData) : MutableList<String>{
+        TideUtil.setTide(item)
+        return TideUtil.getLowItemList()
     }
 
     fun setStateByCalendar() {
