@@ -35,6 +35,7 @@ class FragmentMenuOne : Fragment() {
     private var mMonth: Int = 0
 
     private lateinit var realm: Realm
+    private val mRealmController : RealmController = RealmController.instance
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,10 +56,9 @@ class FragmentMenuOne : Fragment() {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val selectedSpinnerItem = RealmController.instance.findSelectedSpinnerItem(realm)
+        val selectedSpinnerItem = mRealmController.findSelectedSpinnerItem(realm)
         selectedSpinnerItem?.let {
-            val postId = RealmController
-                    .instance
+            val postId = mRealmController
                     .findByPostName(
                             realm,
                             selectedSpinnerItem.doNm,
@@ -84,7 +84,12 @@ class FragmentMenuOne : Fragment() {
             }
 
             override fun onTapEnded(p0: CalendarView, p1: CalendarView.DayMetadata) {
-                val date = p1.year.toString() + p1.month.toString() + p1.day.toString()
+                var day = "${p1.day}"
+                if(p1.day < 10){
+                    day = "0"+day
+                }
+
+                val date = "${p1.year}-${p1.month}-$day"
                 var intent = Intent(activity, TideDetailActivity::class.java)
                 intent.putExtra(Global.INTENT_DATE, date)
                 activity.startActivity(intent)
@@ -98,6 +103,8 @@ class FragmentMenuOne : Fragment() {
                 .subscribe({ tideModel ->
                     val weeklyDataList = tideModel.weeklyDataList
                     for (item: WeeklyModel.WeeklyData in weeklyDataList!!) {
+                        mRealmController.setTideWeekly(realm, item)
+                        Log.w(TAG, "tideWeekly size --> ${mRealmController.findSizeOfTideWeekly(realm)}")
                         Log.w(TAG, "What is data items --> ${item.toString()}")
                         val testView = layoutInflater.inflate(R.layout.view_item_add_calendar, null)
 
