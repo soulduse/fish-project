@@ -45,4 +45,7 @@
     <color name="tide_dark_blue">#2962FF</color>
     <color name="tide_navy">#1A237E</color>
     <color name="tide_white">#FFFFFF</color>
+
+    <color name="tide_down">#008EDA</color>
+    <color name="tide_up">#F14D27</color>
 </resources>
