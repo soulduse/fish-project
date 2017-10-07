@@ -17,6 +17,9 @@ import com.dave.fish.view.fragment.FragmentMenuOne
 import com.dave.fish.view.fragment.FragmentMenuTwo
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
+import android.R.array
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -66,14 +69,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setSpinnerAdapter(spinner : Spinner, items : List<String>){
-        spinner.adapter = ArrayAdapter(
-                applicationContext,
-                android.R.layout.simple_spinner_item,
-                items
-        )
+        val spinnerArrayAdapter = ArrayAdapter<String>(applicationContext, R.layout.spinner_item, items)
+        spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_none_arrow_item)
+        spinner.adapter = spinnerArrayAdapter
     }
 
     private fun initViewPager() {
+        // 스크롤 되게 하기 위해 해당 값을 true 로 해줘야한다.
+        nest_scrollview.isFillViewport = true
         main_viewpager.adapter = ViewPagerAdapter(supportFragmentManager).apply {
             addFragment(FragmentMenuOne())
             addFragment(FragmentMenuTwo())

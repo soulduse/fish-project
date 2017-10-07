@@ -33,29 +33,22 @@
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:background="@color/colorButton">
+                android:layout_margin="20dp">
 
                 <Spinner
                     android:id="@+id/spinner_loc"
-                    android:layout_width="wrap_content"
+                    android:layout_width="@dimen/spinner_width"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    app:layout_constraintLeft_toLeftOf="parent">
-
-                </Spinner>
+                    app:layout_constraintLeft_toLeftOf="parent" />
 
                 <Spinner
                     android:id="@+id/spinner_map"
-                    android:layout_width="wrap_content"
+                    android:layout_width="@dimen/spinner_width"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintLeft_toRightOf="@+id/spinner_loc"
-                    app:layout_constraintRight_toRightOf="parent">
-
-                </Spinner>
+                    app:layout_constraintRight_toRightOf="parent" />
 
             </android.support.constraint.ConstraintLayout>
         </android.support.design.widget.CollapsingToolbarLayout>
@@ -68,11 +61,16 @@
             app:tabMode="fixed" />
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/main_viewpager"
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nest_scrollview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior">
 
-    <!-- app:layout_behavior="@string/appbar_scrolling_view_behavior" -->
+        <android.support.v4.view.ViewPager
+            android:id="@+id/main_viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+    </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>
