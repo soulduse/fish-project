@@ -43,7 +43,7 @@
 
         <TableLayout
             android:id="@+id/tide_table"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginLeft="8dp"
@@ -63,7 +63,8 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:gravity="right|center_vertical"
-                    android:text="18:00" />
+                    android:text="18:00"
+                    android:textSize="@dimen/detail_sub_text_size" />
 
                 <ImageView
                     android:id="@+id/lvl1_up_img"
@@ -80,6 +81,7 @@
                     android:gravity="left|center_vertical"
                     android:text="700"
                     android:textColor="@color/tide_up"
+                    android:textSize="@dimen/detail_sub_text_size"
                     android:textStyle="bold" />
 
                 <TextView
@@ -89,7 +91,8 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:gravity="right|center_vertical"
-                    android:text="22:00" />
+                    android:text="22:00"
+                    android:textSize="@dimen/detail_sub_text_size" />
 
                 <ImageView
                     android:id="@+id/lvl2_down_img"
@@ -106,6 +109,7 @@
                     android:gravity="left|center_vertical"
                     android:text="70"
                     android:textColor="@color/tide_down"
+                    android:textSize="@dimen/detail_sub_text_size"
                     android:textStyle="bold" />
             </TableRow>
 
@@ -118,7 +122,8 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:gravity="right|center_vertical"
-                    android:text="18:00" />
+                    android:text="18:00"
+                    android:textSize="@dimen/detail_sub_text_size" />
 
                 <ImageView
                     android:id="@+id/lvl3_up_img"
@@ -135,6 +140,7 @@
                     android:gravity="left|center_vertical"
                     android:text="700"
                     android:textColor="@color/tide_up"
+                    android:textSize="@dimen/detail_sub_text_size"
                     android:textStyle="bold" />
 
                 <TextView
@@ -144,7 +150,8 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:gravity="right|center_vertical"
-                    android:text="22:00" />
+                    android:text="22:00"
+                    android:textSize="@dimen/detail_sub_text_size" />
 
                 <ImageView
                     android:id="@+id/lvl4_down_img"
@@ -161,7 +168,133 @@
                     android:gravity="left|center_vertical"
                     android:text="70"
                     android:textColor="@color/tide_down"
+                    android:textSize="@dimen/detail_sub_text_size"
                     android:textStyle="bold" />
+            </TableRow>
+        </TableLayout>
+
+        <TableLayout
+            android:id="@+id/tide_detail_table"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tide_table">
+
+            <TableRow
+                android:background="@color/chart_marker_background"
+                android:minHeight="@dimen/detail_title_cell_height">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/detail_weather"
+                    android:textSize="@dimen/detail_title_text_size"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/detail_temperature"
+                    android:textSize="@dimen/detail_title_text_size"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/detail_wave"
+                    android:textSize="@dimen/detail_title_text_size"
+                    android:textStyle="bold" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/tv_detail_weather"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="@dimen/detail_sub_text_size" />
+
+                <TextView
+                    android:id="@+id/tv_detail_temperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="@dimen/detail_sub_text_size" />
+
+                <TextView
+                    android:id="@+id/tv_detail_wave"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="@dimen/detail_sub_text_size" />
+            </TableRow>
+
+            <TableRow
+                android:background="@color/chart_marker_background"
+                android:minHeight="@dimen/detail_title_cell_height">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/detail_moon_date"
+                    android:textSize="@dimen/detail_title_text_size"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="@string/detail_etc"
+                    android:textSize="@dimen/detail_title_text_size"
+                    android:textStyle="bold" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:id="@+id/tv_detail_date_moon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="@dimen/detail_sub_text_size" />
+
+                <TextView
+                    android:id="@+id/tv_detail_etc"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="@dimen/detail_sub_text_size" />
             </TableRow>
         </TableLayout>
 

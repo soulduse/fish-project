@@ -30,9 +30,32 @@ class TideDetailActivity : AppCompatActivity() {
         initLayout()
     }
 
+    private fun initData() {
+        val selectedPostName = mRealmController.findSelectedSpinnerItem(realm)?.postName
+        val selectedDate = intent.getStringExtra(Global.INTENT_DATE)
+        val key = selectedPostName + "_" + selectedDate
+        Log.w(TAG, "What is key --> $key")
+
+        tideWeeklyItem = mRealmController.findTideWeekly(realm, key)
+        Log.w(TAG, "tideWeeklyItem --> " + tideWeeklyItem.toString())
+        TideUtil.setTide(tideWeeklyItem)
+    }
+
     private fun initLayout() {
         initToolbar()
+        initTide()
+        initDetailViews()
+    }
 
+    private fun initToolbar() {
+        setSupportActionBar(toolbar)
+        toolbar_title.text = tideWeeklyItem.obsPostName + " " + tideWeeklyItem.dateSun
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+    }
+
+    private fun initTide() {
         val highList = TideUtil.getHighItemList()
         val lowList = TideUtil.getLowItemList()
 
@@ -75,23 +98,30 @@ class TideDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun initData() {
-        val selectedPostName = mRealmController.findSelectedSpinnerItem(realm)?.postName
-        val selectedDate = intent.getStringExtra(Global.INTENT_DATE)
-        val key = selectedPostName + "_" + selectedDate
-        Log.w(TAG, "What is key --> $key")
-
-        tideWeeklyItem = mRealmController.findTideWeekly(realm, key)
-        Log.w(TAG, "tideWeeklyItem --> " + tideWeeklyItem.toString())
-        TideUtil.setTide(tideWeeklyItem)
+    private fun initDetailViews() {
+        tv_detail_date_moon.text = getDetailViewItem(tideWeeklyItem.dateMoon)
+        tv_detail_weather.text = getDetailViewItem(tideWeeklyItem.weatherChar)
+        tv_detail_temperature.text = getDetailViewItem(tideWeeklyItem.temp)+resources.getString(R.string.measure_temperature)
+        tv_detail_wave.text = "3-5/2-3cm"
+        tv_detail_etc.text = "${getDetailViewItem(tideWeeklyItem.moolNormal)} " +
+                "/ ${getDetailViewItem(tideWeeklyItem.mool7)} " +
+                "/ ${getDetailViewItem(tideWeeklyItem.mool8)}"
     }
 
-    private fun initToolbar() {
-        setSupportActionBar(toolbar)
-        toolbar_title.text = tideWeeklyItem.obsPostName + " " + tideWeeklyItem.dateSun
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
+    private fun getDetailViewItem(detail: String?): String{
+        if(isEmptyDetailItem(detail)){
+            return "--"
+        }
+
+        return detail!!
+    }
+
+    private fun isEmptyDetailItem(detail : String?) : Boolean{
+        return when{
+            detail.isNullOrEmpty() -> return true
+            detail == "/" -> return true
+            else -> false
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
