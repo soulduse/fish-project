@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <com.sickmartian.calendarview.MonthView xmlns:calendar_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/monthView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         calendar_view:activeBackgroundColor="@color/colorCalendarDayBackground"
         calendar_view:activeTextColor="@color/colorPrimaryText"
         calendar_view:currentDayDecorationDrawable="@drawable/current_day_drawable"
@@ -17,9 +19,54 @@
         calendar_view:overflowColor="@color/colorSecondaryText"
         calendar_view:overflowHeight="0.1dp"
         calendar_view:selectedBackgroundColor="@color/selectedDayBackground"
+        calendar_view:separateDaysVertically="true"
         calendar_view:separatorColor="@color/colorSecondaryText"
         calendar_view:showOverflow="true"
-        calendar_view:separateDaysVertically="true"
         calendar_view:textSize="12sp" />
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/calendar_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textStyle="bold" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_prev_month"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/fragment_one_text_height"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="이전달"
+            android:textSize="@dimen/fragment_one_text_size"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_current_month"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/fragment_one_text_height"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="오늘"
+            android:textSize="@dimen/fragment_one_text_size"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_next_month"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/fragment_one_text_height"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="다음달"
+            android:textSize="@dimen/fragment_one_text_size"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</LinearLayout>

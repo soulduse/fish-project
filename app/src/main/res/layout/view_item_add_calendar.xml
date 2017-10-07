@@ -7,8 +7,9 @@
 
     <ImageView
         android:id="@+id/iv_tide_state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="@dimen/ic_weather_size"
+        android:layout_height="@dimen/ic_weather_size"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/tv_tide_level"

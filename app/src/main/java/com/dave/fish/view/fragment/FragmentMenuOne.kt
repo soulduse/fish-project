@@ -57,24 +57,8 @@ class FragmentMenuOne : Fragment() {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val selectedSpinnerItem = mRealmController.findSelectedSpinnerItem(realm)
-        selectedSpinnerItem?.let {
-            val postId = mRealmController
-                    .findByPostName(
-                            realm,
-                            selectedSpinnerItem.doNm,
-                            selectedSpinnerItem.postName
-                    )?.obsPostId
-            postId?.let {
-                val minDayOfMonth = DateTime().dayOfMonth().withMinimumValue()
-                initData(postId, minDayOfMonth)
-                initData(postId, minDayOfMonth.plusDays(7))
-                initData(postId, minDayOfMonth.plusDays(14))
-                initData(postId, minDayOfMonth.plusDays(21))
-                initData(postId, minDayOfMonth.plusDays(28))
-            }
-        }
 
+        refreshCalendar()
         setDateByStateDependingOnView()
         monthView.firstDayOfTheWeek = CalendarView.SUNDAY_SHIFT
         monthView.setCurrentDay(getCalendarForState())
@@ -85,17 +69,60 @@ class FragmentMenuOne : Fragment() {
             }
 
             override fun onTapEnded(p0: CalendarView, p1: CalendarView.DayMetadata) {
-                var day = "${p1.day}"
-                if(p1.day < 10){
-                    day = "0"+day
-                }
-
-                val date = "${p1.year}-${p1.month}-$day"
+                val date = "${p1.year}-${addZeroToDate(p1.month)}-${addZeroToDate(p1.day)}"
                 var intent = Intent(activity, TideDetailActivity::class.java)
                 intent.putExtra(Global.INTENT_DATE, date)
                 activity.startActivity(intent)
             }
         })
+    }
+
+    private fun addZeroToDate(dateNum : Int) : String{
+        if(dateNum < 10){
+            return "0"+dateNum
+        }
+
+        return "$dateNum"
+    }
+
+    private fun refreshCalendar(){
+        val selectedSpinnerItem = mRealmController.findSelectedSpinnerItem(realm)
+
+        onMoveCalendar()
+        selectedSpinnerItem?.let {
+            val postId = mRealmController
+                    .findByPostName(
+                            realm,
+                            selectedSpinnerItem.doNm,
+                            selectedSpinnerItem.postName
+                    )?.obsPostId
+            postId?.let {
+                DateTime(getCalendarForState())
+                val minDayOfMonth = getDateForState().dayOfMonth().withMinimumValue()
+                initData(postId, minDayOfMonth)
+                initData(postId, minDayOfMonth.plusDays(7))
+                initData(postId, minDayOfMonth.plusDays(14))
+                initData(postId, minDayOfMonth.plusDays(21))
+                initData(postId, minDayOfMonth.plusDays(28))
+            }
+        }
+    }
+
+    fun onMoveCalendar(){
+        tv_prev_month.setOnClickListener {
+            setPrevDateByStateDependingOnView()
+            refreshCalendar()
+        }
+
+        tv_current_month.setOnClickListener {
+            setDateByStateDependingOnView()
+            refreshCalendar()
+        }
+
+        tv_next_month.setOnClickListener {
+            setNextDateByStateDependingOnView()
+            refreshCalendar()
+        }
     }
 
     fun initData(postId: String, dateTime: DateTime) {
@@ -115,7 +142,7 @@ class FragmentMenuOne : Fragment() {
                                 0->{
                                     calendarItemView.tv_tide_level.text = TideUtil.getHeight(lowTideList[i])
                                     if (TideUtil.getHeight(lowTideList[i]).toInt() <= 100) {
-                                        calendarItemView.tv_tide_level2.setTextColor(Color.RED)
+                                        calendarItemView.tv_tide_level.setTextColor(Color.RED)
                                     }
                                 }
 
@@ -138,6 +165,7 @@ class FragmentMenuOne : Fragment() {
                                 Glide.with(context)
                                         .load(getWeatherIcon(item?.am))
                                         .into(calendarItemView.iv_tide_state)
+                                calendarItemView.iv_tide_state.visibility = View.VISIBLE
                             }
                         }
 
@@ -189,13 +217,45 @@ class FragmentMenuOne : Fragment() {
         outState.putInt(FIRST_DAY_OF_WEEK_PARAMETER, monthView.firstDayOfTheWeek)
     }
 
+    private fun getDateForState() : DateTime{
+        return DateTime(mYear, mMonth, mDay, 0, 0, 0, 0)
+    }
+
     private fun getCalendarForState(): Calendar {
         val newDateTime = DateTime(mYear, mMonth, mDay, 0, 0, 0, 0)
         return newDateTime.toCalendar(Locale.KOREA)
     }
 
-    private fun setDateByStateDependingOnView() {
+    private fun setPrevDateByStateDependingOnView(){
+        changeYearAndMonth(--mMonth)
         monthView.setDate(mMonth, mYear)
+        calendar_date.text = "$mYear.$mMonth"
+    }
+
+    private fun setNextDateByStateDependingOnView(){
+        changeYearAndMonth(++mMonth)
+        monthView.setDate(mMonth, mYear)
+        calendar_date.text = "$mYear.$mMonth"
+    }
+
+    private fun setDateByStateDependingOnView() {
+        setStateByCalendar()
+        monthView.setDate(mMonth, mYear)
+        calendar_date.text = "$mYear.$mMonth"
+    }
+
+    private fun changeYearAndMonth(month: Int){
+        when{
+            month < 1 -> {
+                --mYear
+                mMonth = 12
+            }
+
+            month > 12 ->{
+                ++mYear
+                mMonth = 1
+            }
+        }
     }
 
     companion object {
