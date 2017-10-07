@@ -23,7 +23,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.dave.fish_project"
+        applicationId "com.dave.fish"
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
@@ -33,6 +33,10 @@ android {
 
     buildTypes {
         release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -41,6 +45,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -50,8 +55,8 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
     // Android Architecture
-    compile "android.arch.lifecycle:runtime:1.0.0-alpha5"
-    compile "android.arch.lifecycle:extensions:1.0.0-alpha5"
+    compile 'android.arch.lifecycle:runtime:1.0.0-alpha5'
+    compile 'android.arch.lifecycle:extensions:1.0.0-alpha5'
     annotationProcessor "android.arch.lifecycle:compiler:1.0.0-alpha5"
 
     // Retrofit Lib
@@ -78,9 +83,11 @@ dependencies {
     // Calendar Lib
     compile 'com.sickmartian.calendarview:calendarview:1.0.0'
 
+    compile 'gun0912.ted:tedpermission:2.0.3'
+
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     testCompile 'junit:junit:4.12'
-    testCompile "com.nhaarman:mockito-kotlin:1.1.0"
+    testCompile 'com.nhaarman:mockito-kotlin:1.1.0'
     testCompile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
