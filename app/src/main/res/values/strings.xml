@@ -4,23 +4,12 @@
     <string name="no_data_time">--:--</string>
     <string name="no_data_height">--cm</string>
     <string name="measure_cm">cm</string>
+    <string name="measure_temperature">℃</string>
 
-    <string-array name="loc_array">
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-        <item>Jupiter</item>
-        <item>Saturn</item>
-        <item>Uranus</item>
-        <item>Neptune</item>
-    </string-array>
-
-
-    <string-array name="map_array">
-        <item>A</item>
-        <item>B</item>
-        <item>C</item>
-        <item>D</item>
-    </string-array>
+    <!-- detail view -->
+    <string name="detail_moon_date">음력</string>
+    <string name="detail_weather">날씨</string>
+    <string name="detail_temperature">온도</string>
+    <string name="detail_wave">파고</string>
+    <string name="detail_etc">기타</string>
 </resources>
