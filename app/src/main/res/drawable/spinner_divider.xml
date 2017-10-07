@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <bitmap android:src="@drawable/ic_brightness_1_orange_a200_24dp"/>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/chart_marker_background"/>
+        </shape>
+    </item>
+    <item android:bottom="1.5dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/colorButton"/>
+        </shape>
+    </item>
+</layer-list>
