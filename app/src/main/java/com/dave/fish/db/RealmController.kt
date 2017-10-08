@@ -7,9 +7,10 @@ import com.dave.fish.model.realm.SpinnerSecondModel
 import com.dave.fish.model.realm.SelectItemModel
 import com.dave.fish.model.realm.TideWeeklyModel
 import com.dave.fish.model.retrofit.WeeklyModel
+import com.dave.fish.util.DateUtil
 import io.realm.Realm
-import io.realm.RealmList
 import io.realm.RealmResults
+import org.joda.time.DateTime
 
 
 /**
@@ -93,11 +94,12 @@ class RealmController {
                 .secondSpinnerItems?.first { second -> second.obsPostName == postName }
     }
 
-    fun setTideWeekly(realm: Realm, weeklyData: WeeklyModel.WeeklyData) {
+    fun setTideWeekly(realm: Realm, weeklyData: WeeklyModel.WeeklyData, postId: String) {
         if (findSizeOfTideWeekly(realm) > 0) {
             realm.executeTransactionAsync { db ->
                 val tideWeeklyModel = TideWeeklyModel()
                 tideWeeklyModel.key = weeklyData.obsPostName + "_" + weeklyData.searchDate
+                tideWeeklyModel.postId = postId
                 tideWeeklyModel.dateMoon = weeklyData.dateMoon
                 tideWeeklyModel.dateSun = weeklyData.dateSun
                 tideWeeklyModel.flgView = weeklyData.flgView
@@ -111,7 +113,7 @@ class RealmController {
                 tideWeeklyModel.obsPostName = weeklyData.obsPostName
                 tideWeeklyModel.obsLat = weeklyData.obsLat
                 tideWeeklyModel.obsLon = weeklyData.obsLon
-                tideWeeklyModel.searchDate = weeklyData.searchDate
+                tideWeeklyModel.searchDate = DateTime(weeklyData.searchDate).toDate()
                 tideWeeklyModel.temp = weeklyData.temp
                 tideWeeklyModel?.am = weeklyData?.am
                 tideWeeklyModel?.weatherChar = weeklyData?.weatherChar
@@ -120,6 +122,7 @@ class RealmController {
         } else {
             realm.executeTransactionAsync { db ->
                 db.createObject(TideWeeklyModel::class.java, weeklyData.obsPostName + "_" + weeklyData.searchDate).apply {
+                    this.postId = postId
                     this.am = weeklyData.am
                     this.dateMoon = weeklyData.dateMoon
                     this.dateSun = weeklyData.dateSun
@@ -134,12 +137,28 @@ class RealmController {
                     this.obsPostName = weeklyData.obsPostName
                     this.obsLat = weeklyData.obsLat
                     this.obsLon = weeklyData.obsLon
-                    this.searchDate = weeklyData.searchDate
+                    this.searchDate = DateTime(weeklyData.searchDate).toDate()
                     this.temp = weeklyData.temp
                     this.weatherChar = weeklyData.weatherChar
                 }
             }
         }
+    }
+
+    fun findTideMonth(realm : Realm, postId: String, date: DateTime) : RealmResults<TideWeeklyModel>{
+        val from = date.dayOfMonth().withMinimumValue().toDate()
+        var to = date.dayOfMonth().withMaximumValue().toDate()
+
+        if(DateUtil.equalsDateWithCurrentDate(date)){
+            to = date.minusDays(1).toDate()
+        }
+
+        return realm.where(TideWeeklyModel::class.java)
+                .between("searchDate"
+                        , from
+                        , to)
+                .equalTo("postId", postId)
+                .findAll()
     }
 
     fun findTideWeelyList(realm: Realm) : RealmResults<TideWeeklyModel>{
