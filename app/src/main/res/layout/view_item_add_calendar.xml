@@ -9,18 +9,18 @@
         android:id="@+id/iv_tide_state"
         android:layout_width="@dimen/ic_weather_size"
         android:layout_height="@dimen/ic_weather_size"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/tv_tide_level"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="276" />
+        android:layout_width="@dimen/tv_tide_value_width"
+        android:layout_height="@dimen/tv_tide_value_height"
+        android:textSize="@dimen/tv_tide_value_text_size" />
 
     <TextView
         android:id="@+id/tv_tide_level2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="276" />
+        android:layout_width="@dimen/tv_tide_value_width"
+        android:layout_height="@dimen/tv_tide_value_height"
+        android:textSize="@dimen/tv_tide_value_text_size" />
 
 </LinearLayout>
