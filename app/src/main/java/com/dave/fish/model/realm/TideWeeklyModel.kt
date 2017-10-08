@@ -2,6 +2,7 @@ package com.dave.fish.model.realm
 
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
+import java.util.*
 
 /**
  * Created by soul on 2017. 10. 4..
@@ -9,7 +10,8 @@ import io.realm.annotations.PrimaryKey
 open class TideWeeklyModel : RealmObject() {
     @PrimaryKey
     var key : String = ""
-    var searchDate: String = ""
+    var postId : String = ""
+    var searchDate: Date = Date()
     var obsPostName: String = ""
     var obsLon: Double = 0.0
     var obsLat: Double = 0.0

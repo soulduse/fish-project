@@ -16,20 +16,23 @@ object TideUtil{
     private var lvlLowItemList: MutableList<String> = mutableListOf()
     private var lvlHighItemList: MutableList<String> = mutableListOf()
 
-    fun setTide(tideWeekly : TideWeeklyModel){
+    fun setTide(tideWeekly: Any){
         clearTideList()
-        makeTideList(tideWeekly.lvl1)
-        makeTideList(tideWeekly.lvl2)
-        makeTideList(tideWeekly.lvl3)
-        makeTideList(tideWeekly.lvl4)
-    }
 
-    fun setTide(tideWeekly : WeeklyModel.WeeklyData){
-        clearTideList()
-        makeTideList(tideWeekly.lvl1)
-        makeTideList(tideWeekly.lvl2)
-        makeTideList(tideWeekly.lvl3)
-        makeTideList(tideWeekly.lvl4)
+        when (tideWeekly) {
+            is TideWeeklyModel -> {
+                makeTideList(tideWeekly.lvl1)
+                makeTideList(tideWeekly.lvl2)
+                makeTideList(tideWeekly.lvl3)
+                makeTideList(tideWeekly.lvl4)
+            }
+            is WeeklyModel.WeeklyData -> {
+                makeTideList(tideWeekly.lvl1)
+                makeTideList(tideWeekly.lvl2)
+                makeTideList(tideWeekly.lvl3)
+                makeTideList(tideWeekly.lvl4)
+            }
+        }
     }
 
     private fun clearTideList(){
