@@ -2,6 +2,7 @@ package com.dave.fish
 
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
+import org.joda.time.LocalDate
 import org.junit.Test
 import kotlin.test.*
 
@@ -10,6 +11,21 @@ import kotlin.test.*
  */
 class JodaTimeTest {
 
+    @Test
+    fun 날짜비교_메소드(){
+        val seoul = DateTimeZone.forID("Asia/Seoul")
+        val theTime = DateTime(seoul)
+        val pattern = "yyyy-MM-dd"
+        val date1 = DateTime(2017, 10, 8, 0, 0)
+
+        println("date --> ${theTime.minusDays(1).toDate()}")
+
+        println("${theTime.toString(pattern)} == ${date1.toString(pattern)}")
+        println(theTime.toString(pattern) == date1.toString(pattern))
+        assertEquals(theTime.toString(pattern), date1.toString(pattern), "What is result of those datas")
+    }
+
+    /*
     @Test
     fun changeDate(){
         var minDayOfMonth =  DateTime().dayOfMonth().withMinimumValue()
@@ -51,4 +67,5 @@ class JodaTimeTest {
 
         assertEquals(date1.toString(pattern), date2.toString(pattern), "What happend?")
     }
+    */
 }
