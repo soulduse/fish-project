@@ -11,8 +11,10 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.dave.fish.R
 import com.dave.fish.db.RealmController
+import com.dave.fish.model.realm.TideWeeklyModel
 import com.dave.fish.model.retrofit.WeeklyModel
 import com.dave.fish.network.RetrofitController
+import com.dave.fish.util.DateUtil
 import com.dave.fish.util.Global
 import com.dave.fish.util.TideUtil
 import com.dave.fish.view.activity.TideDetailActivity
@@ -36,7 +38,8 @@ class FragmentMenuOne : Fragment() {
     private var mMonth: Int = 0
 
     private lateinit var realm: Realm
-    private val mRealmController : RealmController = RealmController.instance
+    private val mRealmController: RealmController = RealmController.instance
+    private var lockSelectFromRealm = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,15 +80,15 @@ class FragmentMenuOne : Fragment() {
         })
     }
 
-    private fun addZeroToDate(dateNum : Int) : String{
-        if(dateNum < 10){
-            return "0"+dateNum
+    private fun addZeroToDate(dateNum: Int): String {
+        if (dateNum < 10) {
+            return "0" + dateNum
         }
 
         return "$dateNum"
     }
 
-    private fun refreshCalendar(){
+    private fun refreshCalendar() {
         val selectedSpinnerItem = mRealmController.findSelectedSpinnerItem(realm)
 
         onMoveCalendar()
@@ -97,18 +100,20 @@ class FragmentMenuOne : Fragment() {
                             selectedSpinnerItem.postName
                     )?.obsPostId
             postId?.let {
-                DateTime(getCalendarForState())
                 val minDayOfMonth = getDateForState().dayOfMonth().withMinimumValue()
+                val maxDayOfMonth = getDateForState().dayOfMonth().withMaximumValue()
+
                 initData(postId, minDayOfMonth)
                 initData(postId, minDayOfMonth.plusDays(7))
                 initData(postId, minDayOfMonth.plusDays(14))
                 initData(postId, minDayOfMonth.plusDays(21))
-                initData(postId, minDayOfMonth.plusDays(28))
+                initData(postId, maxDayOfMonth.minusDays(6))
+                lockSelectFromRealm = false
             }
         }
     }
 
-    fun onMoveCalendar(){
+    fun onMoveCalendar() {
         tv_prev_month.setOnClickListener {
             setPrevDateByStateDependingOnView()
             refreshCalendar()
@@ -125,64 +130,122 @@ class FragmentMenuOne : Fragment() {
         }
     }
 
-    fun initData(postId: String, dateTime: DateTime) {
-        Log.d(TAG, "postID --> $postId, dateTime : ${dateTime}")
-        RetrofitController().getWeeklyData(postId, dateTime)
-                .subscribe({ tideModel ->
-                    val weeklyDataList = tideModel.weeklyDataList
-                    for (item: WeeklyModel.WeeklyData in weeklyDataList!!) {
-                        mRealmController.setTideWeekly(realm, item)
-                        Log.w(TAG, "tideWeekly size --> ${mRealmController.findSizeOfTideWeekly(realm)}")
-                        Log.w(TAG, "What is data items --> ${item.toString()}")
-                        val calendarItemView = layoutInflater.inflate(R.layout.view_item_add_calendar, null)
+    private fun initData(postId: String, dateTime: DateTime) {
+        if(DateUtil.isBiggerThanCurrentDate(dateTime)){
+            Log.d(TAG, "tideMonthList.isBiggerThanCurrentDate()")
+            RetrofitController().getWeeklyData(postId, dateTime)
+                    .subscribe({ tideModel ->
+                        val weeklyDataList = tideModel.weeklyDataList
+                        addDataToCalendar(weeklyDataList, postId)
+                        Log.d(TAG, "used api")
+                    }, { e ->
+                        Log.d(TAG, "Something wrong --> ${e.localizedMessage}")
+                    })
+        }
 
-                        val lowTideList = getLowTide(item)
-                        for(i in 0 .. lowTideList.size){
-                            when(i){
-                                0->{
-                                    calendarItemView.tv_tide_level.text = TideUtil.getHeight(lowTideList[i])
-                                    if (TideUtil.getHeight(lowTideList[i]).toInt() <= 100) {
-                                        calendarItemView.tv_tide_level.setTextColor(Color.RED)
-                                    }
-                                }
+        val tideMonthList = mRealmController.findTideMonth(realm, postId, getDateForState())
+        if (tideMonthList.isNotEmpty()) {
+            if(!lockSelectFromRealm){
+                lockSelectFromRealm = true
+                Log.d(TAG, "tideMonthList.isNotEmpty()")
+                addDataToCalendar(tideMonthList, postId)
+            }
+        } else {
+            Log.d(TAG, "tideMonthList.retrofit")
 
-                                1->{
-                                    try{
-                                        calendarItemView.tv_tide_level2.text = TideUtil.getHeight(lowTideList[i])
-                                        if (TideUtil.getHeight(lowTideList[i]).toInt() <= 100) {
-                                            calendarItemView.tv_tide_level2.setTextColor(Color.RED)
-                                        }
-                                    }catch (e:IndexOutOfBoundsException){
-                                        calendarItemView.tv_tide_level2.text = ""
-                                    }
-                                }
-                            }
+            RetrofitController().getWeeklyData(postId, dateTime)
+                    .subscribe({ tideModel ->
+                        val weeklyDataList = tideModel.weeklyDataList
+                        addDataToCalendar(weeklyDataList, postId)
+                        Log.d(TAG, "used api")
+                    }, { e ->
+                        Log.d(TAG, "Something wrong --> ${e.localizedMessage}")
+                    })
+        }
+    }
+
+    private fun addDataToCalendar(itemList: List<Any>, postId: String) {
+        itemList.forEach { item ->
+            Log.w(TAG, "What is data items --> ${item.toString()}")
+            val calendarItemView = layoutInflater.inflate(R.layout.view_item_add_calendar, null)
+            val lowTideList = getLowTide(item)
+            for (i in 0..lowTideList.size) {
+                when (i) {
+                    0 -> {
+                        calendarItemView.tv_tide_level.text = TideUtil.getHeight(lowTideList[i])
+                        if (TideUtil.getHeight(lowTideList[i]).toInt() <= 100) {
+                            calendarItemView.tv_tide_level.setTextColor(Color.RED)
                         }
-
-                        item.am?.let {
-                            val weatherIcon = getWeatherIcon(item?.am)
-                            if (weatherIcon != 0) {
-                                Glide.with(context)
-                                        .load(getWeatherIcon(item?.am))
-                                        .into(calendarItemView.iv_tide_state)
-                                calendarItemView.iv_tide_state.visibility = View.VISIBLE
-                            }
-                        }
-
-                        var tideDate = DateTime(item.searchDate)
-                        Log.d(TAG, """
-                            ㄴ year ---> ${tideDate.year}
-                            ㄴ month ---> ${tideDate.monthOfYear}
-                            ㄴ day ---> ${tideDate.dayOfMonth}
-                            """)
-                        monthView.addViewToDay(CalendarView.DayMetadata(tideDate.year, tideDate.monthOfYear, tideDate.dayOfMonth),
-                                calendarItemView)
-
                     }
-                    Log.d(TAG, "used api")
-                }, { e ->
-                    Log.d(TAG, "Something wrong --> ${e.localizedMessage}")
-                })
+
+                    1 -> {
+                        try {
+                            calendarItemView.tv_tide_level2.text = TideUtil.getHeight(lowTideList[i])
+                            if (TideUtil.getHeight(lowTideList[i]).toInt() <= 100) {
+                                calendarItemView.tv_tide_level2.setTextColor(Color.RED)
+                            }
+                        } catch (e: IndexOutOfBoundsException) {
+                            calendarItemView.tv_tide_level2.text = ""
+                        }
+                    }
+                }
+            }
+
+            var tideDate = DateTime()
+            when (item) {
+                is WeeklyModel.WeeklyData -> {
+                    Log.d(TAG, "Item instanceOf --> WeeklyModel.WeeklyData")
+                    mRealmController.setTideWeekly(realm, item, postId)
+                    item.am?.let {
+                        val weatherIcon = getWeatherIcon(item?.am!!)
+                        if (weatherIcon != 0) {
+                            Glide.with(context)
+                                    .load(getWeatherIcon(item?.am!!))
+                                    .into(calendarItemView.iv_tide_state)
+                            calendarItemView.iv_tide_state.visibility = View.VISIBLE
+                        }
+                    }
+                    tideDate = DateTime(item.searchDate)
+                }
+
+                is TideWeeklyModel -> {
+                    Log.d(TAG, "Item instanceOf --> TideWeeklyModel")
+                    item.am?.let {
+                        val weatherIcon = getWeatherIcon(item?.am!!)
+                        if (weatherIcon != 0) {
+                            Glide.with(context)
+                                    .load(getWeatherIcon(item?.am!!))
+                                    .into(calendarItemView.iv_tide_state)
+                            calendarItemView.iv_tide_state.visibility = View.VISIBLE
+                        }
+                    }
+                    tideDate = DateTime(item.searchDate)
+                }
+            }
+            if (isEmptyInMonthView(tideDate)) {
+                Log.d(TAG, "Item instanceOf --> passed isEmptyInMonthView")
+                Log.w(TAG, "Item instanceOf --> passed Date (${tideDate.year}/${tideDate.monthOfYear}/${tideDate.dayOfMonth})")
+                monthView.addViewToDay(CalendarView.DayMetadata(tideDate.year, tideDate.monthOfYear, tideDate.dayOfMonth),
+                        calendarItemView)
+            }
+
+        }
+    }
+
+    private fun isEmptyInMonthView(tideDate: DateTime): Boolean {
+        val dayContentList = monthView
+                .getDayContent(
+                        CalendarView.DayMetadata(
+                                tideDate.year,
+                                tideDate.monthOfYear,
+                                tideDate.dayOfMonth)
+                )
+
+        if (null == dayContentList || dayContentList.isEmpty()) {
+            return true
+        }
+
+        return false
     }
 
     private fun getWeatherIcon(weather: String): Int {
@@ -196,8 +259,16 @@ class FragmentMenuOne : Fragment() {
         }
     }
 
-    fun getLowTide(item: WeeklyModel.WeeklyData) : MutableList<String>{
-        TideUtil.setTide(item)
+    fun getLowTide(item: Any): MutableList<String> {
+        when (item) {
+            is WeeklyModel.WeeklyData -> {
+                TideUtil.setTide(item)
+            }
+
+            is TideWeeklyModel -> {
+                TideUtil.setTide(item)
+            }
+        }
         return TideUtil.getLowItemList()
     }
 
@@ -217,7 +288,7 @@ class FragmentMenuOne : Fragment() {
         outState.putInt(FIRST_DAY_OF_WEEK_PARAMETER, monthView.firstDayOfTheWeek)
     }
 
-    private fun getDateForState() : DateTime{
+    private fun getDateForState(): DateTime {
         return DateTime(mYear, mMonth, mDay, 0, 0, 0, 0)
     }
 
@@ -226,13 +297,13 @@ class FragmentMenuOne : Fragment() {
         return newDateTime.toCalendar(Locale.KOREA)
     }
 
-    private fun setPrevDateByStateDependingOnView(){
+    private fun setPrevDateByStateDependingOnView() {
         changeYearAndMonth(--mMonth)
         monthView.setDate(mMonth, mYear)
         calendar_date.text = "$mYear.$mMonth"
     }
 
-    private fun setNextDateByStateDependingOnView(){
+    private fun setNextDateByStateDependingOnView() {
         changeYearAndMonth(++mMonth)
         monthView.setDate(mMonth, mYear)
         calendar_date.text = "$mYear.$mMonth"
@@ -244,14 +315,14 @@ class FragmentMenuOne : Fragment() {
         calendar_date.text = "$mYear.$mMonth"
     }
 
-    private fun changeYearAndMonth(month: Int){
-        when{
+    private fun changeYearAndMonth(month: Int) {
+        when {
             month < 1 -> {
                 --mYear
                 mMonth = 12
             }
 
-            month > 12 ->{
+            month > 12 -> {
                 ++mYear
                 mMonth = 1
             }
