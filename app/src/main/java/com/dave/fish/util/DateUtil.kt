@@ -39,9 +39,7 @@ object DateUtil {
         val seoul = DateTimeZone.forID("Asia/Seoul")
         val currentDate = DateTime(seoul)
         if(currentDate.toString(DATE_PATTERN_YEAR_MONTH) == compareDate.toString(DATE_PATTERN_YEAR_MONTH)){
-            if(currentDate.dayOfMonth <= compareDate.dayOfMonth){
-                return true
-            }
+            return true
         }
 
         return false
