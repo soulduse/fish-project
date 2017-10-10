@@ -11,7 +11,8 @@ class ApiTest {
 
     @Test
     fun groupByTest(){
-        RetrofitController()
+        RetrofitController
+                .instance
                 .getGisData()
                 .subscribe({
                     response ->

@@ -2,14 +2,21 @@ package com.dave.fish
 
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
-import org.joda.time.LocalDate
 import org.junit.Test
-import kotlin.test.*
+import kotlin.test.assertEquals
 
 /**
  * Created by soul on 2017. 8. 24..
  */
 class JodaTimeTest {
+
+    @Test
+    fun 서울과_주어진_문자열에서_데이트타임_구하기(){
+        val dateStr = "2017-10-10"
+        val seoul = DateTimeZone.forID("Asia/Seoul")
+        println("first date time "+DateTime(dateStr, seoul))
+        println("second date time "+DateTime(dateStr))
+    }
 
     @Test
     fun 날짜비교_메소드(){
