@@ -36,9 +36,9 @@ class RetrofitController {
                 .subscribeOn(Schedulers.io())
     }
 
-    fun getWeatherAndWave() : Observable<WeatherAndWaveModel> {
+    fun getWeatherAndWave(postId:String, dateTime: DateTime) : Observable<WeatherAndWaveModel> {
         return getRetrofit()
-                .getWeatherAndWave("DT_0001", DateTime().toString(DATE_FORMAT))
+                .getWeatherAndWave(postId, dateTime.toString(DATE_FORMAT))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
     }
@@ -50,7 +50,10 @@ class RetrofitController {
                 .subscribeOn(Schedulers.io())
     }
 
+    private object Holder { val INSTANCE = RetrofitController() }
+
     companion object {
+        val instance : RetrofitController by lazy { Holder.INSTANCE }
         private val TAG = RetrofitController.javaClass.simpleName
         private val DATE_FORMAT = "yyyyMMdd"
     }
