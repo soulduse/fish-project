@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Fish_project</string>
 
+    <string name="sea_openapi_key">SpGC4MjwhAPJosLja1g8ApaDhGbk/hWZ2kOV8ZcCNB8ymdluVZNSuQ4hm4X/atHo5/QhX72g8hUMdwAu1Kg==</string>
+    <string name="naver_map_key">zZJw_IMQXLr5pnSuxaLQ</string>
+
     <string name="no_data_time">--:--</string>
     <string name="no_data_wave">--/--</string>
     <string name="no_data_height">--cm</string>
