@@ -132,7 +132,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initRealmForSpinner() {
-        RetrofitController()
+        RetrofitController
+                .instance
                 .getGisData()
                 .subscribe({ gisModel ->
                     var dataList = gisModel.data

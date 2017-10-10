@@ -133,7 +133,9 @@ class FragmentMenuOne : Fragment() {
     private fun initData(postId: String, dateTime: DateTime) {
         if(DateUtil.isBiggerThanCurrentDate(dateTime)){
             Log.d(TAG, "tideMonthList.isBiggerThanCurrentDate()")
-            RetrofitController().getWeeklyData(postId, dateTime)
+            RetrofitController
+                    .instance
+                    .getWeeklyData(postId, dateTime)
                     .subscribe({ tideModel ->
                         val weeklyDataList = tideModel.weeklyDataList
                         addDataToCalendar(weeklyDataList, postId)
@@ -152,8 +154,9 @@ class FragmentMenuOne : Fragment() {
             }
         } else {
             Log.d(TAG, "tideMonthList.retrofit")
-
-            RetrofitController().getWeeklyData(postId, dateTime)
+            RetrofitController
+                    .instance
+                    .getWeeklyData(postId, dateTime)
                     .subscribe({ tideModel ->
                         val weeklyDataList = tideModel.weeklyDataList
                         addDataToCalendar(weeklyDataList, postId)

@@ -6,10 +6,12 @@ import android.util.Log
 import com.dave.fish.R
 import com.dave.fish.db.RealmController
 import com.dave.fish.model.realm.TideWeeklyModel
+import com.dave.fish.network.RetrofitController
 import com.dave.fish.util.Global
 import com.dave.fish.util.TideUtil
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_tide_detail.*
+import org.joda.time.DateTime
 
 /**
  * Created by soul on 2017. 10. 3..
@@ -31,10 +33,35 @@ class TideDetailActivity : AppCompatActivity() {
     }
 
     private fun initData() {
-        val selectedPostName = mRealmController.findSelectedSpinnerItem(realm)?.postName
+        val selectedSpinnerItem = mRealmController.findSelectedSpinnerItem(realm)
+        val postName = selectedSpinnerItem?.postName
+        val postId = selectedSpinnerItem?.let {
+            mRealmController
+                    .findByPostName(
+                            realm,
+                            selectedSpinnerItem?.doNm!!,
+                            selectedSpinnerItem?.postName!!
+                    )?.obsPostId
+        }
+
         val selectedDate = intent.getStringExtra(Global.INTENT_DATE)
-        val key = selectedPostName + "_" + selectedDate
+        val key = postName + "_" + selectedDate
         Log.w(TAG, "What is key --> $key")
+
+        postId?.let {
+            val weatherAndWave = RetrofitController.instance.getWeatherAndWave(postId, DateTime(selectedDate))
+            weatherAndWave.subscribe { response->
+                val longDataList = response.long
+                val shortDataList = response.short
+
+                if(longDataList.isNotEmpty()){
+                    longDataList.first().apply {
+                        tv_detail_wave.text = "${resources.getString(R.string.detail_am)} : ${amWave.replace(" ","")}\n"+
+                        "${resources.getString(R.string.detail_pm)} : ${pmWave.replace(" ","")}"
+                    }
+                }
+            }
+        }
 
         tideWeeklyItem = mRealmController.findTideWeekly(realm, key)
         Log.w(TAG, "tideWeeklyItem --> " + tideWeeklyItem.toString())
@@ -101,23 +128,23 @@ class TideDetailActivity : AppCompatActivity() {
     private fun initDetailViews() {
         tv_detail_date_moon.text = getDetailViewItem(tideWeeklyItem.dateMoon)
         tv_detail_weather.text = getDetailViewItem(tideWeeklyItem.weatherChar)
-        tv_detail_temperature.text = getDetailViewItem(tideWeeklyItem.temp)+resources.getString(R.string.measure_temperature)
-        tv_detail_wave.text = "3-5/2-3cm"
+        tv_detail_temperature.text = getDetailViewItem(tideWeeklyItem.temp) + resources.getString(R.string.measure_temperature)
+        tv_detail_wave.text = resources.getString(R.string.no_data_wave)
         tv_detail_etc.text = "${getDetailViewItem(tideWeeklyItem.moolNormal)} " +
                 "/ ${getDetailViewItem(tideWeeklyItem.mool7)} " +
                 "/ ${getDetailViewItem(tideWeeklyItem.mool8)}"
     }
 
-    private fun getDetailViewItem(detail: String?): String{
-        if(isEmptyDetailItem(detail)){
+    private fun getDetailViewItem(detail: String?): String {
+        if (isEmptyDetailItem(detail)) {
             return "--"
         }
 
         return detail!!
     }
 
-    private fun isEmptyDetailItem(detail : String?) : Boolean{
-        return when{
+    private fun isEmptyDetailItem(detail: String?): Boolean {
+        return when {
             detail.isNullOrEmpty() -> return true
             detail == "/" -> return true
             else -> false
