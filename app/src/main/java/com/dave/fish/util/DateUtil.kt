@@ -31,18 +31,14 @@ object DateUtil {
     }
 
     /**
-     * @method - 현재 년,월 이면서 날짜가 오늘보다 큰 경우 구분 짓는다.
+     * @method - 현재 년,월과 비교 날짜가 같을때 값 반환
      * @why - 위의 조건에 해당하는 날짜의 데이터는 유동적으로 변경되는 값이기 때문에 ex)날씨 매번 데이터 갱신이 필요하다.
      * @param compareDate - 비교할 날짜
      */
     fun isBiggerThanCurrentDate(compareDate: DateTime) : Boolean{
-        val seoul = DateTimeZone.forID("Asia/Seoul")
+        val seoul = DateTimeZone.forID(DATE_TIME_ZONE_SEOUL)
         val currentDate = DateTime(seoul)
-        if(currentDate.toString(DATE_PATTERN_YEAR_MONTH) == compareDate.toString(DATE_PATTERN_YEAR_MONTH)){
-            return true
-        }
-
-        return false
+        return currentDate.toString(DATE_PATTERN_YEAR_MONTH) == compareDate.toString(DATE_PATTERN_YEAR_MONTH)
     }
 
     fun getDataWithPattern(dateTime: DateTime, pattern: String) : String{
