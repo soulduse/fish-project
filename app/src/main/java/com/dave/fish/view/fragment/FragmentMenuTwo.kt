@@ -2,11 +2,13 @@ package com.dave.fish.view.fragment
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.dave.fish.R
 import com.nhn.android.maps.NMapContext
+import com.nhn.android.maps.NMapLocationManager
 import com.nhn.android.maps.NMapView
 import kotlinx.android.synthetic.main.fragment_menu_two.*
 
@@ -32,6 +34,11 @@ class FragmentMenuTwo : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         mapView.setClientId(resources.getString(R.string.naver_map_key))// 클라이언트 아이디 설정
         mMapContext.setupMapView(mapView)
+
+
+        val locationManager = NMapLocationManager(context)
+        val myLocation = locationManager.myLocation
+        Log.w(TAG, "myLocation --> $myLocation")
     }
 
     override fun onStart() {
