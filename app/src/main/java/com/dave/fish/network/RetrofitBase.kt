@@ -13,25 +13,43 @@ import java.util.concurrent.TimeUnit
  */
 class RetrofitBase {
 
-    private var retrofit: Retrofit
-    var apiService : TideApi
+    private lateinit var retrofit: Retrofit
+    var tideServiceApi: TideApi ?= null
+    var kmaServiceApi : KmaApi ?= null
 
-    init {
-        retrofit = createRetrofit()
-        apiService = createAPI()
+    fun initRetrofit(api:Api){
+        retrofit = createRetrofit(api)
+        setServiceApi(api)
     }
 
-    private fun createRetrofit(): Retrofit {
+    private fun setServiceApi(api:Api){
+        when(api){
+            Api.Kma ->{
+                kmaServiceApi = retrofit.create(KmaApi::class.java)
+            }
+
+            Api.Tide ->{
+                tideServiceApi = retrofit.create(TideApi::class.java)
+            }
+        }
+    }
+
+    private fun createRetrofit(api: Api) : Retrofit{
+        val url = when(api){
+            Api.Kma ->{
+                FORECAST_URL
+            }
+            else -> {
+                BASE_URL
+            }
+        }
+
         return Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(url)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(createOkHttpClient())
                 .build()
-    }
-
-    fun createAPI(): TideApi {
-        return retrofit.create(TideApi::class.java)
     }
 
     private fun createOkHttpClient(): OkHttpClient {
@@ -51,8 +69,13 @@ class RetrofitBase {
         val INSTANCE = RetrofitBase()
     }
 
+    enum class Api{
+        Tide, Kma
+    }
+
     companion object {
         val INSTANCE: RetrofitBase by lazy { Holder.INSTANCE }
         private val BASE_URL = "http://www.khoa.go.kr/swtc/"
+        private val FORECAST_URL = "http://http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastSpaceData"
     }
 }

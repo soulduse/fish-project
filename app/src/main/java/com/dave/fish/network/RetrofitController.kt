@@ -11,41 +11,56 @@ import org.joda.time.DateTime
  */
 class RetrofitController {
 
-    private fun getRetrofit(): TideApi {
-        return RetrofitBase.INSTANCE.apiService
+    private val retrofitBase = RetrofitBase.INSTANCE
+
+    private fun getTideRetrofit(): TideApi {
+        retrofitBase.initRetrofit(RetrofitBase.Api.Tide)
+        return retrofitBase.tideServiceApi!!
+    }
+
+    private fun getKmaRetrofit(): KmaApi {
+        retrofitBase.initRetrofit(RetrofitBase.Api.Kma)
+        return retrofitBase.kmaServiceApi!!
     }
 
     fun getChartData() : Observable<ChartModel>{
-        return getRetrofit()
+        return getTideRetrofit()
                 .getChartData("DT_0001", DateTime().toString(DATE_FORMAT))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
     }
 
     fun getWeeklyData(postId:String, dateTime: DateTime) : Observable<WeeklyModel>{
-        return getRetrofit()
+        return getTideRetrofit()
                 .getWeeklyData(postId, dateTime.toString(DATE_FORMAT))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
     }
 
     fun getSidePanelData() : Observable<SidePanelModel> {
-        return getRetrofit()
+        return getTideRetrofit()
                 .getSidePanelData("DT_0001")
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
     }
 
     fun getWeatherAndWave(postId:String, dateTime: DateTime) : Observable<WeatherAndWaveModel> {
-        return getRetrofit()
+        return getTideRetrofit()
                 .getWeatherAndWave(postId, dateTime.toString(DATE_FORMAT))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
     }
 
     fun getGisData() : Observable<GisModel>{
-        return getRetrofit()
+        return getTideRetrofit()
                 .getGisData()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+    }
+
+    fun getForecastSpaceData() : Observable<ForecastSpaceData>{
+        return getKmaRetrofit()
+                .getForecastSpaceData()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
     }
