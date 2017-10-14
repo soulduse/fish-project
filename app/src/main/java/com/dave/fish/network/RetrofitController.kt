@@ -1,6 +1,10 @@
 package com.dave.fish.network
 
+import com.dave.fish.MyApplication
+import com.dave.fish.R
 import com.dave.fish.model.retrofit.*
+import com.dave.fish.util.DateUtil
+import com.dave.fish.util.Global
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -25,14 +29,14 @@ class RetrofitController {
 
     fun getChartData() : Observable<ChartModel>{
         return getTideRetrofit()
-                .getChartData("DT_0001", DateTime().toString(DATE_FORMAT))
+                .getChartData("DT_0001", DateTime().toString(DateUtil.DATE_PATTERN_YEAR_MONTH_DAY))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
     }
 
     fun getWeeklyData(postId:String, dateTime: DateTime) : Observable<WeeklyModel>{
         return getTideRetrofit()
-                .getWeeklyData(postId, dateTime.toString(DATE_FORMAT))
+                .getWeeklyData(postId, dateTime.toString(DateUtil.DATE_PATTERN_YEAR_MONTH_DAY))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
     }
@@ -46,7 +50,7 @@ class RetrofitController {
 
     fun getWeatherAndWave(postId:String, dateTime: DateTime) : Observable<WeatherAndWaveModel> {
         return getTideRetrofit()
-                .getWeatherAndWave(postId, dateTime.toString(DATE_FORMAT))
+                .getWeatherAndWave(postId, dateTime.toString(DateUtil.DATE_PATTERN_YEAR_MONTH_DAY))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
     }
@@ -58,9 +62,20 @@ class RetrofitController {
                 .subscribeOn(Schedulers.io())
     }
 
-    fun getForecastSpaceData() : Observable<ForecastSpaceData>{
+    fun getForecastSpaceData(baseDate: String,
+                             baseTime: String,
+                             nx: Int,
+                             ny: Int) : Observable<ForecastSpaceData>{
         return getKmaRetrofit()
-                .getForecastSpaceData()
+                .getForecastSpaceData(
+                        MyApplication.context?.resources?.getString(R.string.kma_opemapi_key)!!,
+                        baseDate,
+                        baseTime,
+                        nx,
+                        ny,
+                        200,    // 한번에 총 출력할 데이터 량
+                        1,      // 한번에 총 출력할 페이지 수
+                        Global.ParserType.JSON.toString().toLowerCase())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
     }
@@ -70,6 +85,5 @@ class RetrofitController {
     companion object {
         val instance : RetrofitController by lazy { Holder.INSTANCE }
         private val TAG = RetrofitController.javaClass.simpleName
-        private val DATE_FORMAT = "yyyyMMdd"
     }
 }
