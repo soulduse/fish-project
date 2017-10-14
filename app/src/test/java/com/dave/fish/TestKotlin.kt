@@ -8,6 +8,15 @@ import org.junit.Test
 
 class TestKotlin {
 
+    enum class ParserType{
+        XML, JSON
+    }
+
+    @Test
+    fun Enum과String테스트하기(){
+        println(ParserType.JSON.toString().toLowerCase())
+    }
+
 
     internal fun test() {
         val a = 0
