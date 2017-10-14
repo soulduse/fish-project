@@ -6,4 +6,8 @@ package com.dave.fish.util
 object Global {
     val INTENT_DATE = "intent_date"
     val INTENT_TIDE_OBJECT = "intent_tide_object"
+
+    enum class ParserType{
+        XML, JSON
+    }
 }

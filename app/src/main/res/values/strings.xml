@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Fish_project</string>
 
+    <string name="kma_opemapi_key">IEUdGrjr8gLf11x5UyDgUpeQpgogxGYoPC8ZZfdvFtp%2BCMgU969WgPaXLOmEaXM%2FUcYbzZYrb9OBHTz58I4zaA%3D%3D</string>
     <string name="sea_openapi_key">SpGC4MjwhAPJosLja1g8ApaDhGbk/hWZ2kOV8ZcCNB8ymdluVZNSuQ4hm4X/atHo5/QhX72g8hUMdwAu1Kg==</string>
     <string name="naver_map_key">zZJw_IMQXLr5pnSuxaLQ</string>
 

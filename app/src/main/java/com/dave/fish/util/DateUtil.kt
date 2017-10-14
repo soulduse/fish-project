@@ -11,6 +11,7 @@ object DateUtil {
     val DATE_PATTERN_YEAR_MONTH_DAY = "yyyyMMdd"
     val DATE_PATTERN_YEAR_MONTH_DAY_ADD_DASH = "yyyy-MM-dd"
     val DATE_PATTERN_YEAR_MONTH = "yyyy-MM"
+    val DATE_PATTERN_TIME_OF_DATE = "mmss"
     val DATE_PATTERN_ALL = "yyyy-MM-dd hh:mm:ss"
     val DATE_TIME_ZONE_SEOUL = "Asia/Seoul"
 
@@ -45,4 +46,5 @@ object DateUtil {
         val seoul = DateTimeZone.forID(DATE_TIME_ZONE_SEOUL)
         return dateTime.withZone(seoul).toString(pattern)
     }
+
 }
