@@ -21,6 +21,8 @@ class TideDetailActivity : AppCompatActivity() {
 
     private val mRealmController: RealmController = RealmController.instance
     private var tideWeeklyItem: TideWeeklyModel = TideWeeklyModel()
+    private val mRetrofitContoller: RetrofitController = RetrofitController.instance
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tide_detail)
@@ -133,6 +135,10 @@ class TideDetailActivity : AppCompatActivity() {
         tv_detail_etc.text = "${getDetailViewItem(tideWeeklyItem.moolNormal)} " +
                 "/ ${getDetailViewItem(tideWeeklyItem.mool7)} " +
                 "/ ${getDetailViewItem(tideWeeklyItem.mool8)}"
+    }
+
+    private fun setWeatherInfoFromApi(){
+//        mRetrofitContoller.getForecastSpaceData()
     }
 
     private fun getDetailViewItem(detail: String?): String {
