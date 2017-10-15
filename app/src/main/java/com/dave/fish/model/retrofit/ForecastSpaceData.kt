@@ -8,6 +8,8 @@ import java.util.*
  */
 class ForecastSpaceData {
 
+    var response : Response ?= null
+
     data class Response(
             val header: Header,
             val body: Body
@@ -19,7 +21,14 @@ class ForecastSpaceData {
     )
 
     data class Body(
-            val items: List<Item>
+            val items: Items,
+            val numOfRows: Int,
+            val pageNo: Int,
+            val totalCount: Int
+    )
+
+    data class Items(
+            val item : List<Item>
     )
 
     data class Item(
