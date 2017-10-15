@@ -76,6 +76,6 @@ class RetrofitBase {
     companion object {
         val INSTANCE: RetrofitBase by lazy { Holder.INSTANCE }
         private val BASE_URL = "http://www.khoa.go.kr/swtc/"
-        private val FORECAST_URL = "http://http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/ForecastSpaceData"
+        private val FORECAST_URL = "http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/"
     }
 }

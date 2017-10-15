@@ -63,14 +63,13 @@ class RetrofitController {
     }
 
     fun getForecastSpaceData(baseDate: String,
-                             baseTime: String,
                              nx: Int,
                              ny: Int) : Observable<ForecastSpaceData>{
         return getKmaRetrofit()
                 .getForecastSpaceData(
                         MyApplication.context?.resources?.getString(R.string.kma_opemapi_key)!!,
                         baseDate,
-                        baseTime,
+                        "0200",
                         nx,
                         ny,
                         200,    // 한번에 총 출력할 데이터 량
