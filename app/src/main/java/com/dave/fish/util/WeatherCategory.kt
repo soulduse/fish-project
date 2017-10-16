@@ -17,5 +17,5 @@ enum class WeatherCategory(val title: String) {
     VVV("풍속(남북성분)"),
     WAV("파고"),
     VEC("풍향"),
-    WSD("풍속")
+    WSD("풍속");
 }

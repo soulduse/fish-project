@@ -6,7 +6,7 @@ package com.dave.fish.util
  */
 class ApiLocationUtill {
 
-    fun convertGRID_GPS(mode: Int, lat_X: Double, lng_Y: Double): LatXLngY {
+    fun convertGridGps(mode: Int, lat_X: Double, lng_Y: Double): LatXLngY {
         val RE = 6371.00877 // 지구 반경(km)
         val GRID = 5.0 // 격자 간격(km)
         val SLAT1 = 30.0 // 투영 위도1(degree)
@@ -88,7 +88,10 @@ class ApiLocationUtill {
         var y: Double = 0.toDouble()
     }
 
+    private object Holder { val INSTANCE = ApiLocationUtill() }
+
     companion object {
+        val instance : ApiLocationUtill by lazy { Holder.INSTANCE }
         var TO_GRID = 0
         var TO_GPS = 1
     }

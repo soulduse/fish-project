@@ -7,8 +7,7 @@ import com.dave.fish.R
 import com.dave.fish.db.RealmController
 import com.dave.fish.model.realm.TideWeeklyModel
 import com.dave.fish.network.RetrofitController
-import com.dave.fish.util.Global
-import com.dave.fish.util.TideUtil
+import com.dave.fish.util.*
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_tide_detail.*
 import org.joda.time.DateTime
@@ -52,14 +51,14 @@ class TideDetailActivity : AppCompatActivity() {
 
         postId?.let {
             val weatherAndWave = RetrofitController.instance.getWeatherAndWave(postId, DateTime(selectedDate))
-            weatherAndWave.subscribe { response->
+            weatherAndWave.subscribe { response ->
                 val longDataList = response.long
                 val shortDataList = response.short
 
-                if(longDataList.isNotEmpty()){
+                if (longDataList.isNotEmpty()) {
                     longDataList.first().apply {
-                        tv_detail_wave.text = "${resources.getString(R.string.detail_am)} : ${amWave.replace(" ","")}\n"+
-                        "${resources.getString(R.string.detail_pm)} : ${pmWave.replace(" ","")}"
+                        tv_detail_wave.text = "${resources.getString(R.string.detail_am)} : ${amWave.replace(" ", "")}\n" +
+                                "${resources.getString(R.string.detail_pm)} : ${pmWave.replace(" ", "")}"
                     }
                 }
             }
@@ -68,6 +67,8 @@ class TideDetailActivity : AppCompatActivity() {
         tideWeeklyItem = mRealmController.findTideWeekly(realm, key)
         Log.w(TAG, "tideWeeklyItem --> " + tideWeeklyItem.toString())
         TideUtil.setTide(tideWeeklyItem)
+
+        setWeatherInfoFromApi()
     }
 
     private fun initLayout() {
@@ -137,8 +138,92 @@ class TideDetailActivity : AppCompatActivity() {
                 "/ ${getDetailViewItem(tideWeeklyItem.mool8)}"
     }
 
-    private fun setWeatherInfoFromApi(){
-//        mRetrofitContoller.getForecastSpaceData()
+    private fun setWeatherInfoFromApi() {
+        val standardTime = listOf(2, 5, 8, 11, 14, 17, 20, 23)
+        val grid = ApiLocationUtill.instance.convertGridGps(ApiLocationUtill.TO_GRID, tideWeeklyItem.obsLat, tideWeeklyItem.obsLon)
+        val nx = grid.x.toInt()
+        val ny = grid.y.toInt()
+        val searchDate = DateTime(tideWeeklyItem.searchDate).toString(DateUtil.DATE_PATTERN_YEAR_MONTH_DAY)
+
+        mRetrofitContoller.getForecastSpaceData(searchDate, nx, ny)
+                .subscribe({ response ->
+                    Log.w(TAG, "api result --> ${response.response.toString()}")
+                    val resultCode = response.response?.header?.resultCode
+                    when (resultCode) {
+                        "0000" -> {
+                            val itemList = response.response?.body?.items?.item
+                            itemList?.filter {
+                                it.baseDate == it.fcstDate
+                            }?.forEach { item ->
+                                setCategoryWeather(item.category)
+                            }
+
+                        }
+                    }
+
+                }, { throwable ->
+                    Log.e(TAG, "api throwable --> ${throwable.localizedMessage}")
+                })
+    }
+
+    private fun setCategoryWeather(category: String) {
+        when (category) {
+            WeatherCategory.POP.toString() -> {
+
+            }
+
+            WeatherCategory.PTY.toString() -> {
+
+            }
+
+            WeatherCategory.R06.toString() -> {
+
+            }
+
+            WeatherCategory.REH.toString() -> {
+
+            }
+
+            WeatherCategory.S06.toString() -> {
+
+            }
+
+            WeatherCategory.SKY.toString() -> {
+
+            }
+
+            WeatherCategory.T3H.toString() -> {
+
+            }
+
+            WeatherCategory.TMN.toString() -> {
+
+            }
+
+            WeatherCategory.TMX.toString() -> {
+
+            }
+
+            WeatherCategory.UUU.toString() -> {
+
+            }
+
+            WeatherCategory.VVV.toString() -> {
+
+            }
+
+            WeatherCategory.WAV.toString() -> {
+
+            }
+
+            WeatherCategory.VEC.toString() -> {
+
+            }
+
+            WeatherCategory.WSD.toString() -> {
+
+            }
+        }
     }
 
     private fun getDetailViewItem(detail: String?): String {
