@@ -68,8 +68,10 @@ class TideDetailActivity : AppCompatActivity() {
 
                 if (longDataList.isNotEmpty()) {
                     longDataList.first().apply {
-                        tv_detail_wave.text = "${resources.getString(R.string.detail_am)} : ${amWave.replace(" ", "")}\n" +
-                                "${resources.getString(R.string.detail_pm)} : ${pmWave.replace(" ", "")}"
+                        if(tv_detail_wave.text == resources.getString(R.string.no_data_wave)){
+                            tv_detail_wave.text = "${resources.getString(R.string.detail_am)} : ${amWave.replace(" ", "")}\n" +
+                                    "${resources.getString(R.string.detail_pm)} : ${pmWave.replace(" ", "")}"
+                        }
                     }
                 }
             }
@@ -162,7 +164,7 @@ class TideDetailActivity : AppCompatActivity() {
                     Log.w(TAG, "api result --> ${response.response.toString()}")
                     val resultCode = response.response.header.resultCode
                     when (resultCode) {
-                        "0000" -> {
+                        SUCCESS -> {
                             val itemList = response.response.body.items.item
                             itemList.filter {
                                 it.baseDate == it.fcstDate
@@ -170,8 +172,19 @@ class TideDetailActivity : AppCompatActivity() {
                                 initWave(item)
                                 initWindSpeed(item)
                             }
+
+                            tv_detail_wave.text = "${resources.getString(R.string.detail_am)} : $amWaveMin-$amWaveMax\n" +
+                                    "${resources.getString(R.string.detail_pm)} : $pmWaveMin-$pmWaveMax"
+
+                            tv_detail_wind_speed.text = "${resources.getString(R.string.detail_am)} : $amWindSpeedMin-$amWindSpeedMax\n" +
+                                    "${resources.getString(R.string.detail_pm)} : $pmWindSpeedMin-$pmWindSpeedMax"
+                        }
+                        BEFORE_DATE->{
+
                         }
                     }
+
+
                 }, { throwable ->
                     Log.e(TAG, "api throwable --> ${throwable.localizedMessage}")
                 })
@@ -248,5 +261,7 @@ class TideDetailActivity : AppCompatActivity() {
 
     companion object {
         val TAG = TideDetailActivity::class.java.simpleName
+        val SUCCESS = "0000"
+        val BEFORE_DATE = "99"
     }
 }

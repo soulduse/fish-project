@@ -16,6 +16,7 @@
     <string name="detail_weather">날씨</string>
     <string name="detail_temperature">온도</string>
     <string name="detail_wave">파고</string>
+    <string name="detail_wind_speed">풍속</string>
     <string name="detail_etc">기타</string>
 
     <string name="detail_am">오전</string>

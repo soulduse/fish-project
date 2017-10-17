@@ -271,6 +271,16 @@
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:gravity="center"
+                    android:text="@string/detail_wind_speed"
+                    android:textSize="@dimen/detail_title_text_size"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
                     android:text="@string/detail_etc"
                     android:textSize="@dimen/detail_title_text_size"
                     android:textStyle="bold" />
@@ -280,6 +290,15 @@
 
                 <TextView
                     android:id="@+id/tv_detail_date_moon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textSize="@dimen/detail_sub_text_size" />
+
+                <TextView
+                    android:id="@+id/tv_detail_wind_speed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
