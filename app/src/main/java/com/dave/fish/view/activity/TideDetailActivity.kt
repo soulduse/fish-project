@@ -6,6 +6,7 @@ import android.util.Log
 import com.dave.fish.R
 import com.dave.fish.db.RealmController
 import com.dave.fish.model.realm.TideWeeklyModel
+import com.dave.fish.model.retrofit.ForecastSpaceData
 import com.dave.fish.network.RetrofitController
 import com.dave.fish.util.*
 import io.realm.Realm
@@ -20,7 +21,17 @@ class TideDetailActivity : AppCompatActivity() {
 
     private val mRealmController: RealmController = RealmController.instance
     private var tideWeeklyItem: TideWeeklyModel = TideWeeklyModel()
-    private val mRetrofitContoller: RetrofitController = RetrofitController.instance
+    private val mRetrofitController: RetrofitController = RetrofitController.instance
+
+    private var amWindSpeedMin = Double.MAX_VALUE
+    private var amWindSpeedMax = Double.MIN_VALUE
+    private var pmWindSpeedMin = Double.MAX_VALUE
+    private var pmWindSpeedMax = Double.MIN_VALUE
+
+    private var amWaveMin = Double.MAX_VALUE
+    private var amWaveMax = Double.MIN_VALUE
+    private var pmWaveMin = Double.MAX_VALUE
+    private var pmWaveMax = Double.MIN_VALUE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -136,95 +147,83 @@ class TideDetailActivity : AppCompatActivity() {
         tv_detail_etc.text = "${getDetailViewItem(tideWeeklyItem.moolNormal)} " +
                 "/ ${getDetailViewItem(tideWeeklyItem.mool7)} " +
                 "/ ${getDetailViewItem(tideWeeklyItem.mool8)}"
+
+
     }
 
     private fun setWeatherInfoFromApi() {
-        val standardTime = listOf(2, 5, 8, 11, 14, 17, 20, 23)
         val grid = ApiLocationUtill.instance.convertGridGps(ApiLocationUtill.TO_GRID, tideWeeklyItem.obsLat, tideWeeklyItem.obsLon)
         val nx = grid.x.toInt()
         val ny = grid.y.toInt()
         val searchDate = DateTime(tideWeeklyItem.searchDate).toString(DateUtil.DATE_PATTERN_YEAR_MONTH_DAY)
 
-        mRetrofitContoller.getForecastSpaceData(searchDate, nx, ny)
+        mRetrofitController.getForecastSpaceData(searchDate, nx, ny)
                 .subscribe({ response ->
                     Log.w(TAG, "api result --> ${response.response.toString()}")
-                    val resultCode = response.response?.header?.resultCode
+                    val resultCode = response.response.header.resultCode
                     when (resultCode) {
                         "0000" -> {
-                            val itemList = response.response?.body?.items?.item
-                            itemList?.filter {
+                            val itemList = response.response.body.items.item
+                            itemList.filter {
                                 it.baseDate == it.fcstDate
-                            }?.forEach { item ->
-                                setCategoryWeather(item.category)
+                            }.forEach { item ->
+                                initWave(item)
+                                initWindSpeed(item)
                             }
-
                         }
                     }
-
                 }, { throwable ->
                     Log.e(TAG, "api throwable --> ${throwable.localizedMessage}")
                 })
     }
 
-    private fun setCategoryWeather(category: String) {
-        when (category) {
-            WeatherCategory.POP.toString() -> {
+    private fun initWave(item: ForecastSpaceData.Item){
+        if(WeatherCategory.WAV.toString() == item.category){
+            if(isMorningTime(item.fcstTime)){
+                if(amWaveMin > item.fcstValue){
+                    amWaveMin = item.fcstValue
+                }
 
-            }
+                if(amWaveMax < item.fcstValue){
+                    amWaveMax = item.fcstValue
+                }
+            }else{
+                if(pmWaveMin > item.fcstValue){
+                    pmWaveMin = item.fcstValue
+                }
 
-            WeatherCategory.PTY.toString() -> {
-
-            }
-
-            WeatherCategory.R06.toString() -> {
-
-            }
-
-            WeatherCategory.REH.toString() -> {
-
-            }
-
-            WeatherCategory.S06.toString() -> {
-
-            }
-
-            WeatherCategory.SKY.toString() -> {
-
-            }
-
-            WeatherCategory.T3H.toString() -> {
-
-            }
-
-            WeatherCategory.TMN.toString() -> {
-
-            }
-
-            WeatherCategory.TMX.toString() -> {
-
-            }
-
-            WeatherCategory.UUU.toString() -> {
-
-            }
-
-            WeatherCategory.VVV.toString() -> {
-
-            }
-
-            WeatherCategory.WAV.toString() -> {
-
-            }
-
-            WeatherCategory.VEC.toString() -> {
-
-            }
-
-            WeatherCategory.WSD.toString() -> {
-
+                if(pmWaveMax < item.fcstValue){
+                    pmWaveMax = item.fcstValue
+                }
             }
         }
     }
+
+    private fun initWindSpeed(item: ForecastSpaceData.Item){
+        if(WeatherCategory.WSD.toString() == item.category){
+            if(isMorningTime(item.fcstTime)){
+                if(amWindSpeedMin > item.fcstValue){
+                    amWindSpeedMin = item.fcstValue
+                }
+
+                if(amWindSpeedMax < item.fcstValue){
+                    amWindSpeedMax = item.fcstValue
+                }
+            }else{
+                if(pmWindSpeedMin > item.fcstValue){
+                    pmWindSpeedMin = item.fcstValue
+                }
+
+                if(pmWindSpeedMax < item.fcstValue){
+                    pmWindSpeedMax = item.fcstValue
+                }
+            }
+        }
+    }
+
+    private fun isMorningTime(time : String) : Boolean = parseTime(time) <= 12
+
+    private fun parseTime(time : String) : Int = time.take(2).toInt()
 
     private fun getDetailViewItem(detail: String?): String {
         if (isEmptyDetailItem(detail)) {
