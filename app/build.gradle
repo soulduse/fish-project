@@ -88,6 +88,8 @@ dependencies {
     // Naver map Lib
     compile 'com.naver.maps.open:naver-map-api:2.1.2@aar'
 
+    compile 'com.yarolegovich:sliding-root-nav:1.1.0'
+
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     testCompile 'junit:junit:4.12'
     testCompile 'com.nhaarman:mockito-kotlin:1.1.0'
