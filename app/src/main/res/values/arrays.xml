@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- left drawer menu titles -->
+    <string-array name="drawer_menu_titles">
+        <item>물때&amp;날씨</item>
+        <item>지도</item>
+        <item/>
+        <item>조과</item>
+        <item>채팅</item>
+        <item>알림설정</item>
+        <item/>
+        <item>메일문의</item>
+        <item>카카오톡에 공유</item>
+    </string-array>
+
+    <!-- left drawer images -->
+    <string-array name="drawer_menu_images">
+        <item>@drawable/ic_toys_white_24dp</item>
+        <item>@drawable/ic_toys_white_24dp</item>
+        <item>0</item>
+        <item>@drawable/ic_toys_white_24dp</item>
+        <item>@drawable/ic_toys_white_24dp</item>
+        <item>@drawable/ic_toys_white_24dp</item>
+        <item>0</item>
+        <item>@drawable/ic_toys_white_24dp</item>
+        <item>@drawable/ic_toys_white_24dp</item>
+    </string-array>
+</resources>

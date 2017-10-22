@@ -21,4 +21,6 @@
 
     <string name="detail_am">오전</string>
     <string name="detail_pm">오후</string>
+
+    <string name="today_tide">오늘의 물때 : 태안</string>
 </resources>

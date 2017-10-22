@@ -48,4 +48,7 @@
 
     <color name="tide_down">#008EDA</color>
     <color name="tide_up">#F14D27</color>
+
+    <color name="textColorPrimary">#212121</color>
+    <color name="textColorSecondary">#757575</color>
 </resources>
