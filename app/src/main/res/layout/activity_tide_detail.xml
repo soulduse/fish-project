@@ -28,10 +28,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="상세보기"
-                android:textColor="@color/tide_white"
+                android:textColor="@color/colorSecondaryText"
                 android:textSize="20dp"
                 android:textStyle="bold" />
-
 
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
