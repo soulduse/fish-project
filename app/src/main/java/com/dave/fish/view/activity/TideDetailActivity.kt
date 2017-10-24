@@ -45,16 +45,9 @@ class TideDetailActivity : AppCompatActivity() {
     }
 
     private fun initData() {
-        val selectedSpinnerItem = mRealmController.findSelectedSpinnerItem(realm)
-        val postName = selectedSpinnerItem?.postName
-        val postId = selectedSpinnerItem?.let {
-            mRealmController
-                    .findByPostName(
-                            realm,
-                            selectedSpinnerItem?.doNm!!,
-                            selectedSpinnerItem?.postName!!
-                    )?.obsPostId
-        }
+        val secondSpinnerItem = mRealmController.findSelectedSecondModel(realm)
+        val postId = secondSpinnerItem?.obsPostId
+        val postName = secondSpinnerItem?.obsPostName
 
         val selectedDate = intent.getStringExtra(Global.INTENT_DATE)
         val key = postName + "_" + selectedDate
