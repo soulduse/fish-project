@@ -20,14 +20,13 @@ import com.dave.fish.db.RealmListener
 import com.dave.fish.model.realm.SelectItemModel
 import com.dave.fish.network.RetrofitController
 import com.dave.fish.view.adapter.ViewPagerAdapter
-import com.dave.fish.view.fragment.FragmentMenuOne
-import com.dave.fish.view.fragment.FragmentMenuTwo
+import com.dave.fish.view.fragment.FragmentCalendar
+import com.dave.fish.view.fragment.FragmentMap
 import com.dave.fish.view.menu.*
 import com.yarolegovich.slidingrootnav.SlidingRootNav
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
 
 class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
     private lateinit var realm: Realm
@@ -160,8 +159,8 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
         // 스크롤 되게 하기 위해 해당 값을 true 로 해줘야한다.
         nest_scrollview.isFillViewport = true
         main_viewpager.adapter = ViewPagerAdapter(supportFragmentManager).apply {
-            addFragment(FragmentMenuOne())
-            addFragment(FragmentMenuTwo())
+            addFragment(FragmentCalendar())
+            addFragment(FragmentMap())
         }
     }
 

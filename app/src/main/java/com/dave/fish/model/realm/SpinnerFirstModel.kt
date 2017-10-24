@@ -9,5 +9,5 @@ import io.realm.RealmObject
 
 open class SpinnerFirstModel : RealmObject(){
     var areaName :String = ""
-    var secondSpinnerItems : RealmList<SpinnerSecondModel> ?= RealmList()
+    var secondSpinnerItems : RealmList<SpinnerSecondModel> = RealmList()
 }
