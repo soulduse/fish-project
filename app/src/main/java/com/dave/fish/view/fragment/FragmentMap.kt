@@ -1,6 +1,7 @@
 package com.dave.fish.view.fragment
 
 import android.Manifest
+import android.content.Intent
 import android.location.Location
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
@@ -15,10 +16,13 @@ import com.google.android.gms.maps.GoogleMap.OnMyLocationClickListener
 import com.gun0912.tedpermission.TedPermission
 import io.realm.Realm
 import android.widget.Toast
+import com.dave.fish.model.realm.SpinnerSecondModel
+import com.dave.fish.view.activity.DetailMapActivity
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.gun0912.tedpermission.PermissionListener
+import kotlinx.android.synthetic.main.fragment_menu_two.*
 import java.util.ArrayList
 
 
@@ -32,25 +36,14 @@ class FragmentMap : Fragment(), OnMyLocationButtonClickListener,
 
     private val realm : Realm = Realm.getDefaultInstance()
     private val mRealmController : RealmController = RealmController.instance
-
-    /**
-     * Request code for location permission request.
-     *
-     * @see .onRequestPermissionsResult
-     */
-    private val LOCATION_PERMISSION_REQUEST_CODE = 1
-
-    /**
-     * Flag indicating whether a requested permission has been denied after returning in
-     * [.onRequestPermissionsResult].
-     */
-    private var mPermissionDenied = false
+    private lateinit var selectedItem : SpinnerSecondModel
 
     private lateinit var mMap: GoogleMap
     var mapView: MapView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        selectedItem = mRealmController.findSelectedSecondModel(realm)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -61,16 +54,34 @@ class FragmentMap : Fragment(), OnMyLocationButtonClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapview = view.findViewById<MapView>(R.id.google_map_view)
-        mapview.isClickable = false
+        mapview.isClickable = true
         mapview.onCreate(savedInstanceState)
         mapview.onResume()
         mapview.getMapAsync(this)
+
+        mapview.setOnClickListener {
+            Toast.makeText(context, "test", Toast.LENGTH_SHORT).show()
+            val detailMapIntent = Intent(activity, DetailMapActivity::class.java)
+            detailMapIntent.putExtra("lat", selectedItem.obsLat)
+            detailMapIntent.putExtra("lon", selectedItem.obsLon)
+            startActivity(detailMapIntent)
+        }
+//        onClickMap()
+    }
+
+    private fun onClickMap(){
+        google_map_view.setOnClickListener {
+            Toast.makeText(context, "test", Toast.LENGTH_SHORT).show()
+            val detailMapIntent = Intent(activity, DetailMapActivity::class.java)
+            detailMapIntent.putExtra("lat", selectedItem.obsLat)
+            detailMapIntent.putExtra("lon", selectedItem.obsLon)
+            startActivity(detailMapIntent)
+        }
     }
 
     override fun onMapReady(map: GoogleMap) {
-        val selectedItem = mRealmController.findSelectedSecondModel(realm)
         val mLatLng = LatLng(selectedItem.obsLat, selectedItem.obsLon)
-
+        selectedItem = mRealmController.findSelectedSecondModel(realm)
         mMap = map
         val mapUtil = mMap.uiSettings
         mapUtil.isScrollGesturesEnabled = false
