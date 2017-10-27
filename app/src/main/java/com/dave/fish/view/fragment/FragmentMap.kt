@@ -9,21 +9,20 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.dave.fish.R
 import com.dave.fish.db.RealmController
-import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener
-import com.google.android.gms.maps.GoogleMap.OnMyLocationClickListener
-import com.gun0912.tedpermission.TedPermission
-import io.realm.Realm
-import android.widget.Toast
 import com.dave.fish.model.realm.SpinnerSecondModel
 import com.dave.fish.view.activity.DetailMapActivity
 import com.google.android.gms.maps.*
+import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener
+import com.google.android.gms.maps.GoogleMap.OnMyLocationClickListener
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.gun0912.tedpermission.PermissionListener
-import kotlinx.android.synthetic.main.fragment_menu_two.*
-import java.util.ArrayList
+import com.gun0912.tedpermission.TedPermission
+import io.realm.Realm
+import java.util.*
 
 
 /**
@@ -31,8 +30,7 @@ import java.util.ArrayList
  */
 class FragmentMap : Fragment(), OnMyLocationButtonClickListener,
         OnMyLocationClickListener,
-        OnMapReadyCallback,
-        ActivityCompat.OnRequestPermissionsResultCallback {
+        OnMapReadyCallback{
 
     private val realm : Realm = Realm.getDefaultInstance()
     private val mRealmController : RealmController = RealmController.instance
@@ -54,29 +52,10 @@ class FragmentMap : Fragment(), OnMyLocationButtonClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val mapview = view.findViewById<MapView>(R.id.google_map_view)
-        mapview.isClickable = true
+        mapview.isClickable = false
         mapview.onCreate(savedInstanceState)
         mapview.onResume()
         mapview.getMapAsync(this)
-
-        mapview.setOnClickListener {
-            Toast.makeText(context, "test", Toast.LENGTH_SHORT).show()
-            val detailMapIntent = Intent(activity, DetailMapActivity::class.java)
-            detailMapIntent.putExtra("lat", selectedItem.obsLat)
-            detailMapIntent.putExtra("lon", selectedItem.obsLon)
-            startActivity(detailMapIntent)
-        }
-//        onClickMap()
-    }
-
-    private fun onClickMap(){
-        google_map_view.setOnClickListener {
-            Toast.makeText(context, "test", Toast.LENGTH_SHORT).show()
-            val detailMapIntent = Intent(activity, DetailMapActivity::class.java)
-            detailMapIntent.putExtra("lat", selectedItem.obsLat)
-            detailMapIntent.putExtra("lon", selectedItem.obsLon)
-            startActivity(detailMapIntent)
-        }
     }
 
     override fun onMapReady(map: GoogleMap) {
@@ -94,6 +73,13 @@ class FragmentMap : Fragment(), OnMyLocationButtonClickListener,
         mMap.setMaxZoomPreference(15.0f)
         mMap.addMarker(MarkerOptions().position(mLatLng).title(selectedItem.obsPostName))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(mLatLng))
+
+        mMap.setOnMapClickListener {
+            val detailMapIntent = Intent(activity, DetailMapActivity::class.java)
+            detailMapIntent.putExtra("lat", selectedItem.obsLat)
+            detailMapIntent.putExtra("lon", selectedItem.obsLon)
+            startActivity(detailMapIntent)
+        }
     }
 
     var permissionlistener: PermissionListener = object : PermissionListener {
@@ -116,7 +102,6 @@ class FragmentMap : Fragment(), OnMyLocationButtonClickListener,
                 .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
                 .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
                 .check()
-//        }
     }
 
     override fun onMyLocationButtonClick(): Boolean {
