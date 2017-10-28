@@ -39,4 +39,7 @@
     <dimen name="fragment_one_text_height">50dp</dimen>
     <dimen name="fragment_one_text_margin">30dp</dimen>
 
+    <dimen name="tv_map_detail_margin">10dp</dimen>
+    <dimen name="tv_map_detail_size">20dp</dimen>
+    <dimen name="tv_map_record_size">20dp</dimen>
 </resources>

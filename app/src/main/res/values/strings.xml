@@ -24,6 +24,12 @@
 
     <string name="today_tide">오늘의 물때 : 태안</string>
 
+    <string name="record_start">기록시작</string>
+    <string name="record_time">현시각 : </string>
+    <string name="record_address">주소 : </string>
+    <string name="warning_empty_address">해당되는 주소 정보는 없습니다.</string>
+
+
     <!--    Permissions    -->
     <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>
     <string name="location_permission_denied">This sample requires location permission to enable the \'my location\' layer. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'Google Maps API Demos\'.</string>

@@ -20,7 +20,8 @@
     <color name="icon_with_off_color">#727272</color>
     <color name="habit_done">#81D4FA</color>
     <color name="habit_skipped">#0277BD</color>
-    <color name="habit_unknown">#AAAAAA</color>
+
+    <color name="color_space">#c7c7c7</color>
 
     <color name="iconSelectionNormalBackground">#FFFFFF</color>
     <color name="iconSelectionSelectedBackground">#E4E4E4</color>
