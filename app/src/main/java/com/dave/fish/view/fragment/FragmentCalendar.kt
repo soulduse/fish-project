@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.fragment_menu_one.*
 import kotlinx.android.synthetic.main.view_item_add_calendar.view.*
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
+import org.joda.time.LocalDate
 import java.util.*
 
 
@@ -36,6 +37,8 @@ class FragmentCalendar : Fragment() {
     private var mYear: Int = 0
     private var mDay: Int = 0
     private var mMonth: Int = 0
+
+    private var changingDate = LocalDate()
 
     private lateinit var realm: Realm
     private val mRealmController: RealmController = RealmController.instance
@@ -64,8 +67,8 @@ class FragmentCalendar : Fragment() {
         refreshCalendar()
         setDateByStateDependingOnView()
         monthView.firstDayOfTheWeek = CalendarView.SUNDAY_SHIFT
+        Log.d(TAG, "getCalendarForState() --> ${getCalendarForState()}")
         monthView.setCurrentDay(getCalendarForState())
-
 
         monthView.setDaySelectedListener(object : CalendarView.DaySelectionListener {
             override fun onLongClick(p0: CalendarView?, p1: CalendarView.DayMetadata?) {
@@ -73,7 +76,7 @@ class FragmentCalendar : Fragment() {
 
             override fun onTapEnded(p0: CalendarView, p1: CalendarView.DayMetadata) {
                 val date = "${p1.year}-${addZeroToDate(p1.month)}-${addZeroToDate(p1.day)}"
-                var intent = Intent(activity, TideDetailActivity::class.java)
+                val intent = Intent(activity, TideDetailActivity::class.java)
                 intent.putExtra(Global.INTENT_DATE, date)
                 activity.startActivity(intent)
             }
@@ -90,6 +93,13 @@ class FragmentCalendar : Fragment() {
 
     private fun refreshCalendar() {
         onMoveCalendar()
+
+        val yearAndMonth = "${changingDate.year}${changingDate.monthOfYear}"
+        if(yearAndMonth == getCurrentDate()){
+            monthView.setCurrentDay(getCalendarForState())
+        }else{
+            monthView.setCurrentDay(0)
+        }
 
         val secondSpinnerItem = mRealmController.findSelectedSecondModel(realm)
         val postId = secondSpinnerItem.obsPostId
@@ -192,11 +202,11 @@ class FragmentCalendar : Fragment() {
                 is WeeklyModel.WeeklyData -> {
                     Log.d(TAG, "Item instanceOf --> WeeklyModel.WeeklyData")
                     mRealmController.setTideWeekly(realm, item, postId)
-                    item.am?.let {
-                        val weatherIcon = getWeatherIcon(item?.am!!)
+                    item.am.let {
+                        val weatherIcon = getWeatherIcon(item.am)
                         if (weatherIcon != 0) {
                             Glide.with(context)
-                                    .load(getWeatherIcon(item?.am!!))
+                                    .load(getWeatherIcon(item.am))
                                     .into(calendarItemView.iv_tide_state)
                             calendarItemView.iv_tide_state.visibility = View.VISIBLE
                         }
@@ -207,10 +217,10 @@ class FragmentCalendar : Fragment() {
                 is TideWeeklyModel -> {
                     Log.d(TAG, "Item instanceOf --> TideWeeklyModel")
                     item.am?.let {
-                        val weatherIcon = getWeatherIcon(item?.am!!)
+                        val weatherIcon = getWeatherIcon(item.am!!)
                         if (weatherIcon != 0) {
                             Glide.with(context)
-                                    .load(getWeatherIcon(item?.am!!))
+                                    .load(getWeatherIcon(item.am!!))
                                     .into(calendarItemView.iv_tide_state)
                             calendarItemView.iv_tide_state.visibility = View.VISIBLE
                         }
@@ -293,21 +303,28 @@ class FragmentCalendar : Fragment() {
         return newDateTime.toCalendar(Locale.KOREA)
     }
 
+    private fun getCurrentDate() : String{
+        return DateTime().toString("yyyyMM")
+    }
+
     private fun setPrevDateByStateDependingOnView() {
         changeYearAndMonth(--mMonth)
         monthView.setDate(mMonth, mYear)
+        changingDate = changingDate.minusMonths(1)
         calendar_date.text = "$mYear.$mMonth"
     }
 
     private fun setNextDateByStateDependingOnView() {
         changeYearAndMonth(++mMonth)
         monthView.setDate(mMonth, mYear)
+        changingDate = changingDate.plusMonths(1)
         calendar_date.text = "$mYear.$mMonth"
     }
 
     private fun setDateByStateDependingOnView() {
         setStateByCalendar()
         monthView.setDate(mMonth, mYear)
+        changingDate = LocalDate.now()
         calendar_date.text = "$mYear.$mMonth"
     }
 
@@ -326,7 +343,7 @@ class FragmentCalendar : Fragment() {
     }
 
     companion object {
-        private val TAG = FragmentCalendar.javaClass.simpleName
+        private val TAG = FragmentCalendar::class.java.simpleName
         private val DAY_PARAMETER = "day"
         private val MONTH_PARAMETER = "month"
         private val YEAR_PARAMETER = "year"

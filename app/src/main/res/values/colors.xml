@@ -11,6 +11,7 @@
     <color name="colorInvertedText">#FFFFFF</color>
     <color name="colorBackground">#E4E4E4</color>
 
+    <color name="colorCurrentDayOnCalendar">#2196F3</color>
     <color name="colorCalendarDayBackground">#FFFFFF</color>
     <color name="colorCalendarDivider">#E7E7E7</color>
     <color name="currentDayBackground">#F0F4C3</color>

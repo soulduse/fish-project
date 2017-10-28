@@ -85,8 +85,6 @@ dependencies {
 
     compile 'gun0912.ted:tedpermission:2.0.3'
 
-    // Naver map Lib
-    compile 'com.naver.maps.open:naver-map-api:2.1.2@aar'
     compile 'com.google.android.gms:play-services-maps:11.4.0'
 
     // Ted Permission

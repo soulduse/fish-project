@@ -91,7 +91,6 @@ class FragmentMap : Fragment(),
 
     var permissionlistener: PermissionListener = object : PermissionListener {
         override fun onPermissionGranted() {
-            Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
             mMap.isMyLocationEnabled = false
         }
 
