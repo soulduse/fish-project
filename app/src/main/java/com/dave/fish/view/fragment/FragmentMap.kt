@@ -2,10 +2,10 @@ package com.dave.fish.view.fragment
 
 import android.Manifest
 import android.content.Intent
-import android.location.Location
+import android.location.Geocoder
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,21 +15,18 @@ import com.dave.fish.db.RealmController
 import com.dave.fish.model.realm.SpinnerSecondModel
 import com.dave.fish.view.activity.DetailMapActivity
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.GoogleMap.OnMyLocationButtonClickListener
-import com.google.android.gms.maps.GoogleMap.OnMyLocationClickListener
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import io.realm.Realm
+import kotlinx.android.synthetic.main.fragment_menu_two.*
 import java.util.*
-
 
 /**
  * Created by soul on 2017. 8. 27..
  */
-class FragmentMap : Fragment(), OnMyLocationButtonClickListener,
-        OnMyLocationClickListener,
+class FragmentMap : Fragment(),
         OnMapReadyCallback{
 
     private val realm : Realm = Realm.getDefaultInstance()
@@ -56,6 +53,18 @@ class FragmentMap : Fragment(), OnMyLocationButtonClickListener,
         mapview.onCreate(savedInstanceState)
         mapview.onResume()
         mapview.getMapAsync(this)
+
+        val geocoder = Geocoder(context)
+        val locationList = geocoder.getFromLocation(selectedItem.obsLat, selectedItem.obsLon, 10)
+        locationList?.let {
+            val address = try{
+                locationList[0].getAddressLine(0).filterNot { c->"대한민국".contains(c) }
+            }catch (e : IndexOutOfBoundsException){
+                resources.getString(R.string.warning_empty_address)
+            }
+
+            tv_record_address.text = address
+        }
     }
 
     override fun onMapReady(map: GoogleMap) {
@@ -66,8 +75,6 @@ class FragmentMap : Fragment(), OnMyLocationButtonClickListener,
         mapUtil.isScrollGesturesEnabled = false
         mapUtil.isZoomGesturesEnabled = false
 
-        mMap.setOnMyLocationButtonClickListener(this)
-        mMap.setOnMyLocationClickListener(this)
         enableMyLocation()
         mMap.setMinZoomPreference(12.0f)
         mMap.setMaxZoomPreference(15.0f)
@@ -85,7 +92,7 @@ class FragmentMap : Fragment(), OnMyLocationButtonClickListener,
     var permissionlistener: PermissionListener = object : PermissionListener {
         override fun onPermissionGranted() {
             Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
-            mMap.isMyLocationEnabled = true
+            mMap.isMyLocationEnabled = false
         }
 
         override fun onPermissionDenied(deniedPermissions: ArrayList<String>?) {
@@ -102,13 +109,6 @@ class FragmentMap : Fragment(), OnMyLocationButtonClickListener,
                 .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
                 .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
                 .check()
-    }
-
-    override fun onMyLocationButtonClick(): Boolean {
-        return false
-    }
-
-    override fun onMyLocationClick(p0: Location) {
     }
 
     override fun onResume() {
