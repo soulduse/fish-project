@@ -33,6 +33,7 @@
 
         <activity android:name=".view.activity.TideDetailActivity"/>
         <activity android:name=".view.activity.DetailMapActivity"/>
+        <service android:name=".view.service.LocationService"/>
     </application>
 
 </manifest>

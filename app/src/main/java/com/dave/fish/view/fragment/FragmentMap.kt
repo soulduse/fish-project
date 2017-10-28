@@ -5,7 +5,6 @@ import android.content.Intent
 import android.location.Geocoder
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +13,7 @@ import com.dave.fish.R
 import com.dave.fish.db.RealmController
 import com.dave.fish.model.realm.SpinnerSecondModel
 import com.dave.fish.view.activity.DetailMapActivity
+import com.dave.fish.view.service.LocationService
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -58,12 +58,18 @@ class FragmentMap : Fragment(),
         val locationList = geocoder.getFromLocation(selectedItem.obsLat, selectedItem.obsLon, 10)
         locationList?.let {
             val address = try{
-                locationList[0].getAddressLine(0).filterNot { c->"대한민국".contains(c) }
+                locationList[0].getAddressLine(0).filterNot { c->resources.getString(R.string.korea).contains(c) }
             }catch (e : IndexOutOfBoundsException){
                 resources.getString(R.string.warning_empty_address)
             }
 
             tv_record_address.text = address
+        }
+
+        btn_start_record.setOnClickListener {
+            val intentService = Intent(activity, LocationService::class.java)
+            activity.startService(intentService)
+            Toast.makeText(activity, "서비스 시작", Toast.LENGTH_LONG).show()
         }
     }
 
