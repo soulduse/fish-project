@@ -85,7 +85,8 @@ dependencies {
 
     compile 'gun0912.ted:tedpermission:2.0.3'
 
-    compile 'com.google.android.gms:play-services-maps:11.4.0'
+    compile 'com.google.android.gms:play-services-maps:11.4.2'
+    compile 'com.google.android.gms:play-services-location:11.4.2'
 
     // Ted Permission
     compile 'gun0912.ted:tedpermission:2.0.3'

@@ -67,15 +67,19 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
     override fun onMapReady(map: GoogleMap) {
         mMap = map
         val mLatLng = LatLng(lat, lon)
-        mMap.setOnMyLocationButtonClickListener(this)
-        mMap.setOnMyLocationClickListener(this)
+        mMap?.run {
+            setOnMyLocationButtonClickListener(this@GoogleMapUtil)
+            setOnMyLocationClickListener(this@GoogleMapUtil)
+            setMinZoomPreference(7.0f)
+            setMaxZoomPreference(17.0f)
+            addMarker(MarkerOptions().position(mLatLng))
+            moveCamera(CameraUpdateFactory.newLatLng(mLatLng))
+            moveCamera(CameraUpdateFactory.zoomTo(12.0f))
+        }
+
         enableMyLocation()
-        mMap.setMinZoomPreference(7.0f)
-        mMap.setMaxZoomPreference(17.0f)
-        mMap.addMarker(MarkerOptions().position(mLatLng))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(mLatLng))
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(12.0f))
     }
+
 
     private object Holder {
         val INSTANCE = GoogleMapUtil()
