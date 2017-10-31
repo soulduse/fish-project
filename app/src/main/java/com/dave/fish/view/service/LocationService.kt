@@ -10,7 +10,12 @@ import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.gms.common.api.GoogleApiActivity
+import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
 
 /**
  * Created by soul on 2017. 10. 29..
@@ -19,6 +24,7 @@ class LocationService : Service() {
 
     private lateinit var locationManager: LocationManager
     private lateinit var mLocationRequest: LocationRequest
+    private lateinit var mGoogleApiClient : GoogleApiClient
 
     override fun onCreate() {
         super.onCreate()
@@ -66,6 +72,33 @@ class LocationService : Service() {
             smallestDisplacement = SMALLEST_DISPLACEMENT //added
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
+    }
+
+    private fun isGooglePlayServicesAvailable() : Boolean{
+        val code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(applicationContext)
+        return code == ConnectionResult.SUCCESS
+    }
+
+    private fun setGoogleApi(){
+        mGoogleApiClient = GoogleApiClient.Builder(applicationContext)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(connectionCallbacks)
+                .addOnConnectionFailedListener(connectionFailedListener)
+                .build()
+    }
+
+    private val connectionCallbacks = object : GoogleApiClient.ConnectionCallbacks{
+        override fun onConnected(p0: Bundle?) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onConnectionSuspended(p0: Int) {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+    }
+
+    private val connectionFailedListener = GoogleApiClient.OnConnectionFailedListener {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     companion object {
