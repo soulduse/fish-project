@@ -6,6 +6,10 @@ import com.dave.fish.R
 import com.dave.fish.view.util.GoogleMapUtil
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PolylineOptions
+
+
 
 /**
  * Created by soul on 2017. 10. 26..
@@ -23,6 +27,10 @@ class DetailMapActivity : AppCompatActivity() {
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map_detail) as SupportMapFragment
         GoogleMapUtil.instance.initMap(mapFragment, lat, lon)
+
+
+
+
     }
 
 //    override fun onMapReady(map: GoogleMap) {
