@@ -14,8 +14,11 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.GoogleApiActivity
 import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.common.api.PendingResult
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.LocationSettingsResult
 
 /**
  * Created by soul on 2017. 10. 29..
@@ -86,6 +89,15 @@ class LocationService : Service() {
                 .addOnConnectionFailedListener(connectionFailedListener)
                 .build()
     }
+
+
+    private fun locationSetting(){
+        val builder : LocationSettingsRequest.Builder = LocationSettingsRequest.Builder().addLocationRequest(mLocationRequest)
+        builder.setAlwaysShow(true)
+//        val result : PendingResult
+    }
+
+
 
     private val connectionCallbacks = object : GoogleApiClient.ConnectionCallbacks{
         override fun onConnected(p0: Bundle?) {
