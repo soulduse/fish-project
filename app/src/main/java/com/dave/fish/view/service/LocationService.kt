@@ -15,6 +15,7 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.GoogleApiActivity
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.PendingResult
+import com.google.android.gms.common.api.ResultCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
@@ -95,9 +96,41 @@ class LocationService : Service() {
         val builder : LocationSettingsRequest.Builder = LocationSettingsRequest.Builder().addLocationRequest(mLocationRequest)
         builder.setAlwaysShow(true)
 //        val result : PendingResult
+
+        val result = LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build())
+        result?.setResultCallback(object : ResultCallback<LocationSettingsResult> {
+            override fun onResult(p0: LocationSettingsResult) {
+//                listener.onResult(locationSettingsResult)
+            }
+        })
     }
 
 
+    /*
+    private LocationSetListener locationSettingsListener = new LocationSetListener() {
+        @Override
+        public void onResult(LocationSettingsResult locationSettingsResult) {
+            final Status status = locationSettingsResult.getStatus();
+            switch (status.getStatusCode()) {
+                case LocationSettingsStatusCodes.SUCCESS:
+                GpsManager.getInstance().startLocationUpdates();
+                break;
+                case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                try {
+                    if (status.hasResolution()) {
+                        status.startResolutionForResult(activity, 1000);
+                    }
+                } catch (IntentSender.SendIntentException e) {
+
+            }
+                break;
+                case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                ToastUtil.getInstance().show("unavailiable");
+                break;
+            }
+        }
+    }
+    */
 
     private val connectionCallbacks = object : GoogleApiClient.ConnectionCallbacks{
         override fun onConnected(p0: Bundle?) {
