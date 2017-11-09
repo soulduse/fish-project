@@ -107,6 +107,8 @@ class FragmentCalendar : Fragment() {
             val minDayOfMonth = getDateForState().dayOfMonth().withMinimumValue()
             val maxDayOfMonth = getDateForState().dayOfMonth().withMaximumValue()
 
+            Log.d(TAG, "minDayOfMonth --> $minDayOfMonth, maxDayOfMonth --> $maxDayOfMonth")
+
             initData(postId, minDayOfMonth)
             initData(postId, minDayOfMonth.plusDays(7))
             initData(postId, minDayOfMonth.plusDays(14))
