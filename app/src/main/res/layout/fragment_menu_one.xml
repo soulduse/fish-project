@@ -39,6 +39,7 @@
 
         <TextView
             android:id="@+id/tv_prev_month"
+            android:background="?selectableItemBackgroundBorderless"
             android:layout_width="0dp"
             android:layout_height="@dimen/fragment_one_text_height"
             android:layout_weight="1"
@@ -49,16 +50,18 @@
 
         <TextView
             android:id="@+id/tv_current_month"
+            android:background="?selectableItemBackgroundBorderless"
             android:layout_width="0dp"
             android:layout_height="@dimen/fragment_one_text_height"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="오늘"
+            android:text="이번달"
             android:textSize="@dimen/fragment_one_text_size"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tv_next_month"
+            android:background="?selectableItemBackgroundBorderless"
             android:layout_width="0dp"
             android:layout_height="@dimen/fragment_one_text_height"
             android:layout_weight="1"
