@@ -81,7 +81,7 @@ class FragmentMap : Fragment(),
         mapUtil.isScrollGesturesEnabled = false
         mapUtil.isZoomGesturesEnabled = false
 
-        enableMyLocation()
+//        enableMyLocation()
         mMap.setMinZoomPreference(12.0f)
         mMap.setMaxZoomPreference(15.0f)
         mMap.addMarker(MarkerOptions().position(mLatLng).title(selectedItem.obsPostName))

@@ -94,12 +94,10 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
         public ViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            Log.w("ViewHolder 들어옴", "초기화 완료");
         }
 
         @Override
         public void onClick(View v) {
-            Log.w("Listener!!", "click View -- "+v.toString());
             adapter.setSelected(getAdapterPosition());
         }
     }

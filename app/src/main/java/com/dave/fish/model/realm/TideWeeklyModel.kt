@@ -26,6 +26,6 @@ open class TideWeeklyModel : RealmObject() {
     var mool7: String = ""
     var mool8: String = ""
     var temp: String = ""
-    var am: String ?= ""
-    var weatherChar: String ?= ""
+    var am: String = ""
+    var weatherChar: String = ""
 }

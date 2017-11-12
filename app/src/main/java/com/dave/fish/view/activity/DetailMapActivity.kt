@@ -6,9 +6,6 @@ import com.dave.fish.R
 import com.dave.fish.view.util.GoogleMapUtil
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.PolylineOptions
-
 
 
 /**

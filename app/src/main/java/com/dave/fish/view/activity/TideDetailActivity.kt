@@ -46,14 +46,14 @@ class TideDetailActivity : AppCompatActivity() {
 
     private fun initData() {
         val secondSpinnerItem = mRealmController.findSelectedSecondModel(realm)
-        val postId = secondSpinnerItem?.obsPostId
-        val postName = secondSpinnerItem?.obsPostName
+        val postId = secondSpinnerItem.obsPostId
+        val postName = secondSpinnerItem.obsPostName
 
         val selectedDate = intent.getStringExtra(Global.INTENT_DATE)
         val key = postName + "_" + selectedDate
         Log.w(TAG, "What is key --> $key")
 
-        postId?.let {
+        postId.let {
             val weatherAndWave = RetrofitController.instance.getWeatherAndWave(postId, DateTime(selectedDate))
             weatherAndWave.subscribe { response ->
                 val longDataList = response.long
