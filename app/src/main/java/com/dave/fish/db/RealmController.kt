@@ -7,6 +7,7 @@ import com.dave.fish.model.realm.SpinnerSecondModel
 import com.dave.fish.model.realm.SelectItemModel
 import com.dave.fish.model.realm.TideWeeklyModel
 import com.dave.fish.model.retrofit.WeeklyModel
+import com.dave.fish.util.DLog
 import com.dave.fish.util.DateUtil
 import io.realm.Realm
 import io.realm.RealmResults
@@ -18,7 +19,7 @@ import org.joda.time.DateTime
  */
 class RealmController {
 
-    private lateinit var realmListener: RealmListener
+    private var realmListener: RealmListener ?= null
 
     fun setSpinner(realm: Realm, dataMap: Map<String, List<GisModel.Data>>) {
         realm.executeTransactionAsync({ db ->
@@ -39,7 +40,7 @@ class RealmController {
             }
         }, {
             // 트랜잭션이 성공하였습니다.
-            realmListener.onSpinnerSuccess()
+            realmListener?.onSpinnerSuccess()
         }, {
             // 트랜잭션이 실패했고 자동으로 취소되었습니다.
         })
@@ -51,9 +52,9 @@ class RealmController {
                 .findFirst().secondSpinnerItems?.map { it.obsPostName }
     }
 
-    fun setSelectedSpinnerItem(realm: Realm, key: String, postName: String, position1: Int, position2: Int) {
-        realm.executeTransactionAsync({ bgRealm ->
-            var selectedItem = bgRealm.where(SelectItemModel::class.java).findFirst()
+    fun initSelectedSpinnerItem(realm: Realm, key: String, postName: String, position1: Int, position2: Int){
+        realm.executeTransaction{ bgRealm ->
+            val selectedItem = bgRealm.where(SelectItemModel::class.java).findFirst()
             if (null == selectedItem) {
                 bgRealm.createObject(SelectItemModel::class.java).apply {
                     doNm = key
@@ -61,18 +62,24 @@ class RealmController {
                     this.firstPosition = position1
                     this.secondPosition = position2
                 }
-            } else {
-                selectedItem.run {
-                    doNm = key
-                    this.postName = postName
-                    this.firstPosition = position1
-                    this.secondPosition = position2
-                }
             }
+        }
+    }
+
+    fun setSelectedSpinnerItem(realm: Realm, key: String, postName: String, position1: Int, position2: Int) {
+        realm.executeTransactionAsync({ bgRealm ->
+            val selectedItem = bgRealm.where(SelectItemModel::class.java).findFirst()
+            selectedItem.run {
+                doNm = key
+                this.postName = postName
+                this.firstPosition = position1
+                this.secondPosition = position2
+            }
+
             Log.d(TAG, "selectedItem --> $selectedItem")
         }, {
             // 트랜잭션이 성공하였습니다.
-            realmListener.onTransactionSuccess()
+            realmListener?.onTransactionSuccess()
         }) {
             // 트랜잭션이 실패했고 자동으로 취소되었습니다.
         }
@@ -83,9 +90,9 @@ class RealmController {
         return findByPostName(realm, selectedItem.doNm, selectedItem.postName)
     }
 
-    fun findSelectedSpinnerItem(realm: Realm): SelectItemModel? {
+    fun findSelectedSpinnerItem(realm: Realm): SelectItemModel {
         return realm.where(SelectItemModel::class.java)
-                ?.findFirst()
+                .findFirst()
     }
 
     fun getSpinnerItems(realm: Realm): List<String> {
@@ -99,64 +106,96 @@ class RealmController {
                 .secondSpinnerItems.first { second -> second.obsPostName == postName }
     }
 
+    private fun createTideWeekly(realm: Realm, weeklyData: WeeklyModel.WeeklyData, postId: String){
+        realm.executeTransactionAsync { db ->
+            db.createObject(TideWeeklyModel::class.java, weeklyData.obsPostName + "_" + weeklyData.searchDate).apply {
+                this.postId = postId
+                this.am = weeklyData.am
+                this.dateMoon = weeklyData.dateMoon
+                this.dateSun = weeklyData.dateSun
+                this.flgView = weeklyData.flgView
+                this.lvl1 = weeklyData.lvl1
+                this.lvl2 = weeklyData.lvl2
+                this.lvl3 = weeklyData.lvl3
+                this.lvl4 = weeklyData.lvl4
+                this.mool7 = weeklyData.mool7
+                this.mool8 = weeklyData.mool8
+                this.moolNormal = weeklyData.moolNormal
+                this.obsPostName = weeklyData.obsPostName
+                this.obsLat = weeklyData.obsLat
+                this.obsLon = weeklyData.obsLon
+                this.searchDate = DateTime(weeklyData.searchDate).toDate()
+                this.temp = weeklyData.temp
+                this.weatherChar = weeklyData.weatherChar
+            }
+        }
+    }
+
+    private fun insertTideWeekly(realm: Realm, weeklyData: WeeklyModel.WeeklyData, postId: String){
+        realm.executeTransactionAsync { db ->
+            val tideWeeklyModel = TideWeeklyModel()
+            tideWeeklyModel.key = weeklyData.obsPostName + "_" + weeklyData.searchDate
+            tideWeeklyModel.postId = postId
+            tideWeeklyModel.dateMoon = weeklyData.dateMoon
+            tideWeeklyModel.dateSun = weeklyData.dateSun
+            tideWeeklyModel.flgView = weeklyData.flgView
+            tideWeeklyModel.lvl1 = weeklyData.lvl1
+            tideWeeklyModel.lvl2 = weeklyData.lvl2
+            tideWeeklyModel.lvl3 = weeklyData.lvl3
+            tideWeeklyModel.lvl4 = weeklyData.lvl4
+            tideWeeklyModel.mool7 = weeklyData.mool7
+            tideWeeklyModel.mool8 = weeklyData.mool8
+            tideWeeklyModel.moolNormal = weeklyData.moolNormal
+            tideWeeklyModel.obsPostName = weeklyData.obsPostName
+            tideWeeklyModel.obsLat = weeklyData.obsLat
+            tideWeeklyModel.obsLon = weeklyData.obsLon
+            tideWeeklyModel.searchDate = DateTime(weeklyData.searchDate).toDate()
+            tideWeeklyModel.temp = weeklyData.temp
+            tideWeeklyModel?.am = weeklyData?.am
+            tideWeeklyModel?.weatherChar = weeklyData?.weatherChar
+            db.insertOrUpdate(tideWeeklyModel)
+        }
+    }
+
+    private fun updateTideWeekly(realm: Realm, weeklyData: WeeklyModel.WeeklyData, postId: String){
+        val tideWeeklyModel = findTideWeekly(realm, weeklyData.obsPostName + "_" + weeklyData.searchDate)
+        realm.executeTransaction { db ->
+            tideWeeklyModel.postId = postId
+            tideWeeklyModel.dateMoon = weeklyData.dateMoon
+            tideWeeklyModel.dateSun = weeklyData.dateSun
+            tideWeeklyModel.flgView = weeklyData.flgView
+            tideWeeklyModel.lvl1 = weeklyData.lvl1
+            tideWeeklyModel.lvl2 = weeklyData.lvl2
+            tideWeeklyModel.lvl3 = weeklyData.lvl3
+            tideWeeklyModel.lvl4 = weeklyData.lvl4
+            tideWeeklyModel.mool7 = weeklyData.mool7
+            tideWeeklyModel.mool8 = weeklyData.mool8
+            tideWeeklyModel.moolNormal = weeklyData.moolNormal
+            tideWeeklyModel.obsPostName = weeklyData.obsPostName
+            tideWeeklyModel.obsLat = weeklyData.obsLat
+            tideWeeklyModel.obsLon = weeklyData.obsLon
+            tideWeeklyModel.searchDate = DateTime(weeklyData.searchDate).toDate()
+            tideWeeklyModel.temp = weeklyData.temp
+            tideWeeklyModel?.am = weeklyData?.am
+            tideWeeklyModel?.weatherChar = weeklyData?.weatherChar
+        }
+    }
+
     fun setTideWeekly(realm: Realm, weeklyData: WeeklyModel.WeeklyData, postId: String) {
         if (findSizeOfTideWeekly(realm) > 0) {
-            realm.executeTransactionAsync { db ->
-                val tideWeeklyModel = TideWeeklyModel()
-                tideWeeklyModel.key = weeklyData.obsPostName + "_" + weeklyData.searchDate
-                tideWeeklyModel.postId = postId
-                tideWeeklyModel.dateMoon = weeklyData.dateMoon
-                tideWeeklyModel.dateSun = weeklyData.dateSun
-                tideWeeklyModel.flgView = weeklyData.flgView
-                tideWeeklyModel.lvl1 = weeklyData.lvl1
-                tideWeeklyModel.lvl2 = weeklyData.lvl2
-                tideWeeklyModel.lvl3 = weeklyData.lvl3
-                tideWeeklyModel.lvl4 = weeklyData.lvl4
-                tideWeeklyModel.mool7 = weeklyData.mool7
-                tideWeeklyModel.mool8 = weeklyData.mool8
-                tideWeeklyModel.moolNormal = weeklyData.moolNormal
-                tideWeeklyModel.obsPostName = weeklyData.obsPostName
-                tideWeeklyModel.obsLat = weeklyData.obsLat
-                tideWeeklyModel.obsLon = weeklyData.obsLon
-                tideWeeklyModel.searchDate = DateTime(weeklyData.searchDate).toDate()
-                tideWeeklyModel.temp = weeklyData.temp
-                tideWeeklyModel?.am = weeklyData?.am
-                tideWeeklyModel?.weatherChar = weeklyData?.weatherChar
-                db.insertOrUpdate(tideWeeklyModel)
+            try{
+                updateTideWeekly(realm, weeklyData, postId)
+            }catch (e: Exception){
+                insertTideWeekly(realm, weeklyData, postId)
             }
         } else {
-            realm.executeTransactionAsync { db ->
-                db.createObject(TideWeeklyModel::class.java, weeklyData.obsPostName + "_" + weeklyData.searchDate).apply {
-                    this.postId = postId
-                    this.am = weeklyData.am
-                    this.dateMoon = weeklyData.dateMoon
-                    this.dateSun = weeklyData.dateSun
-                    this.flgView = weeklyData.flgView
-                    this.lvl1 = weeklyData.lvl1
-                    this.lvl2 = weeklyData.lvl2
-                    this.lvl3 = weeklyData.lvl3
-                    this.lvl4 = weeklyData.lvl4
-                    this.mool7 = weeklyData.mool7
-                    this.mool8 = weeklyData.mool8
-                    this.moolNormal = weeklyData.moolNormal
-                    this.obsPostName = weeklyData.obsPostName
-                    this.obsLat = weeklyData.obsLat
-                    this.obsLon = weeklyData.obsLon
-                    this.searchDate = DateTime(weeklyData.searchDate).toDate()
-                    this.temp = weeklyData.temp
-                    this.weatherChar = weeklyData.weatherChar
-                }
-            }
+            createTideWeekly(realm, weeklyData, postId)
         }
     }
 
     fun findTideMonth(realm : Realm, postId: String, date: DateTime) : RealmResults<TideWeeklyModel>{
         val from = date.dayOfMonth().withMinimumValue().toDate()
-        var to = date.dayOfMonth().withMaximumValue().toDate()
-
-        if(DateUtil.equalsDateWithCurrentDate(date)){
-            to = date.minusDays(1).toDate()
-        }
+        val to = date.dayOfMonth().withMaximumValue().toDate()
 
         return realm.where(TideWeeklyModel::class.java)
                 .between("searchDate"
@@ -182,7 +221,7 @@ class RealmController {
         return realm.where(TideWeeklyModel::class.java).findAll().size
     }
 
-    fun setListener(realmListener: RealmListener) {
+    fun setListener(realmListener: RealmListener?) {
         this.realmListener = realmListener
     }
 
