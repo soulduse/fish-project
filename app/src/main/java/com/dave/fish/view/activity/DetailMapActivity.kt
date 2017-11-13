@@ -1,7 +1,5 @@
 package com.dave.fish.view.activity
 
-import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import com.dave.fish.R
 import com.dave.fish.view.util.GoogleMapUtil
 import com.google.android.gms.maps.GoogleMap
@@ -11,22 +9,22 @@ import com.google.android.gms.maps.SupportMapFragment
 /**
  * Created by soul on 2017. 10. 26..
  */
-class DetailMapActivity : AppCompatActivity() {
-
+class DetailMapActivity : BaseActivity()
+{
     private lateinit var mMap: GoogleMap
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_map_detail)
+    override fun getContentId(): Int = R.layout.activity_map_detail
 
+    override fun onLoadStart() {
         val lat = intent.getDoubleExtra("lat", 0.0)
         val lon = intent.getDoubleExtra("lon", 0.0)
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map_detail) as SupportMapFragment
         GoogleMapUtil.instance.initMap(mapFragment, lat, lon)
 
+    }
 
-
+    override fun onLoadContent() {
 
     }
 

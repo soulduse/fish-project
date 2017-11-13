@@ -1,14 +1,13 @@
 package com.dave.fish.view.activity
 
 import android.graphics.drawable.Drawable
-import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
+import android.support.design.widget.AppBarLayout
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
+import android.support.v4.view.ViewPager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -18,39 +17,70 @@ import com.dave.fish.R
 import com.dave.fish.db.RealmController
 import com.dave.fish.db.RealmListener
 import com.dave.fish.model.realm.SelectItemModel
-import com.dave.fish.network.RetrofitController
 import com.dave.fish.view.adapter.ViewPagerAdapter
 import com.dave.fish.view.fragment.FragmentCalendar
 import com.dave.fish.view.fragment.FragmentMap
-import com.dave.fish.view.menu.*
+import com.dave.fish.view.menu.DrawerAdapter
+import com.dave.fish.view.menu.MenuDrawer
+import com.dave.fish.view.menu.SimpleItem
+import com.dave.fish.view.menu.SpaceItem
 import com.yarolegovich.slidingrootnav.SlidingRootNav
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder
-import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
-    private lateinit var realm: Realm
+class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
+
     private lateinit var mRealmController : RealmController
     private var firstSpinnerPosition = 0
-    private var selectedSpinner : SelectItemModel?= null
+    private var selectedSpinner : SelectItemModel = SelectItemModel()
 
     private var screenTitles: Array<String> = arrayOf()
     private var screenIcons: Array<Drawable?> = arrayOf()
 
     private lateinit var slidingRootNav: SlidingRootNav
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+    private lateinit var toolbarParams :AppBarLayout.LayoutParams
+    private lateinit var toolbarLayoutParams : AppBarLayout.LayoutParams
+
+    private lateinit var fragmentCalendar : FragmentCalendar
+    private lateinit var fragmentMap : FragmentMap
+
+    override fun getContentId(): Int = R.layout.activity_main
+
+    override fun onLoadStart() {
         init()
     }
 
+    override fun onLoadContent() {
+    }
+
     private fun init(){
-        initSlidingMenu()
         initRealm()
+        initFragments()
+        initView()
+    }
+
+    private fun initRealm() {
+        mRealmController = RealmController.instance
+        mRealmController.setListener(realmListener)
+    }
+
+    private fun initFragments() {
+        fragmentCalendar = FragmentCalendar()
+        fragmentMap = FragmentMap()
+    }
+
+    private fun initView(){
+        initToolbar()
+        initSlidingMenu()
         initSpinner()
         initViewPager()
+    }
+
+    private fun initToolbar(){
+        setSupportActionBar(toolbar)
+        toolbarParams = toolbar.layoutParams as AppBarLayout.LayoutParams
+        toolbarLayoutParams = toolbar_layout.layoutParams as AppBarLayout.LayoutParams
     }
 
     private fun initSlidingMenu(){
@@ -88,6 +118,38 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
         menuAdapter.setSelected(MenuDrawer.INFO.position)
     }
 
+    private fun initSpinner() {
+        spinner_loc.onItemSelectedListener = spinnerListener
+        spinner_map.onItemSelectedListener = spinnerListener
+
+        setSpinnerAdapter(spinner_loc, mRealmController.getSpinnerItems(realm))
+        selectedSpinner = mRealmController.findSelectedSpinnerItem(realm)
+        spinner_loc.setSelection(selectedSpinner.firstPosition, false)
+    }
+
+    private fun initViewPager() {
+        main_viewpager.addOnPageChangeListener(object: ViewPager.OnPageChangeListener{
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                when(position){
+                    PAGE_CALENDAR -> setScrollAble(true)
+                    PAGE_MAP_RECORD -> setScrollAble(false)
+                }
+            }
+        })
+        // 스크롤 되게 하기 위해 해당 값을 true 로 해줘야한다.
+        nest_scrollview.isFillViewport = true
+        main_viewpager.adapter = ViewPagerAdapter(supportFragmentManager).apply {
+            addFragment(fragmentCalendar)
+            addFragment(fragmentMap)
+        }
+    }
+
     private fun createItemFor(position: Int): SimpleItem {
         return SimpleItem(screenIcons[position], screenTitles[position])
                 .withIconTint(color(R.color.textColorSecondary))
@@ -122,31 +184,43 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
         slidingRootNav.closeMenu()
 
         when(position){
-            in 0..1 -> main_viewpager.currentItem = position
+            PAGE_CALENDAR -> {
+//                setScrollAble(true)
+                main_viewpager.currentItem = position
+            }
+            PAGE_MAP_RECORD -> {
+//                setScrollAble(false)
+                main_viewpager.currentItem = position
+            }
             else -> Toast.makeText(applicationContext, "개발 진행중인 기능입니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun initRealm() {
-        realm = Realm.getDefaultInstance()
-        mRealmController = RealmController.instance
-        mRealmController.setListener(realmListener)
+    private fun setScrollAble(isAble : Boolean){
+        if(isAble){
+            fragmentCalendar.setVisibleNavigationCalendar(View.VISIBLE)
+            enableScroll()
+        }else{
+            fragmentCalendar.setVisibleNavigationCalendar(View.GONE)
+            unableScroll()
+        }
+
+        toolbar.requestLayout()
+        toolbar_layout.requestLayout()
     }
 
-    private fun initSpinner() {
-        if (isEmptyRealmSpinner()) {
-            initRealmForSpinner()
-        } else {
-            setSpinnerAdapter(spinner_loc, mRealmController.getSpinnerItems(realm))
-        }
+    private fun unableScroll(){
+        toolbarParams.scrollFlags = 0
+        toolbarLayoutParams.scrollFlags = 0
+    }
 
-        spinner_loc.onItemSelectedListener = spinnerListener
-        spinner_map.onItemSelectedListener = spinnerListener
-
-        selectedSpinner = mRealmController.findSelectedSpinnerItem(realm)
-        selectedSpinner?.let {
-            spinner_loc.setSelection(selectedSpinner?.firstPosition!!)
-        }
+    private fun enableScroll(){
+        toolbarParams.scrollFlags =
+                AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
+                AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+        toolbarLayoutParams.scrollFlags =
+                AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
+                AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
     }
 
     private fun setSpinnerAdapter(spinner : Spinner, items : List<String>){
@@ -155,17 +229,9 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
         spinner.adapter = spinnerArrayAdapter
     }
 
-    private fun initViewPager() {
-        // 스크롤 되게 하기 위해 해당 값을 true 로 해줘야한다.
-        nest_scrollview.isFillViewport = true
-        main_viewpager.adapter = ViewPagerAdapter(supportFragmentManager).apply {
-            addFragment(FragmentCalendar())
-            addFragment(FragmentMap())
-        }
-    }
-
     var spinnerListener = object : AdapterView.OnItemSelectedListener{
         override fun onNothingSelected(p0: AdapterView<*>?) {
+
         }
 
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
@@ -175,9 +241,9 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
                 spinner_loc ->{
                     setSpinnerAdapter(spinner_map, mRealmController.getSelectedSpinnerItem(realm, spinner_loc.selectedItem.toString())!!)
                     firstSpinnerPosition = pos
-                    selectedSpinner?.let {
-                        if(selectedSpinner?.doNm == spinner_loc.selectedItem.toString()){
-                            spinner_map.setSelection(selectedSpinner?.secondPosition!!)
+                    selectedSpinner.let {
+                        if(selectedSpinner.doNm == spinner_loc.selectedItem.toString()){
+                            spinner_map.setSelection(selectedSpinner.secondPosition)
                         }else{
                             spinner_map.setSelection(0)
                         }
@@ -198,39 +264,6 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
         }
     }
 
-    private fun isEmptyRealmSpinner(): Boolean {
-        if (mRealmController.getSpinnerItems(realm).isEmpty()) {
-            return true
-        }
-
-        return false
-    }
-
-    private fun initRealmForSpinner() {
-        RetrofitController
-                .instance
-                .getGisData()
-                .subscribe({ gisModel ->
-                    var dataList = gisModel.data
-                    var gisMap = dataList?.let {
-                        dataList.groupBy {
-                            it.doNm
-                        }
-                    }
-
-                    Log.d(TAG, """
-                            map data -->
-                            size : ${gisMap?.size}"
-                            keys : ${gisMap?.keys}"
-                            values : ${gisMap?.values}"
-                            """)
-                    mRealmController.setSpinner(realm, gisMap!!)
-
-                }, { e ->
-                    Log.e(TAG, "result API response ===> error ${e.localizedMessage}")
-                })
-    }
-
     private val realmListener = object : RealmListener{
         override fun onSpinnerSuccess() {
             setSpinnerAdapter(spinner_loc, RealmController.instance.getSpinnerItems(realm))
@@ -247,5 +280,7 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
     companion object {
         private val TAG = MainActivity.javaClass.simpleName
         private var firstExecute = true
+        private val PAGE_CALENDAR = 0
+        private val PAGE_MAP_RECORD = 1
     }
 }

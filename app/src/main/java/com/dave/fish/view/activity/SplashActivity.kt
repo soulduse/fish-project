@@ -1,36 +1,31 @@
 package com.dave.fish.view.activity
 
-import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.content.Intent
 import com.dave.fish.db.RealmController
 import com.dave.fish.db.RealmListener
 import com.dave.fish.network.RetrofitController
 import com.dave.fish.util.DLog
-import io.realm.Realm
-import kotlinx.android.synthetic.main.activity_main.*
-
 
 /**
  * Created by soul on 2017. 11. 10..
  */
-class SplashActivity : AppCompatActivity(){
+class SplashActivity : BaseActivity(){
 
-    private lateinit var realm: Realm
     private lateinit var mRealmController : RealmController
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        init()
+    override fun getContentId(): Int {
+        return 0
     }
 
-    private fun init(){
+    override fun onLoadStart() {
         initRealm()
+    }
+
+    override fun onLoadContent() {
         initSpinnerData()
     }
 
     private fun initRealm() {
-        realm = Realm.getDefaultInstance()
         mRealmController = RealmController.instance
         mRealmController.setListener(realmListener)
     }

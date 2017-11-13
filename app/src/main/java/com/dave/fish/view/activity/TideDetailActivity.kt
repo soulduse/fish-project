@@ -1,7 +1,5 @@
 package com.dave.fish.view.activity
 
-import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.dave.fish.R
 import com.dave.fish.db.RealmController
@@ -9,15 +7,13 @@ import com.dave.fish.model.realm.TideWeeklyModel
 import com.dave.fish.model.retrofit.ForecastSpaceData
 import com.dave.fish.network.RetrofitController
 import com.dave.fish.util.*
-import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_tide_detail.*
 import org.joda.time.DateTime
 
 /**
  * Created by soul on 2017. 10. 3..
  */
-class TideDetailActivity : AppCompatActivity() {
-    private val realm: Realm = Realm.getDefaultInstance()
+class TideDetailActivity : BaseActivity() {
 
     private val mRealmController: RealmController = RealmController.instance
     private var tideWeeklyItem: TideWeeklyModel = TideWeeklyModel()
@@ -33,15 +29,16 @@ class TideDetailActivity : AppCompatActivity() {
     private var pmWaveMin = Double.MAX_VALUE
     private var pmWaveMax = Double.MIN_VALUE
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_tide_detail)
-        init()
+    override fun getContentId(): Int {
+        return R.layout.activity_tide_detail
     }
 
-    private fun init() {
-        initData()
+    override fun onLoadStart() {
         initLayout()
+    }
+
+    override fun onLoadContent() {
+        initData()
     }
 
     private fun initData() {
