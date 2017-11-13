@@ -4,10 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.location.Geocoder
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import com.dave.fish.R
 import com.dave.fish.db.RealmController
@@ -19,40 +15,32 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
-import io.realm.Realm
 import kotlinx.android.synthetic.main.fragment_menu_two.*
 import java.util.*
 
 /**
  * Created by soul on 2017. 8. 27..
  */
-class FragmentMap : Fragment(),
+class FragmentMap : BaseFragment(),
         OnMapReadyCallback{
 
-    private val realm : Realm = Realm.getDefaultInstance()
     private val mRealmController : RealmController = RealmController.instance
     private lateinit var selectedItem : SpinnerSecondModel
 
     private lateinit var mMap: GoogleMap
     var mapView: MapView? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun getContentId(): Int = R.layout.fragment_menu_two
+
+    override fun onLoadStart(savedInstanceState : Bundle?) {
         selectedItem = mRealmController.findSelectedSecondModel(realm)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         MapsInitializer.initialize(this.activity)
-        return inflater.inflate(R.layout.fragment_menu_two, container, false)
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val mapview = view.findViewById<MapView>(R.id.google_map_view)
-        mapview.isClickable = false
-        mapview.onCreate(savedInstanceState)
-        mapview.onResume()
-        mapview.getMapAsync(this)
+        val mapview = view?.findViewById<MapView>(R.id.google_map_view)
+        mapview?.isClickable = false
+        mapview?.onCreate(savedInstanceState)
+        mapview?.onResume()
+        mapview?.getMapAsync(this)
 
         val geocoder = Geocoder(context)
         val locationList = geocoder.getFromLocation(selectedItem.obsLat, selectedItem.obsLon, 10)
@@ -71,6 +59,10 @@ class FragmentMap : Fragment(),
             activity.startService(intentService)
             Toast.makeText(activity, "서비스 시작", Toast.LENGTH_LONG).show()
         }
+    }
+
+    override fun onLoadContent() {
+
     }
 
     override fun onMapReady(map: GoogleMap) {

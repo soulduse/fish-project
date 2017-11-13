@@ -34,11 +34,12 @@ class TideDetailActivity : BaseActivity() {
     }
 
     override fun onLoadStart() {
+        initData()
         initLayout()
     }
 
     override fun onLoadContent() {
-        initData()
+        
     }
 
     private fun initData() {
