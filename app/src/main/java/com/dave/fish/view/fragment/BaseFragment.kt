@@ -12,9 +12,10 @@ import io.realm.Realm
  */
 abstract class BaseFragment : Fragment() {
 
-    protected val realm : Realm = Realm.getDefaultInstance()
+    protected lateinit var realm : Realm
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        realm = Realm.getDefaultInstance()
         return inflater.inflate(getContentId(), container, false)
     }
 
@@ -24,9 +25,9 @@ abstract class BaseFragment : Fragment() {
         onLoadContent()
     }
 
-    override fun onStop() {
+    override fun onDestroyView() {
         realm.close()
-        super.onStop()
+        super.onDestroyView()
     }
 
     abstract fun getContentId(): Int

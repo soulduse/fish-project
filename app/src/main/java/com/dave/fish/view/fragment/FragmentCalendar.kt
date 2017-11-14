@@ -126,7 +126,7 @@ class FragmentCalendar : BaseFragment() {
         setDateByStateDependingOnView()
     }
 
-    fun onMoveCalendar() {
+    private fun onMoveCalendar() {
         tv_prev_month.setOnClickListener {
             setPrevDateByStateDependingOnView()
             refreshCalendar()
@@ -153,8 +153,6 @@ class FragmentCalendar : BaseFragment() {
     }
 
     private fun requestMonthData(postId: String, dateTime: DateTime){
-        DLog.w("request Month data --> ${dateTime.toString("yy-MM-dd")}")
-
         RetrofitController
                 .instance
                 .getWeeklyData(postId, dateTime)

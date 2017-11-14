@@ -11,10 +11,12 @@ import io.realm.Realm
  */
 abstract class BaseActivity : AppCompatActivity() {
 
-    protected val realm : Realm = Realm.getDefaultInstance()
+    protected lateinit var realm : Realm
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        realm = Realm.getDefaultInstance()
+        
         val contentId = getContentId()
         if(contentId != 0){
             setContentView(contentId)
