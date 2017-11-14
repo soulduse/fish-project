@@ -94,7 +94,6 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
                 .withMenuOpened(true)
                 .inject()
 
-
         screenIcons = loadScreenIcons()
         screenTitles = loadScreenTitles()
 
@@ -184,12 +183,7 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         slidingRootNav.closeMenu()
 
         when(position){
-            PAGE_CALENDAR -> {
-//                setScrollAble(true)
-                main_viewpager.currentItem = position
-            }
-            PAGE_MAP_RECORD -> {
-//                setScrollAble(false)
+            in PAGE_CALENDAR .. PAGE_MAP_RECORD -> {
                 main_viewpager.currentItem = position
             }
             else -> Toast.makeText(applicationContext, "개발 진행중인 기능입니다.", Toast.LENGTH_SHORT).show()
@@ -274,6 +268,14 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
                 main_viewpager.adapter.notifyDataSetChanged()
             }
             firstExecute = false
+        }
+    }
+
+    override fun onBackPressed() {
+        if(slidingRootNav.isMenuClosed){
+            slidingRootNav.openMenu()
+        }else{
+            super.onBackPressed()
         }
     }
 
