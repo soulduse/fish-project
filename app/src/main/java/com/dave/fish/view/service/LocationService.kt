@@ -2,11 +2,9 @@ package com.dave.fish.view.service
 
 import android.annotation.SuppressLint
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
+import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
 import android.os.Looper
@@ -19,6 +17,15 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
+import java.text.DateFormat
+import java.util.*
+import com.google.android.gms.location.LocationRequest
+import android.R.attr.priority
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.LocationSettingsStatusCodes
+import android.content.IntentSender
+import com.google.android.gms.common.api.ResolvableApiException
+
 
 
 /**
@@ -26,84 +33,111 @@ import com.google.android.gms.location.LocationServices.getFusedLocationProvider
  */
 class LocationService : Service() {
 
-    private lateinit var mLocationRequest: LocationRequest
-    private lateinit var mGoogleApiClient : GoogleApiClient
     private lateinit var mFusedLocationClient : FusedLocationProviderClient
-    var mCurrentLocation: Location? = null
+    private lateinit var mSettingsClient : SettingsClient
+    private lateinit var locationCallback: LocationCallback
+    private lateinit var mLocationRequest: LocationRequest
+    private lateinit var mLocationSettingsRequest : LocationSettingsRequest
+    private lateinit var mGoogleApiClient : GoogleApiClient
+    private lateinit var mLocation: Location
+
+    private var requestingLocationUpdates = false
+    private var lastUpdateTime = ""
+    private var textLog = ""
+    private var priority = 0
+    // Binder given to clients
+    private val mBinder = LocalBinder()
+
+    inner class LocalBinder : Binder(){
+        fun getService() : LocationService{
+            return this@LocationService
+        }
+    }
+
+    override fun onBind(intent: Intent?): IBinder? = mBinder
 
     @SuppressLint("MissingPermission")
     override fun onCreate() {
         super.onCreate()
-        Log.w(TAG, "service onCreate")
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        mFusedLocationClient.lastLocation.addOnSuccessListener { location ->
-            location?.let {
-                val lat = it.latitude
-                val lon = it.longitude
+        mSettingsClient = LocationServices.getSettingsClient(this)
 
-
-            }
-        }
+        createLocationCallback()
+        createLocationRequest()
+        buildLocationSettingsRequest()
     }
 
     @SuppressLint("MissingPermission")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.w(TAG, "service onStartCommand")
-        mFusedLocationClient.requestLocationUpdates()
-//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0.0f, locationListener)
-//        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0.0f, locationListener)
         Toast.makeText(applicationContext, "서비스 시작됨", Toast.LENGTH_LONG).show()
-        locationSetting()
-        return super.onStartCommand(intent, flags, startId)
+        startLocationUpdates()
+        return START_NOT_STICKY
     }
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
+    override fun stopService(name: Intent?): Boolean {
+        return super.stopService(name)
     }
 
-    private val locationCallback = object : LocationCallback(){
-        override fun onLocationResult(p0: LocationResult?) {
-            super.onLocationResult(p0)
+    private fun createLocationCallback() {
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                super.onLocationResult(locationResult)
+                mLocation = locationResult.lastLocation
+                lastUpdateTime = DateFormat.getTimeInstance().format(Date())
+                updateLocationUI()
+            }
         }
     }
 
-    private fun createLocationRequest() : LocationRequest{
-        val mLocationRequest = LocationRequest()
+    private fun updateLocationUI() {
+        // getLastLocation()
+        if (mLocation != null) {
+            textLog = """
+                ---------- UpdateLocation ----------
+                Latitude=${mLocation.latitude}
+                Longitude=${mLocation.longitude}
+                Accuracy= ${mLocation.accuracy}
+                Altitude= ${mLocation.altitude}
+                Speed= ${mLocation.speed}
+                Bearing= ${mLocation.bearing}
+                Time= $lastUpdateTime """.trimMargin()
+            DLog.w(textLog)
+            Toast.makeText(this, textLog, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun createLocationRequest() {
+        mLocationRequest = LocationRequest()
+
+        priority = 0
+
+        when (priority) {
+            0 -> mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            1 -> mLocationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+            2 -> mLocationRequest.priority = LocationRequest.PRIORITY_LOW_POWER
+            else -> mLocationRequest.priority = LocationRequest.PRIORITY_NO_POWER
+        }
+
         mLocationRequest.run {
             interval = INTERVAL
             fastestInterval = FASTEST_INTERVAL
-            smallestDisplacement = SMALLEST_DISPLACEMENT //added
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            smallestDisplacement = SMALLEST_DISPLACEMENT
         }
-
-        return mLocationRequest
     }
 
-    private fun isGooglePlayServicesAvailable() : Boolean{
-        val code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(applicationContext)
-        return code == ConnectionResult.SUCCESS
+    private fun buildLocationSettingsRequest() {
+        val builder = LocationSettingsRequest.Builder()
+        builder.addLocationRequest(mLocationRequest)
+        mLocationSettingsRequest = builder.build()
     }
 
-    private fun setGoogleApi(){
-        mGoogleApiClient = GoogleApiClient.Builder(applicationContext)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(connectionCallbacks)
-                .addOnConnectionFailedListener(connectionFailedListener)
-                .build()
-    }
-
-
-    private fun locationSetting(){
-        val builder = LocationSettingsRequest
-                .Builder()
-                .addLocationRequest(createLocationRequest())
-
-        builder.setAlwaysShow(true)
-        val client = LocationServices.getSettingsClient(this)
-        val task = client.checkLocationSettings(builder.build())
-
-        task.addOnSuccessListener {
-            DLog.d("""
+    @SuppressLint("MissingPermission")
+    fun startLocationUpdates() {
+        mSettingsClient.checkLocationSettings(mLocationSettingsRequest).run {
+            addOnSuccessListener {
+                // **** need check permission and then update location ****
+                DLog.d("""
                 [ task success ]
                 isLocationPresent - ${it.locationSettingsStates.isLocationPresent}
                 isLocationUsable - ${it.locationSettingsStates.isLocationUsable}
@@ -114,69 +148,39 @@ class LocationService : Service() {
                 isGpsUsable - ${it.locationSettingsStates.isGpsUsable}
                 isGpsPresent - ${it.locationSettingsStates.isGpsPresent}
                 """)
-        }
 
-        task.addOnFailureListener {
-
-            val statusCode = (it as ApiException).statusCode
-            DLog.e("""
-                task error --> $it,
-                statusCode --> $statusCode
-                message --> ${it.message}
-                statusMsg --> ${it.statusMessage}
-                cause --> ${it.cause}
-                """)
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    fun startLocationUpdates() {
-        mLocationRequest = LocationRequest()
-        mLocationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-        mLocationRequest.interval = UPDATE_INTERVAL
-        mLocationRequest.fastestInterval = FASTEST_INTERVAL
-
-        val builder = LocationSettingsRequest.Builder()
-        builder.addLocationRequest(mLocationRequest)
-        val locationSettingsRequest = builder.build()
-
-        val settingsClient = LocationServices.getSettingsClient(this)
-        settingsClient.checkLocationSettings(locationSettingsRequest)
-
-        getFusedLocationProviderClient(this).requestLocationUpdates(mLocationRequest, object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult?) {
-                onLocationChanged(locationResult!!.lastLocation)
+                mFusedLocationClient.requestLocationUpdates(mLocationRequest, locationCallback, Looper.myLooper())
             }
-        }, Looper.myLooper())
-    }
 
-    fun onLocationChanged(location: Location?) {
-        // GPS may be turned off
-        if (location == null) {
-            return
+            addOnFailureListener { e->
+                DLog.e("""
+                task error --> $e,
+                statusCode --> $e
+                message --> ${e.message}
+                statusMsg --> ${e.suppressed}
+                cause --> ${e.cause}
+                """)
+                val statusCode = (e as ApiException).statusCode
+                when (statusCode) {
+                    LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
+                        Log.i("debug", "Location settings are not satisfied. Attempting to upgrade " + "location settings ")
+                        try {
+                            val rae = e as ResolvableApiException
+                            DLog.e(rae.localizedMessage)
+                        } catch (sie: IntentSender.SendIntentException) {
+                            Log.i("debug", "PendingIntent unable to execute request.")
+                        }
+
+                    }
+                    LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
+                        val errorMessage = "Location settings are inadequate, and cannot be " + "fixed here. Fix in Settings."
+                        DLog.e(errorMessage)
+                        Toast.makeText(applicationContext, errorMessage, Toast.LENGTH_LONG).show()
+                        requestingLocationUpdates = false
+                    }
+                }
+            }
         }
-
-        // Report to the UI that the location was updated
-        mCurrentLocation = location
-        val msg = "Updated Location: " +
-                java.lang.Double.toString(location.latitude) + "," +
-                java.lang.Double.toString(location.longitude)
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-    }
-
-
-    private val connectionCallbacks = object : GoogleApiClient.ConnectionCallbacks{
-        override fun onConnected(p0: Bundle?) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-        override fun onConnectionSuspended(p0: Int) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-    }
-
-    private val connectionFailedListener = GoogleApiClient.OnConnectionFailedListener {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     companion object {
