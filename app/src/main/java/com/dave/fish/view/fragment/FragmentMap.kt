@@ -1,11 +1,18 @@
 package com.dave.fish.view.fragment
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.location.Geocoder
 import android.os.Bundle
+import android.os.Handler
+import android.support.v4.content.LocalBroadcastManager
+import android.support.v4.os.ResultReceiver
 import android.widget.Toast
 import com.dave.fish.R
+import com.dave.fish.common.Constants
 import com.dave.fish.db.RealmController
 import com.dave.fish.model.realm.SpinnerSecondModel
 import com.dave.fish.view.activity.DetailMapActivity
@@ -26,6 +33,7 @@ class FragmentMap : BaseFragment(),
 
     private val mRealmController : RealmController = RealmController.instance
     private lateinit var selectedItem : SpinnerSecondModel
+    private lateinit var receiver: BroadcastReceiver
 
     private lateinit var mMap: GoogleMap
     var mapView: MapView? = null
@@ -56,13 +64,31 @@ class FragmentMap : BaseFragment(),
 
         btn_start_record.setOnClickListener {
             val intentService = Intent(activity, LocationService::class.java)
+            intentService.putExtra(Constants.EXTRA_NOTIFIER, Constants.EXTRA_NOTIFICATION_ID)
             activity.startService(intentService)
             Toast.makeText(activity, "서비스 시작", Toast.LENGTH_LONG).show()
         }
     }
 
     override fun onLoadContent() {
+        receiver = object : BroadcastReceiver(){
+            override fun onReceive(context: Context?, intent: Intent?) {
+                val locationMsg = intent?.getStringExtra(Constants.LOCATION_SERVICE_MESSAGE)
+                tv_record_time.text = locationMsg
+                Toast.makeText(getContext(), locationMsg, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
+    private val handler = Handler()
+
+    private val onReceiveResult = object : ResultReceiver(handler){
+        override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+            if(resultCode == Constants.UPDATE_COMPLETE_LOCATION){
+                val locationValue = resultData?.getString(Constants.LOCATION_SERVICE_MESSAGE)
+                tv_record_time.text = locationValue
+            }
+        }
     }
 
     override fun onMapReady(map: GoogleMap) {
@@ -106,6 +132,18 @@ class FragmentMap : BaseFragment(),
                 .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
                 .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
                 .check()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        LocalBroadcastManager.getInstance(context).registerReceiver((receiver),
+                IntentFilter(Constants.LOCATION_SERVICE_RESULT)
+        )
+    }
+
+    override fun onStop() {
+        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver)
+        super.onStop()
     }
 
     override fun onResume() {

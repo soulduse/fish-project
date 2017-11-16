@@ -1,31 +1,30 @@
 package com.dave.fish.view.service
 
 import android.annotation.SuppressLint
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
+import android.content.IntentSender
 import android.location.Location
 import android.os.Binder
-import android.os.Bundle
 import android.os.IBinder
 import android.os.Looper
+import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
 import android.widget.Toast
+import com.dave.fish.common.Constants
 import com.dave.fish.util.DLog
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
-import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
 import java.text.DateFormat
 import java.util.*
-import com.google.android.gms.location.LocationRequest
-import android.R.attr.priority
-import com.google.android.gms.location.LocationSettingsRequest
-import com.google.android.gms.location.LocationSettingsStatusCodes
-import android.content.IntentSender
-import com.google.android.gms.common.api.ResolvableApiException
-
+import android.app.PendingIntent
+import android.content.Context
+import android.support.v4.app.NotificationCompat
+import android.support.v4.app.TaskStackBuilder
+import com.dave.fish.R
+import com.dave.fish.view.activity.MainActivity
 
 
 /**
@@ -38,13 +37,14 @@ class LocationService : Service() {
     private lateinit var locationCallback: LocationCallback
     private lateinit var mLocationRequest: LocationRequest
     private lateinit var mLocationSettingsRequest : LocationSettingsRequest
-    private lateinit var mGoogleApiClient : GoogleApiClient
-    private lateinit var mLocation: Location
+    private lateinit var broadcaster : LocalBroadcastManager
 
+    private lateinit var mLocation: Location
     private var requestingLocationUpdates = false
     private var lastUpdateTime = ""
     private var textLog = ""
     private var priority = 0
+
     // Binder given to clients
     private val mBinder = LocalBinder()
 
@@ -61,6 +61,7 @@ class LocationService : Service() {
         super.onCreate()
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         mSettingsClient = LocationServices.getSettingsClient(this)
+        broadcaster = LocalBroadcastManager.getInstance(this)
 
         createLocationCallback()
         createLocationRequest()
@@ -69,14 +70,44 @@ class LocationService : Service() {
 
     @SuppressLint("MissingPermission")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.w(TAG, "service onStartCommand")
-        Toast.makeText(applicationContext, "서비스 시작됨", Toast.LENGTH_LONG).show()
         startLocationUpdates()
         return START_NOT_STICKY
     }
 
     override fun stopService(name: Intent?): Boolean {
+        stopLocationUpdates()
         return super.stopService(name)
+    }
+
+    private fun initForegroundService(intent: Intent?){
+        intent?.let {
+            val mId = intent.getIntExtra(Constants.EXTRA_RECEIVER, 0)
+            val mBuilder = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANEL)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle("My notification")
+                    .setContentText("Hello World!")
+            // Creates an explicit intent for an Activity in your app
+            val resultIntent = Intent(this, MainActivity::class.java)
+
+            // The stack builder object will contain an artificial back stack for the
+            // started Activity.
+            // This ensures that navigating backward from the Activity leads out of
+            // your application to the Home screen.
+            val stackBuilder = TaskStackBuilder.create(this)
+            // Adds the back stack for the Intent (but not the Intent itself)
+            stackBuilder.addParentStack(MainActivity::class.java)
+            // Adds the Intent that starts the Activity to the top of the stack
+            stackBuilder.addNextIntent(resultIntent)
+            val resultPendingIntent = stackBuilder.getPendingIntent(
+                    0,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+            )
+            mBuilder.setContentIntent(resultPendingIntent)
+            val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            // mId allows you to update the notification later on.
+            mNotificationManager.notify(mId, mBuilder.build())
+            startForeground(mId, mBuilder.build())
+        }
     }
 
     private fun createLocationCallback() {
@@ -85,12 +116,12 @@ class LocationService : Service() {
                 super.onLocationResult(locationResult)
                 mLocation = locationResult.lastLocation
                 lastUpdateTime = DateFormat.getTimeInstance().format(Date())
-                updateLocationUI()
+                sendResultLocation()
             }
         }
     }
 
-    private fun updateLocationUI() {
+    private fun sendResultLocation() {
         // getLastLocation()
         if (mLocation != null) {
             textLog = """
@@ -102,8 +133,12 @@ class LocationService : Service() {
                 Speed= ${mLocation.speed}
                 Bearing= ${mLocation.bearing}
                 Time= $lastUpdateTime """.trimMargin()
-            DLog.w(textLog)
-            Toast.makeText(this, textLog, Toast.LENGTH_SHORT).show()
+
+            val intent = Intent(Constants.LOCATION_SERVICE_RESULT)
+            intent.putExtra(Constants.LOCATION_SERVICE_MESSAGE, textLog)
+            initForegroundService(intent)
+            broadcaster.sendBroadcast(intent)
+//            Toast.makeText(this, textLog, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -133,7 +168,7 @@ class LocationService : Service() {
     }
 
     @SuppressLint("MissingPermission")
-    fun startLocationUpdates() {
+    private fun startLocationUpdates() {
         mSettingsClient.checkLocationSettings(mLocationSettingsRequest).run {
             addOnSuccessListener {
                 // **** need check permission and then update location ****
@@ -181,6 +216,17 @@ class LocationService : Service() {
                 }
             }
         }
+    }
+
+    private fun stopLocationUpdates(){
+        if(!requestingLocationUpdates){
+            return
+        }
+
+        mFusedLocationClient.removeLocationUpdates(locationCallback)
+                .addOnSuccessListener {
+                    requestingLocationUpdates = false
+                }
     }
 
     companion object {
