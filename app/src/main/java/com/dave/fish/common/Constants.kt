@@ -18,4 +18,6 @@ object Constants {
     val UPDATE_COMPLETE_LOCATION = 200
     val LOCATION_SERVICE_RESULT = "com.dave.fish.LOCATION_RESULT"
     val LOCATION_SERVICE_MESSAGE = "com.dave.fish.LOCATION_MESSAGE"
+    val RESPONSE_LOCATION_VALUES = "com.dave.fish.LOCATION_VALUES"
+
 }

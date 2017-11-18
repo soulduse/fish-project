@@ -96,8 +96,8 @@ class LocationService : Service() {
         val mId = this.intent.getIntExtra(Constants.EXTRA_NOTIFIER, 0)
         val mBuilder = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANEL)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("My notification")
-                .setContentText("Hello World!")
+                .setContentTitle("해루질앱")
+                .setContentText("현재 내 위치를 기록하고 있습니다.")
         // Creates an explicit intent for an Activity in your app
         val resultIntent = Intent(this, MainActivity::class.java)
         DLog.w("mId value --> $mId")
@@ -148,6 +148,7 @@ class LocationService : Service() {
 
             val intent = Intent(Constants.LOCATION_SERVICE_RESULT)
             intent.putExtra(Constants.LOCATION_SERVICE_MESSAGE, textLog)
+            intent.putExtra(Constants.RESPONSE_LOCATION_VALUES, mLocation)
             broadcaster.sendBroadcast(intent)
 
             initForegroundService()

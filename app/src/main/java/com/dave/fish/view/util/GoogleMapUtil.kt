@@ -1,6 +1,7 @@
 package com.dave.fish.view.util
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.location.Location
 import android.widget.Toast
 import com.dave.fish.MyApplication

@@ -1,15 +1,16 @@
 package com.dave.fish.view.fragment
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.location.Geocoder
+import android.location.Location
 import android.os.Bundle
-import android.os.Handler
 import android.support.v4.content.LocalBroadcastManager
-import android.support.v4.os.ResultReceiver
 import android.widget.Toast
 import com.dave.fish.R
 import com.dave.fish.common.Constants
@@ -20,10 +21,13 @@ import com.dave.fish.view.service.LocationService
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.Polyline
+import com.google.android.gms.maps.model.PolylineOptions
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import kotlinx.android.synthetic.main.fragment_menu_two.*
 import java.util.*
+
 
 /**
  * Created by soul on 2017. 8. 27..
@@ -36,7 +40,10 @@ class FragmentMap : BaseFragment(),
     private lateinit var receiver: BroadcastReceiver
 
     private lateinit var mMap: GoogleMap
-    var mapView: MapView? = null
+    private var mapView: MapView? = null
+
+    private val polyLineOptions : PolylineOptions = PolylineOptions()
+    private lateinit var polyLine : Polyline
 
     override fun getContentId(): Int = R.layout.fragment_menu_two
 
@@ -72,35 +79,40 @@ class FragmentMap : BaseFragment(),
 
             if(isRecorded){
                 activity.stopService(intentService)
-                btn_start_record.text = resources.getString(R.string.record_stop)
+                btn_start_record.text = resources.getString(R.string.record_start)
             }else{
                 activity.startService(intentService)
-                btn_start_record.text = resources.getString(R.string.record_start)
+                btn_start_record.text = resources.getString(R.string.record_stop)
             }
-
-
-
-//            Toast.makeText(activity, "서비스 시작", Toast.LENGTH_LONG).show()
         }
     }
 
     override fun onLoadContent() {
+        // response location values from service
         receiver = object : BroadcastReceiver(){
-            override fun onReceive(context: Context?, intent: Intent?) {
-                val locationMsg = intent?.getStringExtra(Constants.LOCATION_SERVICE_MESSAGE)
+            override fun onReceive(context: Context?, intent: Intent) {
+//                val locationMsg = intent?.getStringExtra(Constants.LOCATION_SERVICE_MESSAGE)
+                val locationMsg = intent.getStringExtra(Constants.LOCATION_SERVICE_MESSAGE)
+                val locationValues = intent.getParcelableExtra<Location>(Constants.RESPONSE_LOCATION_VALUES)
+                val latLng = LatLng(
+                        locationValues.latitude,
+                        locationValues.longitude
+                )
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+                mMap.setMinZoomPreference(15.0f)
+                mMap.setMaxZoomPreference(20.0f)
+
+                polyLineOptions.add(latLng)
+                        .width(5f)
+                        .color(Color.RED)
+                        .geodesic(true)
+                polyLine = mMap.addPolyline(polyLineOptions)
+                polyLine.tag = "내경로"
+
+                enableMyLocation()
+
                 tv_record_time.text = locationMsg
-                Toast.makeText(getContext(), locationMsg, Toast.LENGTH_LONG).show()
-            }
-        }
-    }
 
-    private val handler = Handler()
-
-    private val onReceiveResult = object : ResultReceiver(handler){
-        override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-            if(resultCode == Constants.UPDATE_COMPLETE_LOCATION){
-                val locationValue = resultData?.getString(Constants.LOCATION_SERVICE_MESSAGE)
-                tv_record_time.text = locationValue
             }
         }
     }
@@ -113,7 +125,6 @@ class FragmentMap : BaseFragment(),
         mapUtil.isScrollGesturesEnabled = false
         mapUtil.isZoomGesturesEnabled = false
 
-//        enableMyLocation()
         mMap.setMinZoomPreference(12.0f)
         mMap.setMaxZoomPreference(15.0f)
         mMap.addMarker(MarkerOptions().position(mLatLng).title(selectedItem.obsPostName))
@@ -127,9 +138,10 @@ class FragmentMap : BaseFragment(),
         }
     }
 
-    var permissionlistener: PermissionListener = object : PermissionListener {
+    private var permissionlistener: PermissionListener = object : PermissionListener {
+        @SuppressLint("MissingPermission")
         override fun onPermissionGranted() {
-            mMap.isMyLocationEnabled = false
+            mMap.isMyLocationEnabled = true
         }
 
         override fun onPermissionDenied(deniedPermissions: ArrayList<String>?) {
