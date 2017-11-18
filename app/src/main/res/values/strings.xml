@@ -25,10 +25,12 @@
     <string name="today_tide">오늘의 물때 : 태안</string>
 
     <string name="record_start">기록시작</string>
+    <string name="record_stop">기록중지</string>
     <string name="record_time">현시각 : </string>
     <string name="record_address">주소 : </string>
     <string name="warning_empty_address">해당되는 주소 정보는 없습니다.</string>
     <string name="korea">대한민국</string>
+
 
 
     <!--    Permissions    -->

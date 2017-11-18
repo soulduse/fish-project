@@ -62,11 +62,25 @@ class FragmentMap : BaseFragment(),
             tv_record_address.text = address
         }
 
+        btn_start_record.isSelected = LocationService.isRecordServiceStarting
+
         btn_start_record.setOnClickListener {
+            val isRecorded = btn_start_record.isSelected
             val intentService = Intent(activity, LocationService::class.java)
             intentService.putExtra(Constants.EXTRA_NOTIFIER, Constants.EXTRA_NOTIFICATION_ID)
-            activity.startService(intentService)
-            Toast.makeText(activity, "서비스 시작", Toast.LENGTH_LONG).show()
+            btn_start_record.isSelected = isRecorded.not()
+
+            if(isRecorded){
+                activity.stopService(intentService)
+                btn_start_record.text = resources.getString(R.string.record_stop)
+            }else{
+                activity.startService(intentService)
+                btn_start_record.text = resources.getString(R.string.record_start)
+            }
+
+
+
+//            Toast.makeText(activity, "서비스 시작", Toast.LENGTH_LONG).show()
         }
     }
 

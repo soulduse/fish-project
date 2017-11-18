@@ -45,6 +45,8 @@ class LocationService : Service() {
     private var textLog = ""
     private var priority = 0
 
+    private lateinit var intent : Intent
+
     // Binder given to clients
     private val mBinder = LocalBinder()
 
@@ -69,45 +71,54 @@ class LocationService : Service() {
     }
 
     @SuppressLint("MissingPermission")
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        DLog.d("service [StartCommand]")
+        isRecordServiceStarting = true
+        this.intent = intent
         startLocationUpdates()
+
         return START_NOT_STICKY
     }
 
     override fun stopService(name: Intent?): Boolean {
-        stopLocationUpdates()
+        DLog.w("service [STOP]")
         return super.stopService(name)
     }
 
-    private fun initForegroundService(intent: Intent?){
-        intent?.let {
-            val mId = intent.getIntExtra(Constants.EXTRA_RECEIVER, 0)
-            val mBuilder = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANEL)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle("My notification")
-                    .setContentText("Hello World!")
-            // Creates an explicit intent for an Activity in your app
-            val resultIntent = Intent(this, MainActivity::class.java)
+    override fun onDestroy() {
+        DLog.w("service [DESTROY]")
+        isRecordServiceStarting = true
+        stopLocationUpdates()
+        super.onDestroy()
+    }
 
-            // The stack builder object will contain an artificial back stack for the
-            // started Activity.
-            // This ensures that navigating backward from the Activity leads out of
-            // your application to the Home screen.
-            val stackBuilder = TaskStackBuilder.create(this)
-            // Adds the back stack for the Intent (but not the Intent itself)
-            stackBuilder.addParentStack(MainActivity::class.java)
-            // Adds the Intent that starts the Activity to the top of the stack
-            stackBuilder.addNextIntent(resultIntent)
-            val resultPendingIntent = stackBuilder.getPendingIntent(
-                    0,
-                    PendingIntent.FLAG_UPDATE_CURRENT
-            )
-            mBuilder.setContentIntent(resultPendingIntent)
-            val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            // mId allows you to update the notification later on.
-            mNotificationManager.notify(mId, mBuilder.build())
-            startForeground(mId, mBuilder.build())
-        }
+    private fun initForegroundService(){
+        val mId = this.intent.getIntExtra(Constants.EXTRA_NOTIFIER, 0)
+        val mBuilder = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANEL)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("My notification")
+                .setContentText("Hello World!")
+        // Creates an explicit intent for an Activity in your app
+        val resultIntent = Intent(this, MainActivity::class.java)
+        DLog.w("mId value --> $mId")
+        // The stack builder object will contain an artificial back stack for the
+        // started Activity.
+        // This ensures that navigating backward from the Activity leads out of
+        // your application to the Home screen.
+        val stackBuilder = TaskStackBuilder.create(this)
+        // Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(MainActivity::class.java)
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent)
+        val resultPendingIntent = stackBuilder.getPendingIntent(
+                0,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        mBuilder.setContentIntent(resultPendingIntent)
+        val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        // mId allows you to update the notification later on.
+//            mNotificationManager.notify(mId, mBuilder.build())
+        startForeground(mId, mBuilder.build())
     }
 
     private fun createLocationCallback() {
@@ -124,6 +135,7 @@ class LocationService : Service() {
     private fun sendResultLocation() {
         // getLastLocation()
         if (mLocation != null) {
+            DLog.v("service [sendResultLocation]")
             textLog = """
                 ---------- UpdateLocation ----------
                 Latitude=${mLocation.latitude}
@@ -136,9 +148,9 @@ class LocationService : Service() {
 
             val intent = Intent(Constants.LOCATION_SERVICE_RESULT)
             intent.putExtra(Constants.LOCATION_SERVICE_MESSAGE, textLog)
-            initForegroundService(intent)
             broadcaster.sendBroadcast(intent)
-//            Toast.makeText(this, textLog, Toast.LENGTH_SHORT).show()
+
+            initForegroundService()
         }
     }
 
@@ -216,6 +228,8 @@ class LocationService : Service() {
                 }
             }
         }
+
+        requestingLocationUpdates = true
     }
 
     private fun stopLocationUpdates(){
@@ -234,5 +248,6 @@ class LocationService : Service() {
         private val INTERVAL : Long = 1000 //1 minute
         private val FASTEST_INTERVAL : Long = 1000 // 1 minute
         private val SMALLEST_DISPLACEMENT = 0.25f //quarter of a meter
+        var isRecordServiceStarting = false
     }
 }

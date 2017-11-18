@@ -73,7 +73,7 @@
         android:id="@+id/btn_start_record"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@color/habit_skipped"
+        android:background="@drawable/selector_record_location"
         android:gravity="center"
         android:text="@string/record_start"
         android:textColor="@color/tide_white"

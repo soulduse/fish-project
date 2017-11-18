@@ -22,6 +22,10 @@
     <color name="habit_done">#81D4FA</color>
     <color name="habit_skipped">#0277BD</color>
 
+
+    <color name="record_button_bg_normal">#0277BD</color>
+    <color name="record_button_bg_selected">#be3f38</color>
+
     <color name="color_space">#c7c7c7</color>
 
     <color name="iconSelectionNormalBackground">#FFFFFF</color>
