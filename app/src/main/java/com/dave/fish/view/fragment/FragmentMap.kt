@@ -16,6 +16,7 @@ import com.dave.fish.R
 import com.dave.fish.common.Constants
 import com.dave.fish.db.RealmController
 import com.dave.fish.model.realm.SpinnerSecondModel
+import com.dave.fish.util.DLog
 import com.dave.fish.view.activity.DetailMapActivity
 import com.dave.fish.view.service.LocationService
 import com.google.android.gms.maps.*
@@ -47,6 +48,13 @@ class FragmentMap : BaseFragment(),
 
     override fun getContentId(): Int = R.layout.fragment_menu_two
 
+    private val locA = LatLng(37.4832, 126.421)
+    private val locB = LatLng(37.4843, 126.522)
+    private val locC = LatLng(37.4854, 126.623)
+    private val locD = LatLng(37.4865, 126.724)
+    private val locE = LatLng(37.4876, 126.825)
+    private val locF = LatLng(37.4887, 126.926)
+
     override fun onLoadStart(savedInstanceState : Bundle?) {
         selectedItem = mRealmController.findSelectedSecondModel(realm)
         MapsInitializer.initialize(this.activity)
@@ -70,15 +78,22 @@ class FragmentMap : BaseFragment(),
         }
 
         btn_start_record.isSelected = LocationService.isRecordServiceStarting
+        if(btn_start_record.isSelected){
+            btn_start_record.text = resources.getString(R.string.record_stop)
+        }else{
+            btn_start_record.text = resources.getString(R.string.record_start)
+        }
 
         btn_start_record.setOnClickListener {
             val isRecorded = btn_start_record.isSelected
             val intentService = Intent(activity, LocationService::class.java)
             intentService.putExtra(Constants.EXTRA_NOTIFIER, Constants.EXTRA_NOTIFICATION_ID)
+
             btn_start_record.isSelected = isRecorded.not()
 
             if(isRecorded){
                 activity.stopService(intentService)
+//                polyLine.remove()
                 btn_start_record.text = resources.getString(R.string.record_start)
             }else{
                 activity.startService(intentService)
@@ -98,18 +113,19 @@ class FragmentMap : BaseFragment(),
                         locationValues.latitude,
                         locationValues.longitude
                 )
+
+                polyLineOptions.add(latLng)
+                        .width(10f)
+                        .color(Color.RED)
+                        .geodesic(true)
+
+                DLog.w("[points]\nsize : ${polyLineOptions.points.size}\npoints :${polyLineOptions.points}")
+                polyLine = mMap.addPolyline(polyLineOptions)
+
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
                 mMap.setMinZoomPreference(15.0f)
                 mMap.setMaxZoomPreference(20.0f)
-
-                polyLineOptions.add(latLng)
-                        .width(5f)
-                        .color(Color.RED)
-                        .geodesic(true)
-                polyLine = mMap.addPolyline(polyLineOptions)
                 polyLine.tag = "내경로"
-
-                enableMyLocation()
 
                 tv_record_time.text = locationMsg
 
@@ -130,6 +146,8 @@ class FragmentMap : BaseFragment(),
         mMap.addMarker(MarkerOptions().position(mLatLng).title(selectedItem.obsPostName))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(mLatLng))
 
+        enableMyLocation()
+
         mMap.setOnMapClickListener {
             val detailMapIntent = Intent(activity, DetailMapActivity::class.java)
             detailMapIntent.putExtra("lat", selectedItem.obsLat)
@@ -149,9 +167,6 @@ class FragmentMap : BaseFragment(),
         }
     }
 
-    /**
-     * Enables the My Location layer if the fine location permission has been granted.
-     */
     private fun enableMyLocation() {
         TedPermission.with(context)
                 .setPermissionListener(permissionlistener)

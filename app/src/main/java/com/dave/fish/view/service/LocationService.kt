@@ -1,30 +1,27 @@
 package com.dave.fish.view.service
 
 import android.annotation.SuppressLint
-import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.IntentSender
 import android.location.Location
-import android.os.Binder
 import android.os.IBinder
 import android.os.Looper
+import android.support.v4.app.NotificationCompat
+import android.support.v4.app.TaskStackBuilder
 import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
 import android.widget.Toast
+import com.dave.fish.R
 import com.dave.fish.common.Constants
 import com.dave.fish.util.DLog
+import com.dave.fish.view.activity.MainActivity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import java.text.DateFormat
 import java.util.*
-import android.app.PendingIntent
-import android.content.Context
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.TaskStackBuilder
-import com.dave.fish.R
-import com.dave.fish.view.activity.MainActivity
 
 
 /**
@@ -47,17 +44,6 @@ class LocationService : Service() {
 
     private lateinit var intent : Intent
 
-    // Binder given to clients
-    private val mBinder = LocalBinder()
-
-    inner class LocalBinder : Binder(){
-        fun getService() : LocationService{
-            return this@LocationService
-        }
-    }
-
-    override fun onBind(intent: Intent?): IBinder? = mBinder
-
     @SuppressLint("MissingPermission")
     override fun onCreate() {
         super.onCreate()
@@ -69,6 +55,8 @@ class LocationService : Service() {
         createLocationRequest()
         buildLocationSettingsRequest()
     }
+
+    override fun onBind(intent: Intent?): IBinder? = null
 
     @SuppressLint("MissingPermission")
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -98,26 +86,17 @@ class LocationService : Service() {
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("해루질앱")
                 .setContentText("현재 내 위치를 기록하고 있습니다.")
-        // Creates an explicit intent for an Activity in your app
+
         val resultIntent = Intent(this, MainActivity::class.java)
         DLog.w("mId value --> $mId")
-        // The stack builder object will contain an artificial back stack for the
-        // started Activity.
-        // This ensures that navigating backward from the Activity leads out of
-        // your application to the Home screen.
         val stackBuilder = TaskStackBuilder.create(this)
-        // Adds the back stack for the Intent (but not the Intent itself)
         stackBuilder.addParentStack(MainActivity::class.java)
-        // Adds the Intent that starts the Activity to the top of the stack
         stackBuilder.addNextIntent(resultIntent)
         val resultPendingIntent = stackBuilder.getPendingIntent(
                 0,
                 PendingIntent.FLAG_UPDATE_CURRENT
         )
         mBuilder.setContentIntent(resultPendingIntent)
-        val mNotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        // mId allows you to update the notification later on.
-//            mNotificationManager.notify(mId, mBuilder.build())
         startForeground(mId, mBuilder.build())
     }
 
@@ -245,9 +224,8 @@ class LocationService : Service() {
     }
 
     companion object {
-        val TAG = LocationService::class.java.simpleName
-        private val INTERVAL : Long = 1000 //1 minute
-        private val FASTEST_INTERVAL : Long = 1000 // 1 minute
+        private val INTERVAL : Long = 1000
+        private val FASTEST_INTERVAL : Long = 1000
         private val SMALLEST_DISPLACEMENT = 0.25f //quarter of a meter
         var isRecordServiceStarting = false
     }
