@@ -15,16 +15,14 @@ import org.joda.time.DateTime
  */
 class RetrofitController {
 
-    private val retrofitBase = RetrofitBase.INSTANCE
+    private val retrofitBase = BaseRetrofit.instance
 
     private fun getTideRetrofit(): TideApi {
-        retrofitBase.initRetrofit(RetrofitBase.Api.Tide)
-        return retrofitBase.tideServiceApi!!
+        return retrofitBase.getTideRetrofit()
     }
 
     private fun getKmaRetrofit(): KmaApi {
-        retrofitBase.initRetrofit(RetrofitBase.Api.Kma)
-        return retrofitBase.kmaServiceApi!!
+        return retrofitBase.getKmaRetrofit()
     }
 
     fun getChartData() : Observable<ChartModel>{
