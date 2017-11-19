@@ -45,6 +45,7 @@ class FragmentMap : BaseFragment(),
 
     private val polyLineOptions : PolylineOptions = PolylineOptions()
     private lateinit var polyLine : Polyline
+    private val polylines : MutableList<Polyline> = mutableListOf()
 
     override fun getContentId(): Int = R.layout.fragment_menu_two
 
@@ -93,7 +94,6 @@ class FragmentMap : BaseFragment(),
 
             if(isRecorded){
                 activity.stopService(intentService)
-//                polyLine.remove()
                 btn_start_record.text = resources.getString(R.string.record_start)
             }else{
                 activity.startService(intentService)
@@ -108,19 +108,24 @@ class FragmentMap : BaseFragment(),
             override fun onReceive(context: Context?, intent: Intent) {
 //                val locationMsg = intent?.getStringExtra(Constants.LOCATION_SERVICE_MESSAGE)
                 val locationMsg = intent.getStringExtra(Constants.LOCATION_SERVICE_MESSAGE)
-                val locationValues = intent.getParcelableExtra<Location>(Constants.RESPONSE_LOCATION_VALUES)
-                val latLng = LatLng(
-                        locationValues.latitude,
-                        locationValues.longitude
-                )
+//                val locationValues = intent.getParcelableExtra<Location>(Constants.RESPONSE_LOCATION_VALUES)
+                val locationValues = intent.getParcelableArrayListExtra<Location>(Constants.RESPONSE_LOCATION_VALUES).map {
+                    LatLng(it.latitude, it.longitude)
+                }
 
-                polyLineOptions.add(latLng)
-                        .width(10f)
-                        .color(Color.RED)
-                        .geodesic(true)
+                val lastLocation = locationValues.last()
+                val latLng = LatLng(lastLocation.latitude, lastLocation.longitude)
+                if(locationValues.isNotEmpty()){
+                    polylines.clear()
+                    polylines.addAll(locationValues)
+                }
+
 
                 DLog.w("[points]\nsize : ${polyLineOptions.points.size}\npoints :${polyLineOptions.points}")
-                polyLine = mMap.addPolyline(polyLineOptions)
+                polyLine = mMap.addPolyline(PolylineOptions()
+                        .width(10f)
+                        .color(Color.RED)
+                        .geodesic(true))
 
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
                 mMap.setMinZoomPreference(15.0f)

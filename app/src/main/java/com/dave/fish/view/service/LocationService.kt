@@ -20,8 +20,10 @@ import com.dave.fish.view.activity.MainActivity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
+import com.google.android.gms.maps.model.Polyline
 import java.text.DateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 /**
@@ -36,6 +38,8 @@ class LocationService : Service() {
     private lateinit var mLocationSettingsRequest : LocationSettingsRequest
     private lateinit var broadcaster : LocalBroadcastManager
 
+    private val locationList : ArrayList<Location> = arrayListOf()
+    private val polyLineList : ArrayList<Polyline> = arrayListOf()
     private lateinit var mLocation: Location
     private var requestingLocationUpdates = false
     private var lastUpdateTime = ""
@@ -68,15 +72,11 @@ class LocationService : Service() {
         return START_NOT_STICKY
     }
 
-    override fun stopService(name: Intent?): Boolean {
-        DLog.w("service [STOP]")
-        return super.stopService(name)
-    }
-
     override fun onDestroy() {
         DLog.w("service [DESTROY]")
         isRecordServiceStarting = true
         stopLocationUpdates()
+        clearLocationList()
         super.onDestroy()
     }
 
@@ -88,7 +88,6 @@ class LocationService : Service() {
                 .setContentText("현재 내 위치를 기록하고 있습니다.")
 
         val resultIntent = Intent(this, MainActivity::class.java)
-        DLog.w("mId value --> $mId")
         val stackBuilder = TaskStackBuilder.create(this)
         stackBuilder.addParentStack(MainActivity::class.java)
         stackBuilder.addNextIntent(resultIntent)
@@ -105,6 +104,8 @@ class LocationService : Service() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
                 mLocation = locationResult.lastLocation
+                addLocationList(mLocation)
+                polyLineList.add()
                 lastUpdateTime = DateFormat.getTimeInstance().format(Date())
                 sendResultLocation()
             }
@@ -127,7 +128,8 @@ class LocationService : Service() {
 
             val intent = Intent(Constants.LOCATION_SERVICE_RESULT)
             intent.putExtra(Constants.LOCATION_SERVICE_MESSAGE, textLog)
-            intent.putExtra(Constants.RESPONSE_LOCATION_VALUES, mLocation)
+            intent.putExtra(Constants.RESPONSE_LOCATION_VALUES, getLocationList())
+//            intent.putParcelableArrayListExtra(Constants.RESPONSE_LOCATION_VALUES, getLocationList())
             broadcaster.sendBroadcast(intent)
 
             initForegroundService()
@@ -221,6 +223,18 @@ class LocationService : Service() {
                 .addOnSuccessListener {
                     requestingLocationUpdates = false
                 }
+    }
+
+    private fun getLocationList() : ArrayList<Location>{
+        return locationList
+    }
+
+    private fun addLocationList(location:Location){
+        locationList.add(location)
+    }
+
+    private fun clearLocationList(){
+        locationList.clear()
     }
 
     companion object {
