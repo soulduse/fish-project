@@ -43,10 +43,6 @@ class FragmentMap : BaseFragment(),
     private lateinit var mMap: GoogleMap
     private var mapView: MapView? = null
 
-    private val polyLineOptions : PolylineOptions = PolylineOptions()
-    private lateinit var polyLine : Polyline
-    private val polylines : MutableList<Polyline> = mutableListOf()
-
     override fun getContentId(): Int = R.layout.fragment_menu_two
 
     private val locA = LatLng(37.4832, 126.421)
@@ -106,30 +102,21 @@ class FragmentMap : BaseFragment(),
         // response location values from service
         receiver = object : BroadcastReceiver(){
             override fun onReceive(context: Context?, intent: Intent) {
-//                val locationMsg = intent?.getStringExtra(Constants.LOCATION_SERVICE_MESSAGE)
                 val locationMsg = intent.getStringExtra(Constants.LOCATION_SERVICE_MESSAGE)
-//                val locationValues = intent.getParcelableExtra<Location>(Constants.RESPONSE_LOCATION_VALUES)
                 val locationValues = intent.getParcelableArrayListExtra<Location>(Constants.RESPONSE_LOCATION_VALUES).map {
                     LatLng(it.latitude, it.longitude)
                 }
 
-                val lastLocation = locationValues.last()
-                val latLng = LatLng(lastLocation.latitude, lastLocation.longitude)
-                if(locationValues.isNotEmpty()){
-                    polylines.clear()
-                    polylines.addAll(locationValues)
-                }
-
-
-                DLog.w("[points]\nsize : ${polyLineOptions.points.size}\npoints :${polyLineOptions.points}")
-                polyLine = mMap.addPolyline(PolylineOptions()
+                DLog.w("[locationValues]\nsize : ${locationValues.size}\npoints :$locationValues")
+                val polyLine = mMap.addPolyline(PolylineOptions()
+                        .addAll(locationValues)
                         .width(10f)
                         .color(Color.RED)
                         .geodesic(true))
 
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
-                mMap.setMinZoomPreference(15.0f)
-                mMap.setMaxZoomPreference(20.0f)
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(locationValues.last()))
+                mMap.setMinZoomPreference(19.0f)
+                mMap.setMaxZoomPreference(23.0f)
                 polyLine.tag = "내경로"
 
                 tv_record_time.text = locationMsg

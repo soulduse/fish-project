@@ -105,7 +105,6 @@ class LocationService : Service() {
                 super.onLocationResult(locationResult)
                 mLocation = locationResult.lastLocation
                 addLocationList(mLocation)
-                polyLineList.add()
                 lastUpdateTime = DateFormat.getTimeInstance().format(Date())
                 sendResultLocation()
             }
@@ -129,7 +128,6 @@ class LocationService : Service() {
             val intent = Intent(Constants.LOCATION_SERVICE_RESULT)
             intent.putExtra(Constants.LOCATION_SERVICE_MESSAGE, textLog)
             intent.putExtra(Constants.RESPONSE_LOCATION_VALUES, getLocationList())
-//            intent.putParcelableArrayListExtra(Constants.RESPONSE_LOCATION_VALUES, getLocationList())
             broadcaster.sendBroadcast(intent)
 
             initForegroundService()
