@@ -20,10 +20,8 @@ import com.dave.fish.view.activity.MainActivity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
-import com.google.android.gms.maps.model.Polyline
 import java.text.DateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 /**
@@ -39,7 +37,6 @@ class LocationService : Service() {
     private lateinit var broadcaster : LocalBroadcastManager
 
     private val locationList : ArrayList<Location> = arrayListOf()
-    private val polyLineList : ArrayList<Polyline> = arrayListOf()
     private lateinit var mLocation: Location
     private var requestingLocationUpdates = false
     private var lastUpdateTime = ""
@@ -80,25 +77,6 @@ class LocationService : Service() {
         super.onDestroy()
     }
 
-    private fun initForegroundService(){
-        val mId = this.intent.getIntExtra(Constants.EXTRA_NOTIFIER, 0)
-        val mBuilder = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANEL)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("해루질앱")
-                .setContentText("현재 내 위치를 기록하고 있습니다.")
-
-        val resultIntent = Intent(this, MainActivity::class.java)
-        val stackBuilder = TaskStackBuilder.create(this)
-        stackBuilder.addParentStack(MainActivity::class.java)
-        stackBuilder.addNextIntent(resultIntent)
-        val resultPendingIntent = stackBuilder.getPendingIntent(
-                0,
-                PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        mBuilder.setContentIntent(resultPendingIntent)
-        startForeground(mId, mBuilder.build())
-    }
-
     private fun createLocationCallback() {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
@@ -134,22 +112,32 @@ class LocationService : Service() {
         }
     }
 
+    private fun initForegroundService(){
+        val mId = this.intent.getIntExtra(Constants.EXTRA_NOTIFIER, 0)
+        val mBuilder = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANEL)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("해루질앱")
+                .setContentText("현재 내 위치를 기록하고 있습니다.")
+
+        val resultIntent = Intent(this, MainActivity::class.java)
+        val stackBuilder = TaskStackBuilder.create(this)
+        stackBuilder.addParentStack(MainActivity::class.java)
+        stackBuilder.addNextIntent(resultIntent)
+        val resultPendingIntent = stackBuilder.getPendingIntent(
+                0,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        mBuilder.setContentIntent(resultPendingIntent)
+        startForeground(mId, mBuilder.build())
+    }
+
     private fun createLocationRequest() {
         mLocationRequest = LocationRequest()
-
-        priority = 0
-
-        when (priority) {
-            0 -> mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-            1 -> mLocationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-            2 -> mLocationRequest.priority = LocationRequest.PRIORITY_LOW_POWER
-            else -> mLocationRequest.priority = LocationRequest.PRIORITY_NO_POWER
-        }
 
         mLocationRequest.run {
             interval = INTERVAL
             fastestInterval = FASTEST_INTERVAL
-            smallestDisplacement = SMALLEST_DISPLACEMENT
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
     }
 
@@ -236,8 +224,8 @@ class LocationService : Service() {
     }
 
     companion object {
-        private val INTERVAL : Long = 1000
-        private val FASTEST_INTERVAL : Long = 1000
+        private val INTERVAL : Long = 1000 * 8
+        private val FASTEST_INTERVAL : Long = 1000 * 4
         private val SMALLEST_DISPLACEMENT = 0.25f //quarter of a meter
         var isRecordServiceStarting = false
     }

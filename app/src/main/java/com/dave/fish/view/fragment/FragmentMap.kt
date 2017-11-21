@@ -115,8 +115,8 @@ class FragmentMap : BaseFragment(),
                         .geodesic(true))
 
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(locationValues.last()))
-                mMap.setMinZoomPreference(19.0f)
-                mMap.setMaxZoomPreference(23.0f)
+                mMap.setMinZoomPreference(16.0f)
+                mMap.setMaxZoomPreference(21.0f)
                 polyLine.tag = "내경로"
 
                 tv_record_time.text = locationMsg
