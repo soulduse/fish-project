@@ -90,7 +90,6 @@ class LocationService : Service() {
     }
 
     private fun sendResultLocation() {
-        // getLastLocation()
         if (mLocation != null) {
             DLog.v("service [sendResultLocation]")
             textLog = """
@@ -151,39 +150,18 @@ class LocationService : Service() {
     private fun startLocationUpdates() {
         mSettingsClient.checkLocationSettings(mLocationSettingsRequest).run {
             addOnSuccessListener {
-                // **** need check permission and then update location ****
-                DLog.d("""
-                [ task success ]
-                isLocationPresent - ${it.locationSettingsStates.isLocationPresent}
-                isLocationUsable - ${it.locationSettingsStates.isLocationUsable}
-                isNetworkLocationPresent - ${it.locationSettingsStates.isNetworkLocationPresent}
-                isNetworkLocationUsable - ${it.locationSettingsStates.isNetworkLocationUsable}
-                isBlePresent - ${it.locationSettingsStates.isBlePresent}
-                isBleUsable - ${it.locationSettingsStates.isBleUsable}
-                isGpsUsable - ${it.locationSettingsStates.isGpsUsable}
-                isGpsPresent - ${it.locationSettingsStates.isGpsPresent}
-                """)
-
                 mFusedLocationClient.requestLocationUpdates(mLocationRequest, locationCallback, Looper.myLooper())
             }
 
             addOnFailureListener { e->
-                DLog.e("""
-                task error --> $e,
-                statusCode --> $e
-                message --> ${e.message}
-                statusMsg --> ${e.suppressed}
-                cause --> ${e.cause}
-                """)
                 val statusCode = (e as ApiException).statusCode
                 when (statusCode) {
                     LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
-                        Log.i("debug", "Location settings are not satisfied. Attempting to upgrade " + "location settings ")
                         try {
                             val rae = e as ResolvableApiException
                             DLog.e(rae.localizedMessage)
                         } catch (sie: IntentSender.SendIntentException) {
-                            Log.i("debug", "PendingIntent unable to execute request.")
+                            DLog.i("PendingIntent unable to execute request.")
                         }
 
                     }
@@ -224,9 +202,8 @@ class LocationService : Service() {
     }
 
     companion object {
-        private val INTERVAL : Long = 1000 * 8
-        private val FASTEST_INTERVAL : Long = 1000 * 4
-        private val SMALLEST_DISPLACEMENT = 0.25f //quarter of a meter
+        private val INTERVAL : Long = 1000 * 10
+        private val FASTEST_INTERVAL : Long = 1000 * 5
         var isRecordServiceStarting = false
     }
 }
