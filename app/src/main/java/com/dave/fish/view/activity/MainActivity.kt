@@ -47,17 +47,17 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
 
     override fun getContentId(): Int = R.layout.activity_main
 
-    override fun onLoadStart() {
-        init()
-    }
-
-    override fun onLoadContent() {
-    }
-
-    private fun init(){
+    override fun initViews() {
         initRealm()
         initFragments()
-        initView()
+        initToolbar()
+        initSlidingMenu()
+        initSpinner()
+        initViewPager()
+    }
+
+    override fun initData() {
+
     }
 
     private fun initRealm() {
@@ -68,13 +68,6 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
     private fun initFragments() {
         fragmentCalendar = FragmentCalendar()
         fragmentMap = FragmentMap()
-    }
-
-    private fun initView(){
-        initToolbar()
-        initSlidingMenu()
-        initSpinner()
-        initViewPager()
     }
 
     private fun initToolbar(){

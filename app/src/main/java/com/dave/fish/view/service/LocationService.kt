@@ -11,7 +11,6 @@ import android.os.Looper
 import android.support.v4.app.NotificationCompat
 import android.support.v4.app.TaskStackBuilder
 import android.support.v4.content.LocalBroadcastManager
-import android.util.Log
 import android.widget.Toast
 import com.dave.fish.R
 import com.dave.fish.common.Constants
@@ -41,7 +40,6 @@ class LocationService : Service() {
     private var requestingLocationUpdates = false
     private var lastUpdateTime = ""
     private var textLog = ""
-    private var priority = 0
 
     private lateinit var intent : Intent
 

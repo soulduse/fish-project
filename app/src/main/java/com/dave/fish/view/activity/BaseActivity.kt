@@ -2,7 +2,6 @@ package com.dave.fish.view.activity
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.view.WindowManager
 import com.dave.fish.R
 import io.realm.Realm
 
@@ -15,27 +14,33 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        realm = Realm.getDefaultInstance()
-        
+
+        initRealm()
+
+        initAnimation()
+
         val contentId = getContentId()
         if(contentId != 0){
             setContentView(contentId)
-
-            window.attributes.width = WindowManager.LayoutParams.MATCH_PARENT
-            window.attributes.height = WindowManager.LayoutParams.MATCH_PARENT
-            window.attributes.horizontalMargin = 0f
-
-            overridePendingTransition(R.anim.anim_popup_slide_right_in, R.anim.anim_none)
         }
-        onLoadStart()
-        onLoadContent()
+        initViews()
+
+        initData()
+    }
+
+    private fun initRealm(){
+        realm = Realm.getDefaultInstance()
+    }
+
+    private fun initAnimation(){
+        overridePendingTransition(R.anim.anim_popup_slide_right_in, R.anim.anim_none)
     }
 
     abstract fun getContentId(): Int
 
-    abstract fun onLoadStart()
+    abstract fun initViews()
 
-    abstract fun onLoadContent()
+    abstract fun initData()
 
     override fun finish() {
         super.finish()

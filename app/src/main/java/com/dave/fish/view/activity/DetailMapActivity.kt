@@ -15,7 +15,7 @@ class DetailMapActivity : BaseActivity()
 
     override fun getContentId(): Int = R.layout.activity_map_detail
 
-    override fun onLoadStart() {
+    override fun initViews() {
         val lat = intent.getDoubleExtra("lat", 0.0)
         val lon = intent.getDoubleExtra("lon", 0.0)
 
@@ -24,7 +24,7 @@ class DetailMapActivity : BaseActivity()
 
     }
 
-    override fun onLoadContent() {
+    override fun initData() {
 
     }
 

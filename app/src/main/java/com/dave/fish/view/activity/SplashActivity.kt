@@ -17,11 +17,11 @@ class SplashActivity : BaseActivity(){
         return 0
     }
 
-    override fun onLoadStart() {
+    override fun initViews() {
         initRealm()
     }
 
-    override fun onLoadContent() {
+    override fun initData() {
         initSpinnerData()
     }
 

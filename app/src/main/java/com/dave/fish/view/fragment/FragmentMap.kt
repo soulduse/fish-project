@@ -52,7 +52,7 @@ class FragmentMap : BaseFragment(),
     private val locE = LatLng(37.4876, 126.825)
     private val locF = LatLng(37.4887, 126.926)
 
-    override fun onLoadStart(savedInstanceState : Bundle?) {
+    override fun initViews(savedInstanceState : Bundle?) {
         selectedItem = mRealmController.findSelectedSecondModel(realm)
         MapsInitializer.initialize(this.activity)
 
@@ -98,7 +98,7 @@ class FragmentMap : BaseFragment(),
         }
     }
 
-    override fun onLoadContent() {
+    override fun initData() {
         // response location values from service
         receiver = object : BroadcastReceiver(){
             override fun onReceive(context: Context?, intent: Intent) {

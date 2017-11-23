@@ -33,16 +33,16 @@ class TideDetailActivity : BaseActivity() {
         return R.layout.activity_tide_detail
     }
 
-    override fun onLoadStart() {
-        initData()
+    override fun initViews() {
+        initRealmData()
         initLayout()
     }
 
-    override fun onLoadContent() {
+    override fun initData() {
         
     }
 
-    private fun initData() {
+    private fun initRealmData() {
         val secondSpinnerItem = mRealmController.findSelectedSecondModel(realm)
         val postId = secondSpinnerItem.obsPostId
         val postName = secondSpinnerItem.obsPostName

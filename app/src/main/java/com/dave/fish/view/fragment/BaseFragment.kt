@@ -21,8 +21,8 @@ abstract class BaseFragment : Fragment() {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        onLoadStart(savedInstanceState)
-        onLoadContent()
+        initViews(savedInstanceState)
+        initData()
     }
 
     override fun onDestroyView() {
@@ -32,7 +32,7 @@ abstract class BaseFragment : Fragment() {
 
     abstract fun getContentId(): Int
 
-    abstract fun onLoadStart(savedInstanceState: Bundle?)
+    abstract fun initViews(savedInstanceState: Bundle?)
 
-    abstract fun onLoadContent()
+    abstract fun initData()
 }

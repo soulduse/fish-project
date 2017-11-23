@@ -47,11 +47,11 @@ class FragmentCalendar : BaseFragment() {
 
     override fun getContentId(): Int = R.layout.fragment_menu_one
 
-    override fun onLoadStart(savedInstanceState: Bundle?) {
+    override fun initViews(savedInstanceState: Bundle?) {
         initView()
     }
 
-    override fun onLoadContent() {
+    override fun initData() {
         refreshCalendar()
     }
 
@@ -109,7 +109,7 @@ class FragmentCalendar : BaseFragment() {
 
     private fun initMonthView(){
         monthView.firstDayOfTheWeek = CalendarView.SUNDAY_SHIFT
-        Log.d(TAG, "getCalendarForState() --> ${getCalendarForState()}")
+        DLog.d("getCalendarForState() --> ${getCalendarForState()}")
         monthView.setCurrentDay(getCalendarForState())
 
         monthView.setDaySelectedListener(object : CalendarView.DaySelectionListener {
