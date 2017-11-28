@@ -45,6 +45,7 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
 
 
     private var permissionlistener: PermissionListener = object : PermissionListener {
+        @SuppressLint("MissingPermission")
         override fun onPermissionGranted() {
             Toast.makeText(MyApplication.context, "Permission Granted", Toast.LENGTH_SHORT).show()
             mMap.isMyLocationEnabled = true

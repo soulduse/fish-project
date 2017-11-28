@@ -16,25 +16,36 @@ class BaseRetrofit {
     private lateinit var retrofit: Retrofit
 
     // 조석정보 API
-    private lateinit var tideServiceApi: TideApi
+    private lateinit var tideServiceApi: NetConfig.TideApi
     // 날씨정보 API
-    private lateinit var kmaServiceApi : KmaApi
+    private lateinit var kmaServiceApi : NetConfig.KmaApi
 
     private var baseUrl = ""
 
-    fun getTideRetrofit(): TideApi {
-        baseUrl = TIDE_URL
+    fun getTideRetrofit(): NetConfig.TideApi {
         retrofit = createRetrofit()
-        tideServiceApi = retrofit.create(TideApi::class.java)
+        tideServiceApi = retrofit.create(NetConfig.TideApi::class.java)
         return tideServiceApi
     }
 
-    fun getKmaRetrofit(): KmaApi {
-        baseUrl = FORECAST_URL
+    fun getKmaRetrofit(): NetConfig.KmaApi {
         retrofit = createRetrofit()
-        kmaServiceApi = retrofit.create(KmaApi::class.java)
+        kmaServiceApi = retrofit.create(NetConfig.KmaApi::class.java)
         return kmaServiceApi
     }
+
+    fun getRetrofit(baseUrl : String) : Any{
+        this.baseUrl = baseUrl
+        retrofit = createRetrofit()
+
+        return if(baseUrl == NetConfig.FORECAST_URL){
+            retrofit.create(NetConfig.KmaApi::class.java)
+        }else{
+            retrofit.create(NetConfig.TideApi::class.java)
+        }
+    }
+
+
 
     private fun createRetrofit() : Retrofit{
         return Retrofit.Builder()
@@ -68,7 +79,5 @@ class BaseRetrofit {
 
     companion object {
         val instance: BaseRetrofit by lazy { Holder.INSTANCE }
-        private val TIDE_URL = "http://www.khoa.go.kr/swtc/"
-        private val FORECAST_URL = "http://newsky2.kma.go.kr/service/SecndSrtpdFrcstInfoService2/"
     }
 }

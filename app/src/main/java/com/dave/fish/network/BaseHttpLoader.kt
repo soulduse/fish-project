@@ -1,10 +1,13 @@
 import com.dave.fish.network.BaseRetrofit
+import com.dave.fish.network.NetConfig
+import io.reactivex.Observable
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 abstract class BaseHttpLoader<T, T1>(private val mOnLoadListener: OnLoadListener<T1>?) {
     private var mCall: Call<T>? = null
+    private var mObservable : Observable<T>? = null
 
     abstract val baseURL: String
 
@@ -14,9 +17,24 @@ abstract class BaseHttpLoader<T, T1>(private val mOnLoadListener: OnLoadListener
         CONTENT
     }
 
-    /*
+    fun startKma(){
+        val service = BaseRetrofit.instance.getKmaRetrofit()
+        this.mObservable = loadService(service)
+        this.mObservable?.subscribe({
+            response ->
+
+        },{
+            throwable ->
+
+        })
+    }
+
+    fun startTide(){
+        val service = BaseRetrofit.instance.getTideRetrofit()
+        this.mObservable = loadService(service)
+    }
+
     fun start() {
-        BaseRetrofit.instance.
         val retrofit = BaseRetrofit..getRetrofit(baseURL)
         val service = retrofit.create(NetConfig.Service::class.java!!)
         this.mCall = loadService(service)
@@ -60,7 +78,7 @@ abstract class BaseHttpLoader<T, T1>(private val mOnLoadListener: OnLoadListener
 //        start()
 //    }
 //
-//    abstract fun loadService(service: Service): Call<T>
+    abstract fun loadService(service: Any): Observable<T>
 
     abstract fun loadContent(data: T?): T1
 
