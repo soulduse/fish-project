@@ -1,5 +1,6 @@
 package com.dave.fish.view.activity
 
+import android.app.Fragment
 import android.graphics.drawable.Drawable
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
@@ -19,6 +20,7 @@ import com.dave.fish.db.RealmListener
 import com.dave.fish.model.realm.SelectItemModel
 import com.dave.fish.view.adapter.ViewPagerAdapter
 import com.dave.fish.view.fragment.FragmentCalendar
+import com.dave.fish.view.fragment.FragmentKma
 import com.dave.fish.view.fragment.FragmentMap
 import com.dave.fish.view.menu.DrawerAdapter
 import com.dave.fish.view.menu.MenuDrawer
@@ -44,6 +46,7 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
 
     private lateinit var fragmentCalendar : FragmentCalendar
     private lateinit var fragmentMap : FragmentMap
+    private lateinit var fragmentKma : FragmentKma
 
     override fun getContentId(): Int = R.layout.activity_main
 
@@ -68,6 +71,7 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
     private fun initFragments() {
         fragmentCalendar = FragmentCalendar()
         fragmentMap = FragmentMap()
+        fragmentKma = FragmentKma()
     }
 
     private fun initToolbar(){
@@ -181,6 +185,12 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
             }
             else -> Toast.makeText(applicationContext, "개발 진행중인 기능입니다.", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun showFragment(fragment: Fragment){
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, fragment)
+                .commit()
     }
 
     private fun setScrollAble(isAble : Boolean){

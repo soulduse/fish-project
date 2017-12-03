@@ -45,8 +45,6 @@ class BaseRetrofit {
         }
     }
 
-
-
     private fun createRetrofit() : Retrofit{
         return Retrofit.Builder()
                 .baseUrl(baseUrl)
@@ -71,10 +69,6 @@ class BaseRetrofit {
 
     private object Holder {
         val INSTANCE = BaseRetrofit()
-    }
-
-    enum class Api{
-        Tide, Kma
     }
 
     companion object {

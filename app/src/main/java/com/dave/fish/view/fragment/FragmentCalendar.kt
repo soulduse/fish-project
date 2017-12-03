@@ -225,6 +225,7 @@ class FragmentCalendar : BaseFragment() {
                     tideDate = DateTime(item.searchDate)
                 }
             }
+
             if (isEmptyInMonthView(tideDate)) {
                 DLog.w("Item instanceOf --> passed Date (${tideDate.year}/${tideDate.monthOfYear}/${tideDate.dayOfMonth})")
                 monthView.addViewToDay(CalendarView.DayMetadata(tideDate.year, tideDate.monthOfYear, tideDate.dayOfMonth),
