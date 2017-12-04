@@ -1,7 +1,6 @@
 package com.dave.fish.view.activity
 
 import android.app.Fragment
-import android.graphics.drawable.Drawable
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
 import android.support.design.widget.AppBarLayout
@@ -18,6 +17,7 @@ import com.dave.fish.R
 import com.dave.fish.db.RealmController
 import com.dave.fish.db.RealmListener
 import com.dave.fish.model.realm.SelectItemModel
+import com.dave.fish.util.DLog
 import com.dave.fish.view.adapter.ViewPagerAdapter
 import com.dave.fish.view.fragment.FragmentCalendar
 import com.dave.fish.view.fragment.FragmentKma
@@ -25,7 +25,6 @@ import com.dave.fish.view.fragment.FragmentMap
 import com.dave.fish.view.menu.DrawerAdapter
 import com.dave.fish.view.menu.MenuDrawer
 import com.dave.fish.view.menu.SimpleItem
-import com.dave.fish.view.menu.SpaceItem
 import com.yarolegovich.slidingrootnav.SlidingRootNav
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder
 import kotlinx.android.synthetic.main.activity_main.*
@@ -35,9 +34,6 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
     private lateinit var mRealmController : RealmController
     private var firstSpinnerPosition = 0
     private var selectedSpinner : SelectItemModel = SelectItemModel()
-
-    private var screenTitles: Array<String> = arrayOf()
-    private var screenIcons: Array<Drawable?> = arrayOf()
 
     private lateinit var slidingRootNav: SlidingRootNav
 
@@ -91,19 +87,18 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
                 .withMenuOpened(true)
                 .inject()
 
-        screenIcons = loadScreenIcons()
-        screenTitles = loadScreenTitles()
+        val menuList = arrayListOf(
+                createItemFor(MenuDrawer.INFO).setChecked(true),
+                createItemFor(MenuDrawer.MAP),
+                createItemFor(MenuDrawer.KWA),
+                createItemFor(MenuDrawer.KHOA),
+                createItemFor(MenuDrawer.CATCH),
+                createItemFor(MenuDrawer.CHAT),
+                createItemFor(MenuDrawer.ALARM),
+                createItemFor(MenuDrawer.MAIL),
+                createItemFor(MenuDrawer.SHARE))
 
-        val menuAdapter = DrawerAdapter(arrayListOf(
-                createItemFor(MenuDrawer.INFO.position).setChecked(true),
-                createItemFor(MenuDrawer.MAP.position),
-                SpaceItem(18),
-                createItemFor(MenuDrawer.CATCH.position),
-                createItemFor(MenuDrawer.CHAT.position),
-                createItemFor(MenuDrawer.ALARM.position),
-                SpaceItem(18),
-                createItemFor(MenuDrawer.MAIL.position),
-                createItemFor(MenuDrawer.SHARE.position)))
+        val menuAdapter = DrawerAdapter(menuList)
 
         menuAdapter.setListener(this)
         val list = findViewById<RecyclerView>(R.id.menu_drawer_list)
@@ -111,7 +106,7 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         list.layoutManager = LinearLayoutManager(this)
         list.adapter = menuAdapter
 
-        menuAdapter.setSelected(MenuDrawer.INFO.position)
+        menuAdapter.setSelected(0)
     }
 
     private fun initSpinner() {
@@ -133,8 +128,18 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
 
             override fun onPageSelected(position: Int) {
                 when(position){
-                    PAGE_CALENDAR -> setScrollAble(true)
-                    PAGE_MAP_RECORD -> setScrollAble(false)
+                    PAGE_CALENDAR -> {
+                        visibleCollapsingToolbar()
+                        setScrollAble(true)
+                    }
+                    PAGE_MAP_RECORD->{
+                        visibleCollapsingToolbar()
+                        setScrollAble(false)
+                    }
+                    else->{
+                        goneCollapsingToolbar()
+                        setScrollAble(false)
+                    }
                 }
             }
         })
@@ -143,32 +148,16 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         main_viewpager.adapter = ViewPagerAdapter(supportFragmentManager).apply {
             addFragment(fragmentCalendar)
             addFragment(fragmentMap)
+            addFragment(fragmentKma)
         }
     }
 
-    private fun createItemFor(position: Int): SimpleItem {
-        return SimpleItem(screenIcons[position], screenTitles[position])
+    private fun createItemFor(menuDrawer: MenuDrawer): SimpleItem {
+        return SimpleItem(ContextCompat.getDrawable(this, menuDrawer.icon), menuDrawer.title)
                 .withIconTint(color(R.color.textColorSecondary))
                 .withTextTint(color(R.color.textColorPrimary))
                 .withSelectedIconTint(color(R.color.colorAccent))
                 .withSelectedTextTint(color(R.color.colorAccent))
-    }
-
-    private fun loadScreenTitles(): Array<String> {
-        return resources.getStringArray(R.array.drawer_menu_titles)
-    }
-
-    private fun loadScreenIcons(): Array<Drawable?> {
-        val ta = resources.obtainTypedArray(R.array.drawer_menu_images)
-        val icons = arrayOfNulls<Drawable>(ta.length())
-        for (i in 0 until ta.length()) {
-            val id = ta.getResourceId(i, 0)
-            if (id != 0) {
-                icons[i] = ContextCompat.getDrawable(this, id)
-            }
-        }
-        ta.recycle()
-        return icons
     }
 
     @ColorInt
@@ -178,9 +167,14 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
 
     override fun onItemSelected(position: Int) {
         slidingRootNav.closeMenu()
-
+        DLog.w("onItemSelected --> $position")
         when(position){
-            in PAGE_CALENDAR .. PAGE_MAP_RECORD -> {
+            in 0 .. 1 -> {
+                visibleCollapsingToolbar()
+                main_viewpager.currentItem = position
+            }
+            2 -> {
+                goneCollapsingToolbar()
                 main_viewpager.currentItem = position
             }
             else -> Toast.makeText(applicationContext, "개발 진행중인 기능입니다.", Toast.LENGTH_SHORT).show()
@@ -191,6 +185,18 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         fragmentManager.beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit()
+    }
+
+    private fun goneCollapsingToolbar(){
+        if(toolbar_layout.visibility == View.VISIBLE){
+            toolbar_layout.visibility = View.GONE
+        }
+    }
+
+    private fun visibleCollapsingToolbar(){
+        if(toolbar_layout.visibility == View.GONE){
+            toolbar_layout.visibility = View.VISIBLE
+        }
     }
 
     private fun setScrollAble(isAble : Boolean){

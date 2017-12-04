@@ -348,7 +348,7 @@ class FragmentCalendar : BaseFragment() {
     }
 
     fun setVisibleNavigationCalendar(visible : Int){
-        navigation_calendar_container.visibility = visible
+        navigation_calendar_container?.visibility = visible
     }
 
     companion object {
