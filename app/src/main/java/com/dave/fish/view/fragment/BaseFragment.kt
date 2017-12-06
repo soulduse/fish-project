@@ -19,7 +19,7 @@ abstract class BaseFragment : Fragment() {
         return inflater.inflate(getContentId(), container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews(savedInstanceState)
         initData()

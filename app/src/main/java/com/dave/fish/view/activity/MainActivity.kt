@@ -1,6 +1,7 @@
 package com.dave.fish.view.activity
 
 import android.app.Fragment
+import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
 import android.support.design.widget.AppBarLayout
@@ -14,14 +15,13 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
 import com.dave.fish.R
+import com.dave.fish.common.Constants
 import com.dave.fish.db.RealmController
 import com.dave.fish.db.RealmListener
 import com.dave.fish.model.realm.SelectItemModel
 import com.dave.fish.util.DLog
 import com.dave.fish.view.adapter.ViewPagerAdapter
-import com.dave.fish.view.fragment.FragmentCalendar
-import com.dave.fish.view.fragment.FragmentKma
-import com.dave.fish.view.fragment.FragmentMap
+import com.dave.fish.view.fragment.*
 import com.dave.fish.view.menu.DrawerAdapter
 import com.dave.fish.view.menu.MenuDrawer
 import com.dave.fish.view.menu.SimpleItem
@@ -42,7 +42,9 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
 
     private lateinit var fragmentCalendar : FragmentCalendar
     private lateinit var fragmentMap : FragmentMap
-    private lateinit var fragmentKma : FragmentKma
+    private lateinit var fragmentKma : FragmentWeb
+    private lateinit var fragmentMarinKma : FragmentWeb
+    private lateinit var fragmentWindyty : FragmentWeb
 
     override fun getContentId(): Int = R.layout.activity_main
 
@@ -65,9 +67,14 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
     }
 
     private fun initFragments() {
-        fragmentCalendar = FragmentCalendar()
-        fragmentMap = FragmentMap()
-        fragmentKma = FragmentKma()
+        fragmentCalendar = FragmentCalendar.newInstance()
+        fragmentMap = FragmentMap.newInstance()
+        fragmentKma = FragmentWeb.newInstance()
+        fragmentKma.arguments = Bundle().apply { putString("url", Constants.KMA_M_URL) }
+        fragmentMarinKma = FragmentWeb.newInstance()
+        fragmentMarinKma.arguments = Bundle().apply { putString("url", Constants.MARIN_KMA_M_URL) }
+        fragmentWindyty = FragmentWeb.newInstance()
+        fragmentWindyty.arguments = Bundle().apply { putString("url", Constants.WINDYTY_M_URL) }
     }
 
     private fun initToolbar(){
@@ -90,8 +97,8 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         val menuList = arrayListOf(
                 createItemFor(MenuDrawer.INFO).setChecked(true),
                 createItemFor(MenuDrawer.MAP),
-                createItemFor(MenuDrawer.KWA),
-                createItemFor(MenuDrawer.KHOA),
+                createItemFor(MenuDrawer.KMA),
+                createItemFor(MenuDrawer.MARIN_KMA),
                 createItemFor(MenuDrawer.CATCH),
                 createItemFor(MenuDrawer.CHAT),
                 createItemFor(MenuDrawer.ALARM),
@@ -149,6 +156,8 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
             addFragment(fragmentCalendar)
             addFragment(fragmentMap)
             addFragment(fragmentKma)
+            addFragment(fragmentMarinKma)
+            addFragment(fragmentWindyty)
         }
     }
 
@@ -173,11 +182,12 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
                 visibleCollapsingToolbar()
                 main_viewpager.currentItem = position
             }
-            2 -> {
+
+            else -> {
                 goneCollapsingToolbar()
                 main_viewpager.currentItem = position
+//                Toast.makeText(applicationContext, "개발 진행중인 기능입니다.", Toast.LENGTH_SHORT).show()
             }
-            else -> Toast.makeText(applicationContext, "개발 진행중인 기능입니다.", Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -1,6 +1,8 @@
 package com.dave.fish.view.activity
 
+import android.support.design.widget.Snackbar
 import android.util.Log
+import android.widget.Toast
 import com.dave.fish.R
 import com.dave.fish.db.RealmController
 import com.dave.fish.model.realm.TideWeeklyModel
@@ -68,11 +70,15 @@ class TideDetailActivity : BaseActivity() {
             }
         }
 
-        tideWeeklyItem = mRealmController.findTideWeekly(realm, key)
-        Log.w(TAG, "tideWeeklyItem --> " + tideWeeklyItem.toString())
-        TideUtil.setTide(tideWeeklyItem)
+        try{
+            tideWeeklyItem = mRealmController.findTideWeekly(realm, key)
+            Log.w(TAG, "tideWeeklyItem --> " + tideWeeklyItem.toString())
+            TideUtil.setTide(tideWeeklyItem)
 
-        setWeatherInfoFromApi()
+            setWeatherInfoFromApi()
+        }catch (e : IllegalStateException){
+            Toast.makeText(applicationContext, "일시적으로 데이터를 읽어올수 없습니다. \n해당 페이지를 다시 접근후 시도해주세요.", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun initLayout() {

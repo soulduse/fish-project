@@ -195,6 +195,12 @@ class FragmentMap : BaseFragment(),
     }
 
     companion object {
-        private val TAG = FragmentMap::class.java.simpleName
+        fun newInstance() : FragmentMap{
+            val fragmemt = FragmentMap()
+            val bundle = Bundle()
+            fragmemt.arguments = bundle
+
+            return fragmemt
+        }
     }
 }

@@ -17,12 +17,12 @@ class RetrofitController {
 
     private val retrofitBase = BaseRetrofit.instance
 
-    private fun getTideRetrofit(): TideApi {
-        return retrofitBase.getTideRetrofit()
+    private fun getTideRetrofit(): NetConfig.TideApi {
+        return retrofitBase.getRetrofit(NetConfig.TIDE_URL) as NetConfig.TideApi
     }
 
-    private fun getKmaRetrofit(): KmaApi {
-        return retrofitBase.getKmaRetrofit()
+    private fun getKmaRetrofit(): NetConfig.KmaApi {
+        return retrofitBase.getRetrofit(NetConfig.FORECAST_URL) as NetConfig.KmaApi
     }
 
     fun getChartData() : Observable<ChartModel>{

@@ -100,6 +100,7 @@ class FragmentCalendar : BaseFragment() {
             initDataOnThisMonth(postId, currentDayOfMonth.dateTime)
 
             dayOfMonthList.forEach {
+                DLog.w("dayOfMonthList --> $it")
                 initCalendarData(postId, it, tideMonthList)
             }
 
@@ -144,10 +145,13 @@ class FragmentCalendar : BaseFragment() {
     }
 
     private fun initCalendarData(postId: String, dateTime: DateTime, tideMonthList : RealmResults<TideWeeklyModel>) {
+        DLog.d("tideMonthList size --> ${tideMonthList.size}")
         if(!lockSelect && tideMonthList.isNotEmpty()){
             addDataToCalendar(tideMonthList, postId)
             lockSelect = true
-        }else if(tideMonthList.isEmpty()){
+            DLog.d("initCalendarData --> true")
+        }else if(tideMonthList.size < MINIMUM_DAY_SIZE){
+            DLog.d("initCalendarData --> false")
             requestMonthData(postId, dateTime)
         }
     }
@@ -160,7 +164,7 @@ class FragmentCalendar : BaseFragment() {
                     val weeklyDataList = tideModel.weeklyDataList
                     addDataToCalendar(weeklyDataList, postId)
                 }, { e ->
-                    Toast.makeText(context, e.localizedMessage, Toast.LENGTH_LONG).show()
+//                    Toast.makeText(context, e.localizedMessage, Toast.LENGTH_LONG).show()
                 })
     }
 
@@ -352,14 +356,22 @@ class FragmentCalendar : BaseFragment() {
     }
 
     companion object {
-        private val TAG = FragmentCalendar::class.java.simpleName
         private val DAY_PARAMETER = "day"
         private val MONTH_PARAMETER = "month"
         private val YEAR_PARAMETER = "year"
         private val FIRST_DAY_OF_WEEK_PARAMETER = "firstDay"
+        private val MINIMUM_DAY_SIZE = 28
 
         enum class WeatherIcons {
             SUN, RAIN, CLOUD, MORECLOUD, CLOUDRAIN
+        }
+
+        fun newInstance() : FragmentCalendar{
+            val fragmemt = FragmentCalendar()
+            val bundle = Bundle()
+            fragmemt.arguments = bundle
+
+            return fragmemt
         }
     }
 }
