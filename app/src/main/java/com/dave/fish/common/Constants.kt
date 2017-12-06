@@ -12,7 +12,7 @@ object Constants {
 
     // Service
     val EXTRA_RECEIVER = "EXTRA_RECEIVER"
-    val EXTRA_RECEIVER_ID = 1001 
+    val EXTRA_RECEIVER_ID = 1001
 
     // Notification
     val NOTIFICATION_CHANEL = "notification_chanel"
