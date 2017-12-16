@@ -45,6 +45,7 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
     private lateinit var fragmentKma : FragmentWeb
     private lateinit var fragmentMarinKma : FragmentWeb
     private lateinit var fragmentWindyty : FragmentWeb
+    private lateinit var fragmentAlarm : FragmentAlarm
 
     override fun getContentId(): Int = R.layout.activity_main
 
@@ -75,6 +76,7 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         fragmentMarinKma.arguments = Bundle().apply { putString("url", Constants.MARIN_KMA_M_URL) }
         fragmentWindyty = FragmentWeb.newInstance()
         fragmentWindyty.arguments = Bundle().apply { putString("url", Constants.WINDYTY_M_URL) }
+        fragmentAlarm = FragmentAlarm.newInstance()
     }
 
     private fun initToolbar(){
@@ -158,6 +160,7 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
             addFragment(fragmentKma)
             addFragment(fragmentMarinKma)
             addFragment(fragmentWindyty)
+            addFragment(fragmentAlarm)
         }
     }
 
