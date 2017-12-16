@@ -41,5 +41,5 @@
 
     <dimen name="tv_map_detail_margin">10dp</dimen>
     <dimen name="tv_map_detail_size">20dp</dimen>
-    <dimen name="tv_map_record_size">20dp</dimen>
+    <dimen name="tv_map_record_size">20sp</dimen>
 </resources>

@@ -31,7 +31,10 @@
     <string name="warning_empty_address">해당되는 주소 정보는 없습니다.</string>
     <string name="korea">대한민국</string>
 
-
+    <string name="number_picker_hour">시간</string>
+    <string name="number_picker_min">분</string>
+    <string name="number_picker_selected_values">%1$d시간 %2$d분후 알람실행</string>
+    <string name="start_alarm">알람 시작</string>
 
     <!--    Permissions    -->
     <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>
