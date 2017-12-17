@@ -1,6 +1,5 @@
 package com.dave.fish.view.activity
 
-import android.app.Fragment
 import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
@@ -13,21 +12,25 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import android.widget.Toast
 import com.dave.fish.R
 import com.dave.fish.common.Constants
+import com.dave.fish.common.PickTideDialog
 import com.dave.fish.db.RealmController
 import com.dave.fish.db.RealmListener
 import com.dave.fish.model.realm.SelectItemModel
 import com.dave.fish.util.DLog
 import com.dave.fish.view.adapter.ViewPagerAdapter
-import com.dave.fish.view.fragment.*
+import com.dave.fish.view.fragment.FragmentAlarm
+import com.dave.fish.view.fragment.FragmentCalendar
+import com.dave.fish.view.fragment.FragmentMap
+import com.dave.fish.view.fragment.FragmentWeb
 import com.dave.fish.view.menu.DrawerAdapter
 import com.dave.fish.view.menu.MenuDrawer
 import com.dave.fish.view.menu.SimpleItem
 import com.yarolegovich.slidingrootnav.SlidingRootNav
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.menu_left_drawer.*
 
 class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
 
@@ -56,6 +59,7 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         initSlidingMenu()
         initSpinner()
         initViewPager()
+        initFavoriteTide()
     }
 
     override fun initData() {
@@ -172,10 +176,19 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
                 .withSelectedTextTint(color(R.color.colorAccent))
     }
 
-    @ColorInt
-    private fun color(@ColorRes res: Int): Int {
-        return ContextCompat.getColor(this, res)
+    private fun initFavoriteTide(){
+//        tv_favorite_tide_name.text = "tttt"
+//        tv_favorite_tide_values.text = "value"
+        tv_favorite_tide_name.setOnClickListener(setOnClickFavoriteTide)
+        tv_favorite_tide_values.setOnClickListener(setOnClickFavoriteTide)
     }
+
+    private val setOnClickFavoriteTide = View.OnClickListener {
+        PickTideDialog().show(supportFragmentManager, "test")
+    }
+
+    @ColorInt
+    private fun color(@ColorRes res: Int): Int = ContextCompat.getColor(this, res)
 
     override fun onItemSelected(position: Int) {
         slidingRootNav.closeMenu()
@@ -192,12 +205,6 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
 //                Toast.makeText(applicationContext, "개발 진행중인 기능입니다.", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    private fun showFragment(fragment: Fragment){
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, fragment)
-                .commit()
     }
 
     private fun goneCollapsingToolbar(){
@@ -245,7 +252,7 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         spinner.adapter = spinnerArrayAdapter
     }
 
-    var spinnerListener = object : AdapterView.OnItemSelectedListener{
+    private var spinnerListener = object : AdapterView.OnItemSelectedListener{
         override fun onNothingSelected(p0: AdapterView<*>?) {
 
         }
@@ -302,7 +309,6 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
     }
 
     companion object {
-        private val TAG = MainActivity.javaClass.simpleName
         private var firstExecute = true
         private val PAGE_CALENDAR = 0
         private val PAGE_MAP_RECORD = 1
