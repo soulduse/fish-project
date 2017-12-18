@@ -62,13 +62,22 @@ class RealmController {
                     this.firstPosition = position1
                     this.secondPosition = position2
                 }
+
+                bgRealm.insert(SelectItemModel().apply {
+                    doNm = key
+                    this.postName = postName
+                    this.firstPosition = position1
+                    this.secondPosition = position2
+                    this.isTodayTide = true
+                })
             }
         }
     }
 
-    fun setSelectedSpinnerItem(realm: Realm, key: String, postName: String, position1: Int, position2: Int) {
+    fun setSelectedSpinnerItem(realm: Realm, key: String, postName: String, position1: Int, position2: Int, isTodayTide : Boolean = false) {
         realm.executeTransactionAsync({ bgRealm ->
-            val selectedItem = bgRealm.where(SelectItemModel::class.java).findFirst()
+//            val selectedItem = bgRealm.where(SelectItemModel::class.java).findFirst()
+            val selectedItem = bgRealm.where(SelectItemModel::class.java).equalTo("isTodayTide", isTodayTide).findFirst()
             selectedItem.run {
                 doNm = key
                 this.postName = postName
@@ -90,8 +99,9 @@ class RealmController {
         return findByPostName(realm, selectedItem.doNm, selectedItem.postName)
     }
 
-    fun findSelectedSpinnerItem(realm: Realm): SelectItemModel {
+    fun findSelectedSpinnerItem(realm: Realm, isTodayTide: Boolean = false): SelectItemModel {
         return realm.where(SelectItemModel::class.java)
+                .equalTo("isTodayTide", isTodayTide)
                 .findFirst()
     }
 

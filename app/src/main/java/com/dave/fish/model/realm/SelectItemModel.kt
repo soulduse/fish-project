@@ -10,5 +10,5 @@ open class SelectItemModel : RealmObject(){
     var firstPosition = 0
     var postName: String = ""
     var secondPosition = 0
-
+    var isTodayTide = false
 }

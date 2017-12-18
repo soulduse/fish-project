@@ -19,24 +19,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_margin="8dp"-->
+        <!--android:orientation="horizontal"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/today_tide">-->
+
+        <!--<Spinner-->
+            <!--android:id="@+id/spinner_loc_pick"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1.2" />-->
+
+        <!--<Spinner-->
+            <!--android:id="@+id/spinner_map_pick"-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1" />-->
+    <!--</LinearLayout>-->
+    <com.dave.fish.view.CustomAreasSpinner
+        android:id="@+id/custom_areas_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/today_tide">
-
-        <Spinner
-            android:id="@+id/spinner_loc_pick"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1.2" />
-
-        <Spinner
-            android:id="@+id/spinner_map_pick"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/today_tide"/>
 </android.support.constraint.ConstraintLayout>

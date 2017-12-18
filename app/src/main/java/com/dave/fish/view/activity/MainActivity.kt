@@ -12,6 +12,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import android.widget.Toast
 import com.dave.fish.R
 import com.dave.fish.common.Constants
 import com.dave.fish.common.PickTideDialog
@@ -43,12 +44,16 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
     private lateinit var toolbarParams :AppBarLayout.LayoutParams
     private lateinit var toolbarLayoutParams : AppBarLayout.LayoutParams
 
+    // fragments
     private lateinit var fragmentCalendar : FragmentCalendar
     private lateinit var fragmentMap : FragmentMap
     private lateinit var fragmentKma : FragmentWeb
     private lateinit var fragmentMarinKma : FragmentWeb
     private lateinit var fragmentWindyty : FragmentWeb
     private lateinit var fragmentAlarm : FragmentAlarm
+
+    // dialog
+    private lateinit var pickTideDialog :PickTideDialog
 
     override fun getContentId(): Int = R.layout.activity_main
 
@@ -59,7 +64,7 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         initSlidingMenu()
         initSpinner()
         initViewPager()
-        initFavoriteTide()
+        initPickTide()
     }
 
     override fun initData() {
@@ -176,15 +181,17 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
                 .withSelectedTextTint(color(R.color.colorAccent))
     }
 
-    private fun initFavoriteTide(){
-//        tv_favorite_tide_name.text = "tttt"
-//        tv_favorite_tide_values.text = "value"
-        tv_favorite_tide_name.setOnClickListener(setOnClickFavoriteTide)
-        tv_favorite_tide_values.setOnClickListener(setOnClickFavoriteTide)
+    private fun initPickTide(){
+        pickTideDialog = PickTideDialog()
+        pickTideDialog.initDialog({
+            Toast.makeText(this, "ttttttt!!!!", Toast.LENGTH_LONG).show()
+        })
+        tv_pick_tide_name.setOnClickListener(setOnClickFavoriteTide)
+        tv_pick_tide_values.setOnClickListener(setOnClickFavoriteTide)
     }
 
     private val setOnClickFavoriteTide = View.OnClickListener {
-        PickTideDialog().show(supportFragmentManager, "test")
+        pickTideDialog.show(supportFragmentManager, "test")
     }
 
     @ColorInt
