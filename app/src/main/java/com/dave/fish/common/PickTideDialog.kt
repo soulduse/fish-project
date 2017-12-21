@@ -14,9 +14,9 @@ import com.dave.fish.view.CustomAreasSpinner
  */
 class PickTideDialog : DialogFragment() {
 
-    private var mListener : ()->Unit = {}
+    private var mListener : (values: Array<String>)->Unit = {}
 
-    fun initDialog(event : ()->Unit){
+    fun initDialog(event : (values: Array<String>)->Unit){
         mListener = event
     }
 
@@ -27,12 +27,13 @@ class PickTideDialog : DialogFragment() {
         val rootView = inflater.inflate(R.layout.dialog_pick_tide, null)
 
         val customAreasSpinner = rootView.findViewById<CustomAreasSpinner>(R.id.custom_areas_spinner)
+
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
         builder.setView(rootView)
                 // Add action buttons
                 .setPositiveButton("설정", DialogInterface.OnClickListener { _, _ ->
-                    mListener()
+                    customAreasSpinner.getPickedValueOfTide(mListener)
                 })
                 .setNegativeButton("취소", DialogInterface.OnClickListener { _, _ ->
                     customAreasSpinner.closeRealm()

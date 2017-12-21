@@ -94,8 +94,10 @@ class RealmController {
         }
     }
 
-    fun findSelectedSecondModel(realm: Realm): SpinnerSecondModel {
-        val selectedItem = realm.where(SelectItemModel::class.java).findFirst()
+    fun findSelectedSecondModel(realm: Realm, isTodayTide: Boolean = false): SpinnerSecondModel {
+        val selectedItem = realm.where(SelectItemModel::class.java)
+                .equalTo("isTodayTide", isTodayTide)
+                .findFirst()
         return findByPostName(realm, selectedItem.doNm, selectedItem.postName)
     }
 
@@ -105,11 +107,10 @@ class RealmController {
                 .findFirst()
     }
 
-    fun getSpinnerItems(realm: Realm): List<String> {
-        return realm.where(SpinnerFirstModel::class.java).findAll().map { result -> result.areaName }
-    }
+    fun getSpinnerItems(realm: Realm): List<String> =
+            realm.where(SpinnerFirstModel::class.java).findAll().map { result -> result.areaName }
 
-    fun findByPostName(realm: Realm, doNm: String, postName: String): SpinnerSecondModel {
+    private fun findByPostName(realm: Realm, doNm: String, postName: String): SpinnerSecondModel {
         return realm.where(SpinnerFirstModel::class.java)
                 .equalTo("areaName", doNm)
                 .findFirst()

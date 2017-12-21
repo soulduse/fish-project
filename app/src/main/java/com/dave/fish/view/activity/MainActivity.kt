@@ -184,6 +184,10 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
     private fun initPickTide(){
         pickTideDialog = PickTideDialog()
         pickTideDialog.initDialog({
+            val title = it[0]
+            val tides = it[1]
+            tv_pick_tide_name.text = title
+            tv_pick_tide_values.text = tides
             Toast.makeText(this, "ttttttt!!!!", Toast.LENGTH_LONG).show()
         })
         tv_pick_tide_name.setOnClickListener(setOnClickFavoriteTide)

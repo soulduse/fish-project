@@ -8,11 +8,14 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import android.widget.Toast
 import com.dave.fish.R
 import com.dave.fish.db.RealmController
 import com.dave.fish.db.RealmListener
 import com.dave.fish.model.realm.SelectItemModel
+import com.dave.fish.network.RetrofitController
 import io.realm.Realm
+import org.joda.time.DateTime
 
 /**
  * Created by soul on 2017. 12. 17..
@@ -133,6 +136,30 @@ class CustomAreasSpinner : ConstraintLayout {
                             )
                 }
             }
+        }
+    }
+
+    fun getPickedValueOfTide(event : (values: Array<String>)->Unit){
+        val secondSpinnerItem = mRealmController.findSelectedSecondModel(realm, true)
+        val postId = secondSpinnerItem.obsPostId
+        val nameOfArea = secondSpinnerItem.obsPostName
+        var valueOfTide = ""
+
+
+        postId.let {
+            val weatherAndWave = RetrofitController.instance.getWeatherAndWave(postId, DateTime())
+            weatherAndWave.subscribe ({ response ->
+                val longDataList = response.long
+                if (longDataList.isNotEmpty()) {
+                    longDataList.first().apply {
+                        valueOfTide = "${resources.getString(R.string.detail_am)} : ${amWave.replace(" ", "")}\n" +
+                                "${resources.getString(R.string.detail_pm)} : ${pmWave.replace(" ", "")}"
+                        event(arrayOf(nameOfArea, valueOfTide))
+                    }
+                }
+            },{
+                Toast.makeText(context, "데이터를 읽어오는데 실패하였습니다.\n다시 시도해주세요.", Toast.LENGTH_LONG).show()
+            })
         }
     }
 
