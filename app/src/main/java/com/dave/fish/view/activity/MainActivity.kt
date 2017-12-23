@@ -36,10 +36,6 @@ import kotlinx.android.synthetic.main.menu_left_drawer.*
 
 class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
 
-    private lateinit var mRealmController : RealmController
-    private var firstSpinnerPosition = 0
-    private var selectedSpinner : SelectItemModel = SelectItemModel()
-
     private lateinit var slidingRootNav: SlidingRootNav
 
     private lateinit var toolbarParams :AppBarLayout.LayoutParams
@@ -59,22 +55,18 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
     override fun getContentId(): Int = R.layout.activity_main
 
     override fun initViews() {
-        initRealm()
         initFragments()
         initToolbar()
         initSlidingMenu()
-        initSpinner()
         initViewPager()
         initPickTide()
+        initSpinner()
     }
+
+
 
     override fun initData() {
 
-    }
-
-    private fun initRealm() {
-        mRealmController = RealmController.instance
-        mRealmController.setListener(realmListener)
     }
 
     private fun initFragments() {
@@ -126,15 +118,6 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         list.adapter = menuAdapter
 
         menuAdapter.setSelected(0)
-    }
-
-    private fun initSpinner() {
-        spinner_loc.onItemSelectedListener = spinnerListener
-        spinner_map.onItemSelectedListener = spinnerListener
-
-        setSpinnerAdapter(spinner_loc, mRealmController.getSpinnerItems(realm))
-        selectedSpinner = mRealmController.findSelectedSpinnerItem(realm)
-        spinner_loc.setSelection(selectedSpinner.firstPosition, false)
     }
 
     private fun initViewPager() {
@@ -191,7 +174,7 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         }
 
         CustomAreasSpinner(this).apply {
-            setIsTodayTide(true)
+            init(true)
             getPickedValueOfTide {
                 it.run(mListener)
             }
@@ -204,6 +187,20 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         }
         tv_pick_tide_name.setOnClickListener(setOnClickPickTide)
         tv_pick_tide_values.setOnClickListener(setOnClickPickTide)
+    }
+
+    private fun initSpinner(){
+        val customAreasSpinner = findViewById<CustomAreasSpinner>(R.id.main_spinners).apply {
+            init(false)
+        }
+
+        customAreasSpinner.initListener {
+//            if(!firstExecute){
+            DLog.w("customAreasSpinner.initListener")
+                main_viewpager.adapter.notifyDataSetChanged()
+//            }
+//            firstExecute = false
+        }
     }
 
     private val setOnClickPickTide = View.OnClickListener {
@@ -267,60 +264,6 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         toolbarLayoutParams.scrollFlags =
                 AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                 AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
-    }
-
-    private fun setSpinnerAdapter(spinner : Spinner, items : List<String>){
-        val spinnerArrayAdapter = ArrayAdapter<String>(applicationContext, R.layout.spinner_item, items)
-        spinnerArrayAdapter.setDropDownViewResource(R.layout.spinner_none_arrow_item)
-        spinner.adapter = spinnerArrayAdapter
-    }
-
-    private var spinnerListener = object : AdapterView.OnItemSelectedListener{
-        override fun onNothingSelected(p0: AdapterView<*>?) {
-
-        }
-
-        override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
-            val spinner = parent as Spinner
-
-            when(spinner){
-                spinner_loc ->{
-                    setSpinnerAdapter(spinner_map, mRealmController.getSelectedSpinnerItem(realm, spinner_loc.selectedItem.toString())!!)
-                    firstSpinnerPosition = pos
-                    selectedSpinner.let {
-                        if(selectedSpinner.doNm == spinner_loc.selectedItem.toString()){
-                            spinner_map.setSelection(selectedSpinner.secondPosition)
-                        }else{
-                            spinner_map.setSelection(0)
-                        }
-                    }
-                }
-
-                spinner_map ->{
-                    mRealmController
-                            .setSelectedSpinnerItem(
-                                    realm,
-                                    spinner_loc.selectedItem.toString(),
-                                    spinner_map.selectedItem.toString(),
-                                    firstSpinnerPosition,
-                                    pos
-                            )
-                }
-            }
-        }
-    }
-
-    private val realmListener = object : RealmListener{
-        override fun onSpinnerSuccess() {
-            setSpinnerAdapter(spinner_loc, RealmController.instance.getSpinnerItems(realm))
-        }
-
-        override fun onTransactionSuccess() {
-            if(!firstExecute){
-                main_viewpager.adapter.notifyDataSetChanged()
-            }
-            firstExecute = false
-        }
     }
 
     override fun onBackPressed() {

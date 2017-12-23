@@ -28,27 +28,12 @@
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <android.support.constraint.ConstraintLayout
+            <com.dave.fish.view.CustomAreasSpinner
+                android:id="@+id/main_spinners"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp">
+                android:layout_margin="20dp" />
 
-                <Spinner
-                    android:id="@+id/spinner_loc"
-                    android:layout_width="@dimen/spinner_width"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintLeft_toLeftOf="parent" />
-
-                <Spinner
-                    android:id="@+id/spinner_map"
-                    android:layout_width="@dimen/spinner_width"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintLeft_toRightOf="@+id/spinner_loc"
-                    app:layout_constraintRight_toRightOf="parent" />
-
-            </android.support.constraint.ConstraintLayout>
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 

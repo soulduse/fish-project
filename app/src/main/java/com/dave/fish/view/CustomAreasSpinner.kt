@@ -15,6 +15,7 @@ import com.dave.fish.db.RealmListener
 import com.dave.fish.model.realm.SelectItemModel
 import com.dave.fish.model.retrofit.SidePanelData
 import com.dave.fish.network.RetrofitController
+import com.dave.fish.util.DLog
 import io.realm.Realm
 
 /**
@@ -31,21 +32,19 @@ class CustomAreasSpinner : ConstraintLayout {
     private lateinit var mRealmController : RealmController
     private lateinit var realm : Realm
     private var isTodayTide: Boolean = false
+    private var listenerChangedSpinner : ()-> Unit = {}
 
     constructor(context : Context) : super(context){
         initRealm()
-        initView()
     }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs){
         initRealm()
-        initView()
         getAttrs(attrs)
     }
 
     constructor(context: Context, attrs: AttributeSet, difStyle: Int) : super(context, attrs){
         initRealm()
-        initView()
         getAttrs(attrs, difStyle)
     }
 
@@ -97,15 +96,19 @@ class CustomAreasSpinner : ConstraintLayout {
         }
 
         override fun onTransactionSuccess() {
-//            if(!MainActivity.firstExecute){
-//                main_viewpager.adapter.notifyDataSetChanged()
-//            }
-//            MainActivity.firstExecute = false
+            DLog.w("onTransactionSuccess")
+            listenerChangedSpinner()
         }
     }
 
-    fun setIsTodayTide(isTodayTide: Boolean){
+    fun init(isTodayTide: Boolean) : CustomAreasSpinner{
         this.isTodayTide = isTodayTide
+        initView()
+        return this
+    }
+
+    fun initListener(changed : ()-> Unit){
+        listenerChangedSpinner = changed
     }
 
     private var spinnerListener = object : AdapterView.OnItemSelectedListener{
