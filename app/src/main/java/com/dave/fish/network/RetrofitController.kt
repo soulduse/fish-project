@@ -39,9 +39,9 @@ class RetrofitController {
                 .subscribeOn(Schedulers.io())
     }
 
-    fun getSidePanelData() : Observable<SidePanelModel> {
+    fun getSidePanelData(postId: String) : Observable<SidePanelModel> {
         return getTideRetrofit()
-                .getSidePanelData("DT_0001")
+                .getSidePanelData(postId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
     }

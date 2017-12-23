@@ -22,7 +22,7 @@
     <string name="detail_am">오전</string>
     <string name="detail_pm">오후</string>
 
-    <string name="today_tide">오늘의 물때 : 태안</string>
+    <string name="today_tide">오늘의 물때 : %s</string>
 
     <string name="record_start">기록시작</string>
     <string name="record_stop">기록중지</string>

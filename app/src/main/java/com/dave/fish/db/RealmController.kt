@@ -88,7 +88,9 @@ class RealmController {
             Log.d(TAG, "selectedItem --> $selectedItem")
         }, {
             // 트랜잭션이 성공하였습니다.
+            Log.d(TAG, "selectedItem --> success transaction / ${ (realmListener==null) }")
             realmListener?.onTransactionSuccess()
+            Log.d(TAG, "selectedItem --> success transaction / ${ (realmListener==null) }")
         }) {
             // 트랜잭션이 실패했고 자동으로 취소되었습니다.
         }

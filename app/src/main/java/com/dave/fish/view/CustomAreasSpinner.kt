@@ -13,9 +13,9 @@ import com.dave.fish.R
 import com.dave.fish.db.RealmController
 import com.dave.fish.db.RealmListener
 import com.dave.fish.model.realm.SelectItemModel
+import com.dave.fish.model.retrofit.SidePanelData
 import com.dave.fish.network.RetrofitController
 import io.realm.Realm
-import org.joda.time.DateTime
 
 /**
  * Created by soul on 2017. 12. 17..
@@ -30,6 +30,7 @@ class CustomAreasSpinner : ConstraintLayout {
     private var firstSpinnerPosition = 0
     private lateinit var mRealmController : RealmController
     private lateinit var realm : Realm
+    private var isTodayTide: Boolean = false
 
     constructor(context : Context) : super(context){
         initRealm()
@@ -80,7 +81,7 @@ class CustomAreasSpinner : ConstraintLayout {
         spinnerMap.onItemSelectedListener = spinnerListener
 
         setSpinnerAdapter(spinnerLoc, mRealmController.getSpinnerItems(realm))
-        selectedSpinner = mRealmController.findSelectedSpinnerItem(realm, true)
+        selectedSpinner = mRealmController.findSelectedSpinnerItem(realm, isTodayTide)
         spinnerLoc.setSelection(selectedSpinner.firstPosition, false)
     }
 
@@ -101,6 +102,10 @@ class CustomAreasSpinner : ConstraintLayout {
 //            }
 //            MainActivity.firstExecute = false
         }
+    }
+
+    fun setIsTodayTide(isTodayTide: Boolean){
+        this.isTodayTide = isTodayTide
     }
 
     private var spinnerListener = object : AdapterView.OnItemSelectedListener{
@@ -132,30 +137,23 @@ class CustomAreasSpinner : ConstraintLayout {
                                     spinnerMap.selectedItem.toString(),
                                     firstSpinnerPosition,
                                     pos,
-                                    true
+                                    isTodayTide
                             )
                 }
             }
         }
     }
 
-    fun getPickedValueOfTide(event : (values: Array<String>)->Unit){
-        val secondSpinnerItem = mRealmController.findSelectedSecondModel(realm, true)
+    fun getPickedValueOfTide(event : (values: SidePanelData)->Unit){
+        val secondSpinnerItem = mRealmController.findSelectedSecondModel(realm, isTodayTide)
         val postId = secondSpinnerItem.obsPostId
-        val nameOfArea = secondSpinnerItem.obsPostName
-        var valueOfTide = ""
-
 
         postId.let {
-            val weatherAndWave = RetrofitController.instance.getWeatherAndWave(postId, DateTime())
-            weatherAndWave.subscribe ({ response ->
-                val longDataList = response.long
-                if (longDataList.isNotEmpty()) {
-                    longDataList.first().apply {
-                        valueOfTide = "${resources.getString(R.string.detail_am)} : ${amWave.replace(" ", "")}\n" +
-                                "${resources.getString(R.string.detail_pm)} : ${pmWave.replace(" ", "")}"
-                        event(arrayOf(nameOfArea, valueOfTide))
-                    }
+            val panelData = RetrofitController.instance.getSidePanelData(postId)
+            panelData.subscribe ({ response ->
+                val tideList = response.data
+                if(tideList.isNotEmpty()){
+                    event(tideList.first())
                 }
             },{
                 Toast.makeText(context, "데이터를 읽어오는데 실패하였습니다.\n다시 시도해주세요.", Toast.LENGTH_LONG).show()

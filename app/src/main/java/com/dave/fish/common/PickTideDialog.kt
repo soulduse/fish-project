@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import com.dave.fish.R
+import com.dave.fish.model.retrofit.SidePanelData
 import com.dave.fish.view.CustomAreasSpinner
 
 
@@ -14,9 +15,9 @@ import com.dave.fish.view.CustomAreasSpinner
  */
 class PickTideDialog : DialogFragment() {
 
-    private var mListener : (values: Array<String>)->Unit = {}
+    private var mListener : (values: SidePanelData)->Unit = {}
 
-    fun initDialog(event : (values: Array<String>)->Unit){
+    fun initDialog(event : (values: SidePanelData)->Unit){
         mListener = event
     }
 
@@ -27,6 +28,7 @@ class PickTideDialog : DialogFragment() {
         val rootView = inflater.inflate(R.layout.dialog_pick_tide, null)
 
         val customAreasSpinner = rootView.findViewById<CustomAreasSpinner>(R.id.custom_areas_spinner)
+        customAreasSpinner.setIsTodayTide(true)
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout

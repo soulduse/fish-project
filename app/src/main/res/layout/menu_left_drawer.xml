@@ -7,7 +7,7 @@
 
     <Space
         android:layout_width="wrap_content"
-        android:layout_height="50dp" />
+        android:layout_height="14dp" />
 
     <TextView
         android:id="@+id/tv_pick_tide_name"
@@ -17,7 +17,8 @@
         android:paddingRight="24dp"
         android:paddingStart="24dp"
         android:text="@string/today_tide"
-        android:textSize="12sp" />
+        android:textSize="18sp"
+        android:textStyle="bold"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -31,13 +32,12 @@
             android:id="@+id/tv_pick_tide_values"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="34sp"
-            android:text="55/60"/>
+            android:textSize="14sp"/>
     </LinearLayout>
 
     <Space
         android:layout_width="wrap_content"
-        android:layout_height="56dp" />
+        android:layout_height="16dp" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/menu_drawer_list"

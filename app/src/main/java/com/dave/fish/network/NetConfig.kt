@@ -35,7 +35,7 @@ object NetConfig {
         @POST("getWeeklyData.do")
         fun getWeeklyData(@Query("obsPostId") obsPostId: String, @Query("stDate") stDate:String): Observable<WeeklyModel>
 
-        @POST("getSidePanelData.do")
+        @POST("sidePanelData.do")
         fun getSidePanelData(@Query("obsPostId") obsPostId: String) : Observable<SidePanelModel>
 
         @POST("getWeatherAndWave.do")

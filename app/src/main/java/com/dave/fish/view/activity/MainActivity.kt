@@ -12,14 +12,15 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
-import android.widget.Toast
 import com.dave.fish.R
 import com.dave.fish.common.Constants
 import com.dave.fish.common.PickTideDialog
 import com.dave.fish.db.RealmController
 import com.dave.fish.db.RealmListener
 import com.dave.fish.model.realm.SelectItemModel
+import com.dave.fish.model.retrofit.SidePanelData
 import com.dave.fish.util.DLog
+import com.dave.fish.view.CustomAreasSpinner
 import com.dave.fish.view.adapter.ViewPagerAdapter
 import com.dave.fish.view.fragment.FragmentAlarm
 import com.dave.fish.view.fragment.FragmentCalendar
@@ -182,20 +183,31 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
     }
 
     private fun initPickTide(){
-        pickTideDialog = PickTideDialog()
-        pickTideDialog.initDialog({
-            val title = it[0]
-            val tides = it[1]
-            tv_pick_tide_name.text = title
-            tv_pick_tide_values.text = tides
-            Toast.makeText(this, "ttttttt!!!!", Toast.LENGTH_LONG).show()
-        })
-        tv_pick_tide_name.setOnClickListener(setOnClickFavoriteTide)
-        tv_pick_tide_values.setOnClickListener(setOnClickFavoriteTide)
+        val mListener : (values: SidePanelData)->Unit = {
+            val tideList = arrayListOf(it.lvl1, it.lvl2, it.lvl3, it.lvl4)
+            DLog.w(tideList.toString())
+            tv_pick_tide_name.text = applicationContext.resources.getString(R.string.today_tide, it.title)
+            tv_pick_tide_values.text = tideList.joinToString ("\n")
+        }
+
+        CustomAreasSpinner(this).apply {
+            setIsTodayTide(true)
+            getPickedValueOfTide {
+                it.run(mListener)
+            }
+        }
+
+        pickTideDialog = PickTideDialog().apply {
+            initDialog({
+                it.run(mListener)
+            })
+        }
+        tv_pick_tide_name.setOnClickListener(setOnClickPickTide)
+        tv_pick_tide_values.setOnClickListener(setOnClickPickTide)
     }
 
-    private val setOnClickFavoriteTide = View.OnClickListener {
-        pickTideDialog.show(supportFragmentManager, "test")
+    private val setOnClickPickTide = View.OnClickListener {
+        pickTideDialog.show(supportFragmentManager, "pickTide")
     }
 
     @ColorInt
