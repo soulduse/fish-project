@@ -20,6 +20,7 @@ android {
         applicationId "com.dave.fish"
         minSdkVersion 19
         targetSdkVersion 26
+        multiDexEnabled = true
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -43,15 +44,26 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:26.+'
-    compile 'com.android.support:design:26.+'
-    compile 'com.android.support:support-vector-drawable:26.+'
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.android.support:design:26.1.0'
+    compile 'com.android.support:support-vector-drawable:26.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
+    // AWS Cloud
+    compile ('com.amazonaws:aws-android-sdk-mobile-client:2.6.7@aar') { transitive = true }
+    compile 'com.amazonaws:aws-android-sdk-ddb-mapper:2.6.12'
+    compile 'com.amazonaws:aws-android-sdk-core:2.6.12'
+    compile 'com.amazonaws:aws-android-sdk-s3:2.6.12'
+    compile 'com.amazonaws:aws-android-sdk-ddb:2.6.12'
+
+    // AWS analytics
+    compile 'com.amazonaws:aws-android-sdk-pinpoint:2.6.12'
+    compile 'com.android.support:multidex:1.0.2'
+
     // Android Architecture
-    compile 'android.arch.lifecycle:runtime:1.0.0-alpha5'
-    compile 'android.arch.lifecycle:extensions:1.0.0-alpha5'
-    annotationProcessor "android.arch.lifecycle:compiler:1.0.0-alpha5"
+    compile 'android.arch.lifecycle:runtime:1.0.3'
+    compile 'android.arch.lifecycle:extensions:1.0.0'
+    annotationProcessor "android.arch.lifecycle:compiler:1.0.0"
 
     // Retrofit Lib
     compile "com.squareup.retrofit2:retrofit:$retrofit_version"
@@ -77,10 +89,8 @@ dependencies {
     // Calendar Lib
     compile 'com.sickmartian.calendarview:calendarview:1.0.0'
 
-    compile 'gun0912.ted:tedpermission:2.0.3'
-
-    compile 'com.google.android.gms:play-services-maps:11.4.2'
-    compile 'com.google.android.gms:play-services-location:11.4.2'
+    compile 'com.google.android.gms:play-services-maps:11.8.0'
+    compile 'com.google.android.gms:play-services-location:11.8.0'
 
     // Ted Permission
     compile 'gun0912.ted:tedpermission:2.0.3'

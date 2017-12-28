@@ -9,15 +9,10 @@ import android.support.v4.view.ViewPager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
+import com.amazonaws.mobile.client.AWSMobileClient
 import com.dave.fish.R
 import com.dave.fish.common.Constants
 import com.dave.fish.common.PickTideDialog
-import com.dave.fish.db.RealmController
-import com.dave.fish.db.RealmListener
-import com.dave.fish.model.realm.SelectItemModel
 import com.dave.fish.model.retrofit.SidePanelData
 import com.dave.fish.util.DLog
 import com.dave.fish.view.CustomAreasSpinner
@@ -33,6 +28,13 @@ import com.yarolegovich.slidingrootnav.SlidingRootNav
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.menu_left_drawer.*
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient
+import com.dave.fish.model.aws.NewsDO
+
+
+
+
 
 class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
 
@@ -51,10 +53,15 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
 
     // dialog
     private lateinit var pickTideDialog :PickTideDialog
+    private lateinit var customSpinner : CustomAreasSpinner
+
+    private var dynamoDBMapper: DynamoDBMapper? = null
+
 
     override fun getContentId(): Int = R.layout.activity_main
 
     override fun initViews() {
+        customSpinner = findViewById<CustomAreasSpinner>(R.id.main_spinners)
         initFragments()
         initToolbar()
         initSlidingMenu()
@@ -66,7 +73,37 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
 
 
     override fun initData() {
+        val dynamoDBClient = AmazonDynamoDBClient(AWSMobileClient.getInstance().credentialsProvider)
+        this.dynamoDBMapper = DynamoDBMapper.builder()
+                .dynamoDBClient(dynamoDBClient)
+                .awsConfiguration(AWSMobileClient.getInstance().configuration)
+                .build()
 
+    }
+
+    fun createNews() {
+        val newsItem = NewsDO()
+
+        newsItem.userId = "soulduse"
+        newsItem.articleId = "Article1"
+        newsItem.content = "This is the article content"
+
+        Thread(Runnable {
+            dynamoDBMapper?.save(newsItem)
+            // Item saved
+        }).start()
+    }
+
+    fun readNews() {
+        Thread(Runnable {
+            val newsItem = dynamoDBMapper?.load(
+                    NewsDO::class.java,
+                    "soulduse",
+                    "Article1")
+
+            // Item read
+             DLog.d("News Item: ${newsItem.toString()}")
+        }).start()
     }
 
     private fun initFragments() {
@@ -173,7 +210,7 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
             tv_pick_tide_values.text = tideList.joinToString ("\n")
         }
 
-        CustomAreasSpinner(this).apply {
+        customSpinner.run {
             init(true)
             getPickedValueOfTide {
                 it.run(mListener)
@@ -190,11 +227,11 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
     }
 
     private fun initSpinner(){
-        val customAreasSpinner = findViewById<CustomAreasSpinner>(R.id.main_spinners).apply {
+        customSpinner.run {
             init(false)
         }
 
-        customAreasSpinner.initListener {
+        customSpinner.initListener {
 //            if(!firstExecute){
             DLog.w("customAreasSpinner.initListener")
                 main_viewpager.adapter.notifyDataSetChanged()
@@ -264,6 +301,12 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         toolbarLayoutParams.scrollFlags =
                 AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                 AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+    }
+
+    override fun onResume() {
+        super.onResume()
+        createNews()
+        readNews()
     }
 
     override fun onBackPressed() {
