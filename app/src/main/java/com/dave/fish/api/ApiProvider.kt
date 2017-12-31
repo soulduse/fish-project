@@ -42,5 +42,4 @@ object ApiProvider {
         interceptor.level = HttpLoggingInterceptor.Level.BODY
         return interceptor
     }
-
 }
