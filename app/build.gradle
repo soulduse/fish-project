@@ -5,21 +5,13 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'realm-android'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
-
-    dataBinding {
-        enabled = true
-    }
-
-    packagingOptions {
-        exclude 'META-INF/rxjava.properties'
-    }
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         applicationId "com.dave.fish"
-        minSdkVersion 19
-        targetSdkVersion 26
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         multiDexEnabled = true
         versionCode 1
         versionName "1.0"
@@ -39,70 +31,49 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile 'com.android.support:appcompat-v7:26.1.0'
-    compile 'com.android.support:design:26.1.0'
-    compile 'com.android.support:support-vector-drawable:26.1.0'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-
-    // AWS Cloud
-    compile ('com.amazonaws:aws-android-sdk-mobile-client:2.6.7@aar') { transitive = true }
-    compile 'com.amazonaws:aws-android-sdk-ddb-mapper:2.6.12'
-    compile 'com.amazonaws:aws-android-sdk-core:2.6.12'
-    compile 'com.amazonaws:aws-android-sdk-s3:2.6.12'
-    compile 'com.amazonaws:aws-android-sdk-ddb:2.6.12'
-
-    // AWS analytics
-    compile 'com.amazonaws:aws-android-sdk-pinpoint:2.6.12'
-    compile 'com.android.support:multidex:1.0.2'
-
-    // Android Architecture
-    compile 'android.arch.lifecycle:runtime:1.0.3'
-    compile 'android.arch.lifecycle:extensions:1.0.0'
-    annotationProcessor "android.arch.lifecycle:compiler:1.0.0"
+    compile "com.android.support:appcompat-v7:$supportLibVersion"
+    compile "com.android.support:design:$supportLibVersion"
+    compile "com.android.support:support-vector-drawable:$supportLibVersion"
+    compile "com.android.support.constraint:constraint-layout:1.0.2"
 
     // Retrofit Lib
-    compile "com.squareup.retrofit2:retrofit:$retrofit_version"
-    compile "com.squareup.retrofit2:converter-gson:$retrofit_version"
-    compile "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
+    compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    compile "com.squareup.retrofit2:converter-gson:$retrofitVersion"
 
     // OKHttp Lib
-    compile "com.squareup.okhttp3:okhttp:$okhttp3_version"
-    compile "com.squareup.okhttp3:logging-interceptor:$okhttp3_version"
-    compile "com.squareup.okhttp3:okhttp-urlconnection:$okhttp3_version"
-
-    // RxJava Lib
-    compile "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
-    compile "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+    compile "com.squareup.okhttp3:okhttp:$okHttpVersion"
+    compile "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
+    compile "com.squareup.okhttp3:okhttp-urlconnection:$okHttpVersion"
 
     // Glide Lib
-    compile 'com.github.bumptech.glide:glide:4.0.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0'
+    compile "com.github.bumptech.glide:glide:$glideVersion"
+    annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
 
     // Joda-time
-    compile 'joda-time:joda-time:2.9.9'
+    compile "joda-time:joda-time:$jodatimeVersion"
 
     // Calendar Lib
-    compile 'com.sickmartian.calendarview:calendarview:1.0.0'
+    compile "com.sickmartian.calendarview:calendarview:$calendarLibVersion"
 
-    compile 'com.google.android.gms:play-services-maps:11.8.0'
-    compile 'com.google.android.gms:play-services-location:11.8.0'
+    // Google Lib
+    compile "com.google.android.gms:play-services-maps:$googleLibVersion"
+    compile "com.google.android.gms:play-services-location:$googleLibVersion"
 
     // Ted Permission
-    compile 'gun0912.ted:tedpermission:2.0.3'
+    compile "gun0912.ted:tedpermission:$tedPermissionVersion"
 
-    compile 'com.yarolegovich:sliding-root-nav:1.1.0'
+    // Main UI Lib
+    compile "com.yarolegovich:sliding-root-nav:$slideRootVersion"
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    testCompile 'junit:junit:4.12'
-    testCompile 'com.nhaarman:mockito-kotlin:1.1.0'
-    testCompile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
-    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    // Kotlin
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion"
+
+    // Test
+    testCompile "junit:junit:$junitVersion"
+    testCompile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
 }
 
 repositories {
