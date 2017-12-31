@@ -1,4 +1,4 @@
-package com.dave.fish.model.retrofit
+package com.dave.fish.api.model
 
 /**
  * Created by soul on 2017. 8. 27..

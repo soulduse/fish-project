@@ -1,4 +1,4 @@
-package com.dave.fish.model.retrofit
+package com.dave.fish.api.model
 
 import com.google.gson.annotations.SerializedName
 import java.util.*
@@ -7,8 +7,6 @@ import java.util.*
  * Created by soul on 2017. 8. 21..
  */
 class WeeklyModel {
-    //getWeeklyData.do?stDate=20170913&obsPostId=DT_0001
-
     var getWeeklyData : WeeklyData = WeeklyData()
 
     @SerializedName("weeklyDataDTO")
