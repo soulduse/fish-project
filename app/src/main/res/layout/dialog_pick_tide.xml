@@ -18,7 +18,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.dave.fish.view.CustomAreasSpinner
+    <com.dave.fish.ui.CustomAreasSpinner
         android:id="@+id/custom_areas_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

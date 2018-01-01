@@ -1,4 +1,4 @@
-package com.dave.fish.view.adapter
+package com.dave.fish.ui.main
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager

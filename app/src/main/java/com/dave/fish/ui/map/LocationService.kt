@@ -1,4 +1,4 @@
-package com.dave.fish.view.service
+package com.dave.fish.ui.map
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.dave.fish.view.TouchWebView
+    <com.dave.fish.ui.web.TouchWebView
         android:id="@+id/webview_weather"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

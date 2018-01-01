@@ -14,15 +14,14 @@ import com.dave.fish.common.Constants
 import com.dave.fish.common.PickTideDialog
 import com.dave.fish.api.model.SidePanelData
 import com.dave.fish.util.DLog
-import com.dave.fish.view.CustomAreasSpinner
-import com.dave.fish.view.adapter.ViewPagerAdapter
-import com.dave.fish.view.fragment.FragmentAlarm
+import com.dave.fish.ui.CustomAreasSpinner
+import com.dave.fish.ui.alarm.AlarmFragment
 import com.dave.fish.ui.calendar.CalendarFragment
-import com.dave.fish.view.fragment.FragmentMap
-import com.dave.fish.view.fragment.FragmentWeb
-import com.dave.fish.view.menu.DrawerAdapter
-import com.dave.fish.view.menu.MenuDrawer
-import com.dave.fish.view.menu.SimpleItem
+import com.dave.fish.ui.map.MapFragment
+import com.dave.fish.ui.web.WebFragment
+import com.dave.fish.ui.main.menu.DrawerAdapter
+import com.dave.fish.ui.main.menu.MenuDrawer
+import com.dave.fish.ui.main.menu.SimpleItem
 import com.yarolegovich.slidingrootnav.SlidingRootNav
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder
 import kotlinx.android.synthetic.main.activity_main.*
@@ -39,11 +38,11 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
 
     // fragments
     private lateinit var fragmentCalendar : CalendarFragment
-    private lateinit var fragmentMap : FragmentMap
-    private lateinit var fragmentKma : FragmentWeb
-    private lateinit var fragmentMarinKma : FragmentWeb
-    private lateinit var fragmentWindyty : FragmentWeb
-    private lateinit var fragmentAlarm : FragmentAlarm
+    private lateinit var fragmentMap : MapFragment
+    private lateinit var fragmentKma : WebFragment
+    private lateinit var fragmentMarinKma : WebFragment
+    private lateinit var fragmentWindyty : WebFragment
+    private lateinit var fragmentAlarm : AlarmFragment
 
     // dialog
     private lateinit var pickTideDialog :PickTideDialog
@@ -69,14 +68,14 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
 
     private fun initFragments() {
         fragmentCalendar = CalendarFragment.newInstance()
-        fragmentMap = FragmentMap.newInstance()
-        fragmentKma = FragmentWeb.newInstance()
+        fragmentMap = MapFragment.newInstance()
+        fragmentKma = WebFragment.newInstance()
         fragmentKma.arguments = Bundle().apply { putString("url", Constants.KMA_M_URL) }
-        fragmentMarinKma = FragmentWeb.newInstance()
+        fragmentMarinKma = WebFragment.newInstance()
         fragmentMarinKma.arguments = Bundle().apply { putString("url", Constants.MARIN_KMA_M_URL) }
-        fragmentWindyty = FragmentWeb.newInstance()
+        fragmentWindyty = WebFragment.newInstance()
         fragmentWindyty.arguments = Bundle().apply { putString("url", Constants.WINDYTY_M_URL) }
-        fragmentAlarm = FragmentAlarm.newInstance()
+        fragmentAlarm = AlarmFragment.newInstance()
     }
 
     private fun initToolbar(){

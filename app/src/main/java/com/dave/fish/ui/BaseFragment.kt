@@ -1,4 +1,4 @@
-package com.dave.fish.view.fragment
+package com.dave.fish.ui
 
 import android.content.Context
 import android.os.Bundle

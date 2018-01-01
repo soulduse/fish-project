@@ -1,4 +1,4 @@
-package com.dave.fish.view.component.broadcast
+package com.dave.fish.ui.alarm
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.dave.fish.view.component.service.PersistentService
 import org.joda.time.DateTime
 
 /**

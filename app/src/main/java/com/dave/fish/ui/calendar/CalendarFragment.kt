@@ -18,8 +18,7 @@ import com.dave.fish.util.DateUtil
 import com.dave.fish.util.DateUtil.DATE_PATTERN_YEAR_MONTH_DAY
 import com.dave.fish.util.Global
 import com.dave.fish.util.TideUtil
-import com.dave.fish.view.activity.TideDetailActivity
-import com.dave.fish.view.fragment.BaseFragment
+import com.dave.fish.ui.BaseFragment
 import com.sickmartian.calendarview.CalendarView
 import io.realm.RealmResults
 import kotlinx.android.synthetic.main.fragment_menu_one.*

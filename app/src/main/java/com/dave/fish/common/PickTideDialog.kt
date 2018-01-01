@@ -7,7 +7,7 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import com.dave.fish.R
 import com.dave.fish.api.model.SidePanelData
-import com.dave.fish.view.CustomAreasSpinner
+import com.dave.fish.ui.CustomAreasSpinner
 
 
 /**

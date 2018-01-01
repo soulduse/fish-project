@@ -1,14 +1,15 @@
-package com.dave.fish.view.fragment
+package com.dave.fish.ui.alarm
 
 import android.os.Bundle
 import android.widget.NumberPicker
 import com.dave.fish.R
+import com.dave.fish.ui.BaseFragment
 import kotlinx.android.synthetic.main.fragment_alaram.*
 
 /**
  * Created by soul on 2017. 12. 16..
  */
-class FragmentAlarm : BaseFragment() {
+class AlarmFragment : BaseFragment() {
 
     override fun getContentId(): Int = R.layout.fragment_alaram
 
@@ -56,8 +57,8 @@ class FragmentAlarm : BaseFragment() {
 
         private val MINUTES : Array<String> = Array(12, {(it*5).toString()})
 
-        fun newInstance(): FragmentAlarm {
-            val fragmemt = FragmentAlarm()
+        fun newInstance(): AlarmFragment {
+            val fragmemt = AlarmFragment()
             val bundle = Bundle()
             fragmemt.arguments = bundle
 

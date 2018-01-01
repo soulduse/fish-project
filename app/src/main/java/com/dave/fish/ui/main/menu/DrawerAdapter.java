@@ -1,7 +1,6 @@
-package com.dave.fish.view.menu;
+package com.dave.fish.ui.main.menu;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;

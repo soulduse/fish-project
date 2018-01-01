@@ -1,4 +1,4 @@
-package com.dave.fish.view.fragment
+package com.dave.fish.ui.map
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -16,9 +16,8 @@ import com.dave.fish.R
 import com.dave.fish.common.Constants
 import com.dave.fish.db.RealmController
 import com.dave.fish.db.model.SpinnerSecondModel
+import com.dave.fish.ui.BaseFragment
 import com.dave.fish.util.DLog
-import com.dave.fish.view.activity.DetailMapActivity
-import com.dave.fish.view.service.LocationService
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -32,7 +31,7 @@ import java.util.*
 /**
  * Created by soul on 2017. 8. 27..
  */
-class FragmentMap : BaseFragment(),
+class MapFragment : BaseFragment(),
         OnMapReadyCallback{
 
     private val mRealmController : RealmController = RealmController.instance
@@ -194,8 +193,8 @@ class FragmentMap : BaseFragment(),
     }
 
     companion object {
-        fun newInstance() : FragmentMap{
-            val fragmemt = FragmentMap()
+        fun newInstance() : MapFragment {
+            val fragmemt = MapFragment()
             val bundle = Bundle()
             fragmemt.arguments = bundle
 

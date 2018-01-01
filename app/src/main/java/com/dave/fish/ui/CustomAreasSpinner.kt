@@ -1,4 +1,4 @@
-package com.dave.fish.view
+package com.dave.fish.ui
 
 import android.content.Context
 import android.support.constraint.ConstraintLayout
@@ -104,7 +104,7 @@ class CustomAreasSpinner : ConstraintLayout {
         }
     }
 
-    fun init(isTodayTide: Boolean) : CustomAreasSpinner{
+    fun init(isTodayTide: Boolean) : CustomAreasSpinner {
         this.isTodayTide = isTodayTide
         initView()
         return this

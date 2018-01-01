@@ -28,7 +28,7 @@
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <com.dave.fish.view.CustomAreasSpinner
+            <com.dave.fish.ui.CustomAreasSpinner
                 android:id="@+id/main_spinners"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -1,4 +1,4 @@
-package com.dave.fish.view
+package com.dave.fish.ui.web
 
 import android.content.Context
 import android.util.AttributeSet

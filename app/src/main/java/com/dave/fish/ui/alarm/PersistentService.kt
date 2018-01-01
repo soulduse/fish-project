@@ -1,4 +1,4 @@
-package com.dave.fish.view.component.service
+package com.dave.fish.ui.alarm
 
 import android.annotation.TargetApi
 import android.app.AlarmManager
@@ -13,8 +13,6 @@ import android.os.CountDownTimer
 import android.os.IBinder
 import android.os.SystemClock
 import android.util.Log
-
-import com.dave.fish.view.component.broadcast.AlarmBroadCastReceiver
 
 
 /**

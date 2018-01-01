@@ -1,4 +1,4 @@
-package com.dave.fish.view.fragment
+package com.dave.fish.ui.web
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -10,12 +10,13 @@ import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.dave.fish.R
+import com.dave.fish.ui.BaseFragment
 import kotlinx.android.synthetic.main.fragment_web.*
 
 /**
  * Created by soul on 2017. 12. 3..
  */
-class FragmentWeb : BaseFragment() {
+class WebFragment : BaseFragment() {
 
     override fun getContentId(): Int = R.layout.fragment_web
 
@@ -69,8 +70,8 @@ class FragmentWeb : BaseFragment() {
     }
 
     companion object {
-        fun newInstance() : FragmentWeb {
-            val fragmemt = FragmentWeb()
+        fun newInstance() : WebFragment {
+            val fragmemt = WebFragment()
             val bundle = Bundle()
             fragmemt.arguments = bundle
 

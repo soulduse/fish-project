@@ -1,4 +1,4 @@
-package com.dave.fish.view.menu;
+package com.dave.fish.ui.main.menu;
 
 import android.content.Context;
 import android.view.View;

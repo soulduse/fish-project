@@ -1,4 +1,4 @@
-package com.dave.fish.view.util
+package com.dave.fish.ui.map
 
 import android.Manifest
 import android.annotation.SuppressLint

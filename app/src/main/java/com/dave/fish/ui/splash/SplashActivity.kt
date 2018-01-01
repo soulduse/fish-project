@@ -1,4 +1,4 @@
-package com.dave.fish.view.activity
+package com.dave.fish.ui.splash
 
 import android.content.Intent
 import com.dave.fish.api.ApiProvider
@@ -18,9 +18,7 @@ class SplashActivity : BaseActivity(){
 
     private lateinit var mRealmController : RealmController
 
-    override fun getContentId(): Int {
-        return 0
-    }
+    override fun getContentId(): Int = 0
 
     override fun initViews() {
         initRealm()
@@ -45,9 +43,7 @@ class SplashActivity : BaseActivity(){
         moveMain()
     }
 
-    private fun isEmptyRealmSpinner(): Boolean {
-        return mRealmController.getSpinnerItems(realm).isEmpty()
-    }
+    private fun isEmptyRealmSpinner(): Boolean = mRealmController.getSpinnerItems(realm).isEmpty()
 
     private fun initDataSpinner() {
         Network.request(ApiProvider.provideTideApi().getGisData(),

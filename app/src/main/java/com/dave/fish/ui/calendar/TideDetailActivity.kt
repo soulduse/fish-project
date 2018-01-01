@@ -1,4 +1,4 @@
-package com.dave.fish.view.activity
+package com.dave.fish.ui.calendar
 
 import android.util.Log
 import android.widget.Toast
@@ -190,7 +190,7 @@ class TideDetailActivity : BaseActivity() {
                         tv_detail_wind_speed.text = "${resources.getString(R.string.detail_am)} : $amWindSpeedMin-$amWindSpeedMax\n" +
                                 "${resources.getString(R.string.detail_pm)} : $pmWindSpeedMin-$pmWindSpeedMax"
                     }
-                    BEFORE_DATE->{
+                    BEFORE_DATE ->{
 
                     }
                 }
