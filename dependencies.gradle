@@ -13,7 +13,7 @@ ext {
     gsonVersion = '2.7'
     okHttpVersion = '3.8.1'
     retrofitVersion = '2.3.0'
-    supportLibVersion = '27.0.0'
+    supportLibVersion = '27.0.2'
     supportConstraintVersion = '1.0.2'
     googleLibVersion = '11.8.0'
     calendarLibVersion = '1.0.0'
@@ -23,5 +23,6 @@ ext {
     junitVersion = '4.12'
     kotlinVersion = '1.2.10'
     coroutineVersion = '0.21'
+    retrofitConverterVersion = '1.0.0'
     realmVersion = '3.5.0'
 }

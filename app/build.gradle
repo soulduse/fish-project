@@ -39,6 +39,7 @@ dependencies {
     // Retrofit Lib
     compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
     compile "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    compile "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-experimental-adapter:$retrofitConverterVersion"
 
     // OKHttp Lib
     compile "com.squareup.okhttp3:okhttp:$okHttpVersion"
@@ -67,7 +68,7 @@ dependencies {
 
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion"
 
     // Test
     testCompile "junit:junit:$junitVersion"
