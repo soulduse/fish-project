@@ -1,9 +1,14 @@
 package com.dave.fish.view.activity
 
 import android.content.Intent
+import com.dave.fish.api.ApiProvider
+import com.dave.fish.api.Network
+import com.dave.fish.api.NetworkCallback
 import com.dave.fish.db.RealmController
 import com.dave.fish.db.RealmListener
-import com.dave.fish.network.RetrofitController
+import com.dave.fish.api.model.GisModel
+import com.dave.fish.ui.BaseActivity
+import com.dave.fish.ui.main.MainActivity
 import com.dave.fish.util.DLog
 
 /**
@@ -45,29 +50,24 @@ class SplashActivity : BaseActivity(){
     }
 
     private fun initDataSpinner() {
-        RetrofitController
-                .instance
-                .getGisData()
-                .subscribe({ gisModel ->
-                    val dataList = gisModel.data
-                    val gisMap = dataList.let {
-                        dataList.groupBy {
-                            it.doNm
+        Network.request(ApiProvider.provideTideApi().getGisData(),
+                NetworkCallback<GisModel>().apply {
+                    success = { gisModel ->
+                        val dataList = gisModel.data
+                        val gisMap = dataList.let {
+                            dataList.groupBy {
+                                it.doNm
+                            }
+                        }.filter {
+                            it.key.isNotEmpty()
                         }
-                    }.filter {
-                        it.key.isNotEmpty()
+
+                        mRealmController.setSpinner(realm, gisMap)
                     }
 
-                    DLog.d("""
-                            map data -->
-                            size : ${gisMap.size}
-                            keys : ${gisMap.keys}
-                            values : ${gisMap.values}
-                            """)
-                    mRealmController.setSpinner(realm, gisMap)
-
-                }, { e ->
-                    DLog.e("result API response ===> error ${e.localizedMessage}")
+                    error = {
+                        DLog.e("result API response ===> error ${it.localizedMessage}")
+                    }
                 })
     }
 

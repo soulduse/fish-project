@@ -1,14 +1,18 @@
 package com.dave.fish.view.activity
 
-import android.support.design.widget.Snackbar
 import android.util.Log
 import android.widget.Toast
 import com.dave.fish.R
+import com.dave.fish.api.ApiProvider
+import com.dave.fish.api.Network
+import com.dave.fish.api.NetworkCallback
 import com.dave.fish.db.RealmController
-import com.dave.fish.model.realm.TideWeeklyModel
-import com.dave.fish.model.retrofit.ForecastSpaceData
-import com.dave.fish.network.RetrofitController
+import com.dave.fish.db.model.TideWeeklyModel
+import com.dave.fish.api.model.ForecastSpaceData
+import com.dave.fish.api.model.WeatherAndWaveModel
+import com.dave.fish.ui.BaseActivity
 import com.dave.fish.util.*
+import com.dave.fish.util.DateUtil.DATE_PATTERN_YEAR_MONTH_DAY
 import kotlinx.android.synthetic.main.activity_tide_detail.*
 import org.joda.time.DateTime
 
@@ -19,7 +23,6 @@ class TideDetailActivity : BaseActivity() {
 
     private val mRealmController: RealmController = RealmController.instance
     private var tideWeeklyItem: TideWeeklyModel = TideWeeklyModel()
-    private val mRetrofitController: RetrofitController = RetrofitController.instance
 
     private var amWindSpeedMin = Double.MAX_VALUE
     private var amWindSpeedMax = Double.MIN_VALUE
@@ -54,20 +57,22 @@ class TideDetailActivity : BaseActivity() {
         Log.w(TAG, "What is key --> $key")
 
         postId.let {
-            val weatherAndWave = RetrofitController.instance.getWeatherAndWave(postId, DateTime(selectedDate))
-            weatherAndWave.subscribe { response ->
-                val longDataList = response.long
-                val shortDataList = response.short
-
-                if (longDataList.isNotEmpty()) {
-                    longDataList.first().apply {
-                        if(tv_detail_wave.text == resources.getString(R.string.no_data_wave)){
-                            tv_detail_wave.text = "${resources.getString(R.string.detail_am)} : ${amWave.replace(" ", "")}\n" +
-                                    "${resources.getString(R.string.detail_pm)} : ${pmWave.replace(" ", "")}"
+            Network.request(ApiProvider.provideTideApi().getWeatherAndWave(
+                    postId,
+                    DateTime(selectedDate).toString(DATE_PATTERN_YEAR_MONTH_DAY)
+            ), NetworkCallback<WeatherAndWaveModel>().apply {
+                success = { weatherAndWave ->
+                    val longDataList = weatherAndWave.long
+                    if (longDataList.isNotEmpty()) {
+                        longDataList.first().apply {
+                            if (tv_detail_wave.text == resources.getString(R.string.no_data_wave)) {
+                                tv_detail_wave.text = "${resources.getString(R.string.detail_am)} : ${amWave.replace(" ", "")}\n" +
+                                        "${resources.getString(R.string.detail_pm)} : ${pmWave.replace(" ", "")}"
+                            }
                         }
                     }
                 }
-            }
+            })
         }
 
         try{
@@ -156,35 +161,41 @@ class TideDetailActivity : BaseActivity() {
         val ny = grid.y.toInt()
         val searchDate = DateTime(tideWeeklyItem.searchDate).toString(DateUtil.DATE_PATTERN_YEAR_MONTH_DAY)
 
-        mRetrofitController.getForecastSpaceData(searchDate, nx, ny)
-                .subscribe({ response ->
-                    Log.w(TAG, "api result --> ${response.response.toString()}")
-                    val resultCode = response.response.header.resultCode
-                    when (resultCode) {
-                        SUCCESS -> {
-                            val itemList = response.response.body.items.item
-                            itemList.filter {
-                                it.baseDate == it.fcstDate
-                            }.forEach { item ->
-                                initWave(item)
-                                initWindSpeed(item)
-                            }
-
-                            tv_detail_wave.text = "${resources.getString(R.string.detail_am)} : $amWaveMin-$amWaveMax\n" +
-                                    "${resources.getString(R.string.detail_pm)} : $pmWaveMin-$pmWaveMax"
-
-                            tv_detail_wind_speed.text = "${resources.getString(R.string.detail_am)} : $amWindSpeedMin-$amWindSpeedMax\n" +
-                                    "${resources.getString(R.string.detail_pm)} : $pmWindSpeedMin-$pmWindSpeedMax"
+        Network.request(ApiProvider.provideKmaApi().getForecastSpaceData(
+                resources.getString(R.string.kma_opemapi_key),
+                searchDate,
+                "0200",
+                nx,
+                ny,
+                200,    // 한번에 총 출력할 데이터 량
+                1,      // 한번에 총 출력할 페이지 수
+                Global.ParserType.JSON.toString().toLowerCase()
+        ), NetworkCallback<ForecastSpaceData>().apply {
+            success = { forecast->
+                Log.w(TAG, "api result --> ${forecast.response.toString()}")
+                val resultCode = forecast.response.header.resultCode
+                when (resultCode) {
+                    SUCCESS -> {
+                        val itemList = forecast.response.body.items.item
+                        itemList.filter {
+                            it.baseDate == it.fcstDate
+                        }.forEach { item ->
+                            initWave(item)
+                            initWindSpeed(item)
                         }
-                        BEFORE_DATE->{
 
-                        }
+                        tv_detail_wave.text = "${resources.getString(R.string.detail_am)} : $amWaveMin-$amWaveMax\n" +
+                                "${resources.getString(R.string.detail_pm)} : $pmWaveMin-$pmWaveMax"
+
+                        tv_detail_wind_speed.text = "${resources.getString(R.string.detail_am)} : $amWindSpeedMin-$amWindSpeedMax\n" +
+                                "${resources.getString(R.string.detail_pm)} : $pmWindSpeedMin-$pmWindSpeedMax"
                     }
+                    BEFORE_DATE->{
 
-
-                }, { throwable ->
-                    Log.e(TAG, "api throwable --> ${throwable.localizedMessage}")
-                })
+                    }
+                }
+            }
+        })
     }
 
     private fun initWave(item: ForecastSpaceData.Item){

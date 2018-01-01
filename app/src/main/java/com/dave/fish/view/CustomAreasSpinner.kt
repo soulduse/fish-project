@@ -10,11 +10,14 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
 import com.dave.fish.R
+import com.dave.fish.api.ApiProvider
+import com.dave.fish.api.Network
+import com.dave.fish.api.NetworkCallback
+import com.dave.fish.api.model.SidePanelData
+import com.dave.fish.api.model.SidePanelModel
 import com.dave.fish.db.RealmController
 import com.dave.fish.db.RealmListener
-import com.dave.fish.model.realm.SelectItemModel
-import com.dave.fish.model.retrofit.SidePanelData
-import com.dave.fish.network.RetrofitController
+import com.dave.fish.db.model.SelectItemModel
 import com.dave.fish.util.DLog
 import io.realm.Realm
 
@@ -152,15 +155,19 @@ class CustomAreasSpinner : ConstraintLayout {
         val postId = secondSpinnerItem.obsPostId
 
         postId.let {
-            val panelData = RetrofitController.instance.getSidePanelData(postId)
-            panelData.subscribe ({ response ->
-                val tideList = response.data
-                if(tideList.isNotEmpty()){
-                    event(tideList.first())
-                }
-            },{
-                Toast.makeText(context, "데이터를 읽어오는데 실패하였습니다.\n다시 시도해주세요.", Toast.LENGTH_LONG).show()
-            })
+            Network.request(ApiProvider.provideTideApi().getSidePanelData(postId),
+                    NetworkCallback<SidePanelModel>().apply {
+                        success = { sidePanelModel->
+                            val tideList = sidePanelModel.data
+                            if(tideList.isNotEmpty()){
+                                event(tideList.first())
+                            }
+                        }
+
+                        error = {
+                            Toast.makeText(context, "데이터를 읽어오는데 실패하였습니다.\n다시 시도해주세요.", Toast.LENGTH_LONG).show()
+                        }
+                    })
         }
     }
 

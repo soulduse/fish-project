@@ -1,27 +1,26 @@
-package com.dave.fish.view.fragment
+package com.dave.fish.ui.calendar
 
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.dave.fish.R
+import com.dave.fish.api.ApiProvider
+import com.dave.fish.api.Network
+import com.dave.fish.api.NetworkCallback
 import com.dave.fish.db.RealmController
-import com.dave.fish.model.realm.TideWeeklyModel
-import com.dave.fish.model.retrofit.WeeklyModel
-import com.dave.fish.network.RetrofitController
+import com.dave.fish.db.model.TideWeeklyModel
+import com.dave.fish.api.model.WeeklyModel
 import com.dave.fish.util.DLog
 import com.dave.fish.util.DateUtil
+import com.dave.fish.util.DateUtil.DATE_PATTERN_YEAR_MONTH_DAY
 import com.dave.fish.util.Global
 import com.dave.fish.util.TideUtil
 import com.dave.fish.view.activity.TideDetailActivity
+import com.dave.fish.view.fragment.BaseFragment
 import com.sickmartian.calendarview.CalendarView
-import io.realm.Realm
 import io.realm.RealmResults
 import kotlinx.android.synthetic.main.fragment_menu_one.*
 import kotlinx.android.synthetic.main.view_item_add_calendar.view.*
@@ -34,7 +33,7 @@ import java.util.*
 /**
  * Created by soul on 2017. 8. 27..
  */
-class FragmentCalendar : BaseFragment() {
+class CalendarFragment : BaseFragment() {
     private var firstDayOfWeek: Int? = null
     private var mYear: Int = 0
     private var mDay: Int = 0
@@ -121,7 +120,7 @@ class FragmentCalendar : BaseFragment() {
                 val date = "${p1.year}-${addZeroToDate(p1.month)}-${addZeroToDate(p1.day)}"
                 val intent = Intent(context, TideDetailActivity::class.java)
                 intent.putExtra(Global.INTENT_DATE, date)
-                activity.startActivity(intent)
+                activity?.startActivity(intent)
             }
         })
         setDateByStateDependingOnView()
@@ -157,15 +156,19 @@ class FragmentCalendar : BaseFragment() {
     }
 
     private fun requestMonthData(postId: String, dateTime: DateTime){
-        RetrofitController
-                .instance
-                .getWeeklyData(postId, dateTime)
-                .subscribe({ tideModel ->
-                    val weeklyDataList = tideModel.weeklyDataList
-                    addDataToCalendar(weeklyDataList, postId)
-                }, { e ->
-//                    Toast.makeText(context, e.localizedMessage, Toast.LENGTH_LONG).show()
-                })
+        Network.request(ApiProvider.provideTideApi().getWeeklyData(
+                postId,
+                dateTime.toString(DATE_PATTERN_YEAR_MONTH_DAY)
+        ), NetworkCallback<WeeklyModel>().apply {
+            success = { tideModel->
+                val weeklyDataList = tideModel.weeklyDataList
+                addDataToCalendar(weeklyDataList, postId)
+            }
+
+            error = { e->
+                Toast.makeText(context, e.localizedMessage, Toast.LENGTH_LONG).show()
+            }
+        })
     }
 
     private fun initDataOnThisMonth(postId: String, dateTime: DateTime){
@@ -366,8 +369,8 @@ class FragmentCalendar : BaseFragment() {
             SUN, RAIN, CLOUD, MORECLOUD, CLOUDRAIN
         }
 
-        fun newInstance() : FragmentCalendar{
-            val fragmemt = FragmentCalendar()
+        fun newInstance() : CalendarFragment {
+            val fragmemt = CalendarFragment()
             val bundle = Bundle()
             fragmemt.arguments = bundle
 
