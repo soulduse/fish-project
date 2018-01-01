@@ -17,11 +17,11 @@ object Network {
         request(call, callback.success, callback.error)
     }
 
-    private fun <T> request(call: Deferred<T>, onSucess: ((T) -> Unit)?, onError: ((Throwable) -> Unit)?) {
+    private fun <T> request(call: Deferred<T>, onSuccess: ((T) -> Unit)?, onError: ((Throwable) -> Unit)?) {
         launch(UI) {
             try {
-                onSucess?.let {
-                    onSucess(call.await())
+                onSuccess?.let {
+                    onSuccess(call.await())
                 }
             } catch (httpException: HttpException) {
                 // a non-2XX response was received

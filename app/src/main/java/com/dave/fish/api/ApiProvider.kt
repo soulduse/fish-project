@@ -4,6 +4,7 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.experimental.Coroutin
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 /**
  * Created by soul on 2017. 12. 31..
@@ -17,6 +18,7 @@ object ApiProvider {
         return Retrofit.Builder()
                 .baseUrl(TIDE_URL)
                 .client(provideOkHttpClient(provideLoggingInterceptor()))
+                .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .build()
                 .create(TideApi::class.java)
@@ -26,6 +28,7 @@ object ApiProvider {
         return Retrofit.Builder()
                 .baseUrl(KMA_URL)
                 .client(provideOkHttpClient(provideLoggingInterceptor()))
+                .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .build()
                 .create(KmaApi::class.java)
