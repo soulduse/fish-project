@@ -1,4 +1,4 @@
-package com.dave.fish.model.realm
+package com.dave.fish.db.model
 
 import io.realm.RealmObject
 

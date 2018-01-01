@@ -1,14 +1,12 @@
 package com.dave.fish.db
 
 import android.util.Log
-import com.dave.fish.model.retrofit.GisModel
-import com.dave.fish.model.realm.SpinnerFirstModel
-import com.dave.fish.model.realm.SpinnerSecondModel
-import com.dave.fish.model.realm.SelectItemModel
-import com.dave.fish.model.realm.TideWeeklyModel
-import com.dave.fish.model.retrofit.WeeklyModel
-import com.dave.fish.util.DLog
-import com.dave.fish.util.DateUtil
+import com.dave.fish.api.model.GisModel
+import com.dave.fish.api.model.WeeklyModel
+import com.dave.fish.db.model.SpinnerFirstModel
+import com.dave.fish.db.model.SpinnerSecondModel
+import com.dave.fish.db.model.SelectItemModel
+import com.dave.fish.db.model.TideWeeklyModel
 import io.realm.Realm
 import io.realm.RealmResults
 import org.joda.time.DateTime
@@ -224,7 +222,7 @@ class RealmController {
                 .sort("key")
     }
 
-    fun findTideWeekly(realm: Realm, key: String) : TideWeeklyModel{
+    fun findTideWeekly(realm: Realm, key: String) : TideWeeklyModel {
         return realm.where(TideWeeklyModel::class.java)
                 .equalTo("key", key)
                 .findFirst()

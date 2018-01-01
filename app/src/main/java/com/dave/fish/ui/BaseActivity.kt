@@ -1,8 +1,7 @@
-package com.dave.fish.view.activity
+package com.dave.fish.ui
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.amazonaws.mobile.client.AWSMobileClient
 import com.dave.fish.R
 import io.realm.Realm
 
@@ -24,7 +23,6 @@ abstract class BaseActivity : AppCompatActivity() {
         if(contentId != 0){
             setContentView(contentId)
         }
-        AWSMobileClient.getInstance().initialize(this).execute()
 
         initViews()
 

@@ -1,4 +1,4 @@
-package com.dave.fish.view.activity
+package com.dave.fish.ui.main
 
 import android.os.Bundle
 import android.support.annotation.ColorInt
@@ -9,16 +9,15 @@ import android.support.v4.view.ViewPager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
-import com.amazonaws.mobile.client.AWSMobileClient
 import com.dave.fish.R
 import com.dave.fish.common.Constants
 import com.dave.fish.common.PickTideDialog
-import com.dave.fish.model.retrofit.SidePanelData
+import com.dave.fish.api.model.SidePanelData
 import com.dave.fish.util.DLog
 import com.dave.fish.view.CustomAreasSpinner
 import com.dave.fish.view.adapter.ViewPagerAdapter
 import com.dave.fish.view.fragment.FragmentAlarm
-import com.dave.fish.view.fragment.FragmentCalendar
+import com.dave.fish.ui.calendar.CalendarFragment
 import com.dave.fish.view.fragment.FragmentMap
 import com.dave.fish.view.fragment.FragmentWeb
 import com.dave.fish.view.menu.DrawerAdapter
@@ -28,12 +27,7 @@ import com.yarolegovich.slidingrootnav.SlidingRootNav
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.menu_left_drawer.*
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient
-import com.dave.fish.model.aws.NewsDO
-
-
-
+import com.dave.fish.ui.BaseActivity
 
 
 class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
@@ -44,7 +38,7 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
     private lateinit var toolbarLayoutParams : AppBarLayout.LayoutParams
 
     // fragments
-    private lateinit var fragmentCalendar : FragmentCalendar
+    private lateinit var fragmentCalendar : CalendarFragment
     private lateinit var fragmentMap : FragmentMap
     private lateinit var fragmentKma : FragmentWeb
     private lateinit var fragmentMarinKma : FragmentWeb
@@ -54,9 +48,6 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
     // dialog
     private lateinit var pickTideDialog :PickTideDialog
     private lateinit var customSpinner : CustomAreasSpinner
-
-    private var dynamoDBMapper: DynamoDBMapper? = null
-
 
     override fun getContentId(): Int = R.layout.activity_main
 
@@ -73,41 +64,11 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
 
 
     override fun initData() {
-        val dynamoDBClient = AmazonDynamoDBClient(AWSMobileClient.getInstance().credentialsProvider)
-        this.dynamoDBMapper = DynamoDBMapper.builder()
-                .dynamoDBClient(dynamoDBClient)
-                .awsConfiguration(AWSMobileClient.getInstance().configuration)
-                .build()
 
-    }
-
-    fun createNews() {
-        val newsItem = NewsDO()
-
-        newsItem.userId = "soulduse"
-        newsItem.articleId = "Article1"
-        newsItem.content = "This is the article content"
-
-        Thread(Runnable {
-            dynamoDBMapper?.save(newsItem)
-            // Item saved
-        }).start()
-    }
-
-    fun readNews() {
-        Thread(Runnable {
-            val newsItem = dynamoDBMapper?.load(
-                    NewsDO::class.java,
-                    "soulduse",
-                    "Article1")
-
-            // Item read
-             DLog.d("News Item: ${newsItem.toString()}")
-        }).start()
     }
 
     private fun initFragments() {
-        fragmentCalendar = FragmentCalendar.newInstance()
+        fragmentCalendar = CalendarFragment.newInstance()
         fragmentMap = FragmentMap.newInstance()
         fragmentKma = FragmentWeb.newInstance()
         fragmentKma.arguments = Bundle().apply { putString("url", Constants.KMA_M_URL) }
@@ -171,7 +132,7 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
                         visibleCollapsingToolbar()
                         setScrollAble(true)
                     }
-                    PAGE_MAP_RECORD->{
+                    PAGE_MAP_RECORD ->{
                         visibleCollapsingToolbar()
                         setScrollAble(false)
                     }
@@ -234,7 +195,7 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         customSpinner.initListener {
 //            if(!firstExecute){
             DLog.w("customAreasSpinner.initListener")
-                main_viewpager.adapter.notifyDataSetChanged()
+                main_viewpager.adapter?.notifyDataSetChanged()
 //            }
 //            firstExecute = false
         }
@@ -301,12 +262,6 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         toolbarLayoutParams.scrollFlags =
                 AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                 AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
-    }
-
-    override fun onResume() {
-        super.onResume()
-        createNews()
-        readNews()
     }
 
     override fun onBackPressed() {

@@ -31,7 +31,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".view.activity.MainActivity"/>
+        <activity android:name=".ui.main.MainActivity"/>
         <activity android:name=".view.activity.TideDetailActivity"/>
         <activity android:name=".view.activity.DetailMapActivity"/>
         <service android:name=".view.service.LocationService"/>

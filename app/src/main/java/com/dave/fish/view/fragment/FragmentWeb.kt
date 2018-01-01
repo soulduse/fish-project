@@ -40,7 +40,7 @@ class FragmentWeb : BaseFragment() {
         webview_weather.settings.javaScriptEnabled = true
         webview_weather.isFocusable = true
         webview_weather.isFocusableInTouchMode = true
-        webview_weather.loadUrl(arguments.getString("url"))
+        webview_weather.loadUrl(arguments?.getString("url"))
         webview_weather.setOnKeyListener(View.OnKeyListener { _, keyCode, keyEvent ->
             if(keyCode == KeyEvent.KEYCODE_BACK &&
                     keyEvent?.action == MotionEvent.ACTION_UP &&

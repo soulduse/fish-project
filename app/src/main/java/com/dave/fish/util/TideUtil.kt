@@ -1,8 +1,7 @@
 package com.dave.fish.util
 
-import com.dave.fish.model.realm.TideWeeklyModel
-import com.dave.fish.model.retrofit.WeeklyModel
-import java.util.*
+import com.dave.fish.api.model.WeeklyModel
+import com.dave.fish.db.model.TideWeeklyModel
 
 /**
  * Created by soul on 2017. 10. 4..

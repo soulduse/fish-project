@@ -15,14 +15,13 @@ import android.widget.Toast
 import com.dave.fish.R
 import com.dave.fish.common.Constants
 import com.dave.fish.db.RealmController
-import com.dave.fish.model.realm.SpinnerSecondModel
+import com.dave.fish.db.model.SpinnerSecondModel
 import com.dave.fish.util.DLog
 import com.dave.fish.view.activity.DetailMapActivity
 import com.dave.fish.view.service.LocationService
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
@@ -89,10 +88,10 @@ class FragmentMap : BaseFragment(),
             btn_start_record.isSelected = isRecorded.not()
 
             if(isRecorded){
-                activity.stopService(intentService)
+                activity?.stopService(intentService)
                 btn_start_record.text = resources.getString(R.string.record_start)
             }else{
-                activity.startService(intentService)
+                activity?.startService(intentService)
                 btn_start_record.text = resources.getString(R.string.record_stop)
             }
         }
@@ -169,13 +168,13 @@ class FragmentMap : BaseFragment(),
 
     override fun onStart() {
         super.onStart()
-        LocalBroadcastManager.getInstance(context).registerReceiver((receiver),
+        LocalBroadcastManager.getInstance(context!!).registerReceiver((receiver),
                 IntentFilter(Constants.LOCATION_SERVICE_RESULT)
         )
     }
 
     override fun onStop() {
-        LocalBroadcastManager.getInstance(context).unregisterReceiver(receiver)
+        LocalBroadcastManager.getInstance(mContext!!).unregisterReceiver(receiver)
         super.onStop()
     }
 

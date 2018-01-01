@@ -15,7 +15,7 @@ import android.widget.Toast
 import com.dave.fish.R
 import com.dave.fish.common.Constants
 import com.dave.fish.util.DLog
-import com.dave.fish.view.activity.MainActivity
+import com.dave.fish.ui.main.MainActivity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
