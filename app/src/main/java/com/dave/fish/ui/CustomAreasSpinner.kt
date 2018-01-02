@@ -5,10 +5,7 @@ import android.support.constraint.ConstraintLayout
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.Toast
+import android.widget.*
 import com.dave.fish.R
 import com.dave.fish.api.ApiProvider
 import com.dave.fish.api.Network
@@ -26,7 +23,7 @@ import io.realm.Realm
  */
 class CustomAreasSpinner : ConstraintLayout {
 
-    private lateinit var bg : ConstraintLayout
+    private lateinit var bg : LinearLayout
     private lateinit var spinnerLoc : Spinner
     private lateinit var spinnerMap : Spinner
 
@@ -57,7 +54,7 @@ class CustomAreasSpinner : ConstraintLayout {
         val v = li.inflate(R.layout.areas_spinner, this, false)
         addView(v)
 
-        bg = findViewById<ConstraintLayout>(R.id.bg) as ConstraintLayout
+        bg = findViewById<ConstraintLayout>(R.id.bg) as LinearLayout
         spinnerLoc = findViewById<Spinner>(R.id.spinner_loc) as Spinner
         spinnerMap = findViewById<Spinner>(R.id.spinner_map) as Spinner
 

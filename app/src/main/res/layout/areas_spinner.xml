@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/bg"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:orientation="horizontal">
 
     <Spinner
         android:id="@+id/spinner_loc"
-        android:layout_width="@dimen/spinner_width"
+        android:layout_marginStart="10dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        android:layout_weight="1"
+        android:background="@color/colorButton" />
 
     <Spinner
         android:id="@+id/spinner_map"
-        android:layout_width="@dimen/spinner_width"
+        android:layout_width="0dp"
+        android:layout_marginStart="10dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintLeft_toRightOf="@+id/spinner_loc"
-        app:layout_constraintRight_toRightOf="parent" />
+        android:layout_weight="1"
+        android:background="@color/colorButton" />
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
