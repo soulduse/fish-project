@@ -95,9 +95,9 @@ class CustomAreasSpinner : ConstraintLayout {
             setSpinnerAdapter(spinnerLoc, RealmController.instance.getSpinnerItems(realm))
         }
 
-        override fun onTransactionSuccess() {
+        override fun onTransactionSuccess(listener: ()->Unit) {
             DLog.w("onTransactionSuccess")
-            listenerChangedSpinner()
+            listener()
         }
     }
 
@@ -140,7 +140,8 @@ class CustomAreasSpinner : ConstraintLayout {
                                     spinnerMap.selectedItem.toString(),
                                     firstSpinnerPosition,
                                     pos,
-                                    isTodayTide
+                                    isTodayTide,
+                                    listenerChangedSpinner
                             )
                 }
             }

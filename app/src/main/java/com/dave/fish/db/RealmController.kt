@@ -72,9 +72,14 @@ class RealmController {
         }
     }
 
-    fun setSelectedSpinnerItem(realm: Realm, key: String, postName: String, position1: Int, position2: Int, isTodayTide : Boolean = false) {
+    fun setSelectedSpinnerItem(realm: Realm,
+                               key: String,
+                               postName: String,
+                               position1: Int,
+                               position2: Int,
+                               isTodayTide : Boolean = false,
+                               listener: ()->Unit = {}) {
         realm.executeTransactionAsync({ bgRealm ->
-//            val selectedItem = bgRealm.where(SelectItemModel::class.java).findFirst()
             val selectedItem = bgRealm.where(SelectItemModel::class.java).equalTo("isTodayTide", isTodayTide).findFirst()
             selectedItem.run {
                 doNm = key
@@ -82,13 +87,9 @@ class RealmController {
                 this.firstPosition = position1
                 this.secondPosition = position2
             }
-
-            Log.d(TAG, "selectedItem --> $selectedItem")
         }, {
             // 트랜잭션이 성공하였습니다.
-            Log.d(TAG, "selectedItem --> success transaction / ${ (realmListener==null) }")
-            realmListener?.onTransactionSuccess()
-            Log.d(TAG, "selectedItem --> success transaction / ${ (realmListener==null) }")
+            realmListener?.onTransactionSuccess(listener)
         }) {
             // 트랜잭션이 실패했고 자동으로 취소되었습니다.
         }

@@ -36,7 +36,6 @@ class PickTideDialog : DialogFragment() {
                     customAreasSpinner?.getPickedValueOfTide(mListener)
                 })
                 .setNegativeButton("취소", DialogInterface.OnClickListener { _, _ ->
-                    customAreasSpinner?.closeRealm()
                     this.dismiss()
                 })
         return builder.create()

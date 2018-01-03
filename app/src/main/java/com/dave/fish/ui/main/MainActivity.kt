@@ -60,8 +60,6 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         initSpinner()
     }
 
-
-
     override fun initData() {
 
     }
@@ -189,14 +187,9 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
     private fun initSpinner(){
         customSpinner.run {
             init(false)
-        }
-
-        customSpinner.initListener {
-//            if(!firstExecute){
-            DLog.w("customAreasSpinner.initListener")
+            initListener {
                 main_viewpager.adapter?.notifyDataSetChanged()
-//            }
-//            firstExecute = false
+            }
         }
     }
 
@@ -209,7 +202,6 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
 
     override fun onItemSelected(position: Int) {
         slidingRootNav.closeMenu()
-        DLog.w("onItemSelected --> $position")
         when(position){
             in 0 .. 1 -> {
                 visibleCollapsingToolbar()

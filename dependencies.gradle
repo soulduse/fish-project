@@ -1,7 +1,7 @@
 ext {
     // Build configuration
     buildToolsVersion = '27.0.2'
-    minSdkVersion = 16
+    minSdkVersion = 17
     compileSdkVersion = 27
     targetSdkVersion = 27
 
