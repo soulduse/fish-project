@@ -4,6 +4,8 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
+import android.media.RingtoneManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.NumberPicker
@@ -11,6 +13,7 @@ import com.dave.fish.R
 import com.dave.fish.ui.BaseFragment
 import kotlinx.android.synthetic.main.fragment_alaram.*
 import org.joda.time.DateTime
+
 
 /**
  * Created by soul on 2017. 12. 16..
@@ -54,7 +57,7 @@ class AlarmFragment : BaseFragment() {
     private fun initAlarm() {
         alarmMgr = mContext?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmIntent = Intent("com.dave.fish.START_ALARM")
-        pendingIntent = PendingIntent.getBroadcast(mContext, 0, alarmIntent, 0)
+        pendingIntent = PendingIntent.getBroadcast(mContext, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         start_alarm.setOnClickListener {
             setExactAlarm(
@@ -65,7 +68,7 @@ class AlarmFragment : BaseFragment() {
         }
     }
 
-    fun setExactAlarm(type: Int, triggerAtMillis: Long, operation: PendingIntent ) {
+    private fun setExactAlarm(type: Int, triggerAtMillis: Long, operation: PendingIntent ) {
         if (Build.VERSION.SDK_INT >= 23)
             alarmMgr.setExactAndAllowWhileIdle(type, triggerAtMillis, operation)
         else if (Build.VERSION.SDK_INT >= 19)

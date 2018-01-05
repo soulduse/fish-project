@@ -35,6 +35,9 @@
     <string name="number_picker_min">분</string>
     <string name="number_picker_selected_values">%1$d시간 %2$d분후 알람실행</string>
     <string name="start_alarm">알람 시작</string>
+    <string name="stop_alarm">알람 해제</string>
+    <string name="tv_alarm">알람</string>
+    <string name="alarm_notice">간조 알람이예요! 안전한 해루질을 위해\n슬슬 해루질을 마무리 합시다!</string>
 
     <!--    Permissions    -->
     <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>

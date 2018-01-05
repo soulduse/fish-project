@@ -79,12 +79,12 @@ class SplashActivity : BaseActivity(){
     }
 
     private val realmListener = object : RealmListener{
-        override fun onSpinnerSuccess() {
-            moveMain()
+        override fun onTransactionSuccess(listener: () -> Unit) {
+
         }
 
-        override fun onTransactionSuccess() {
-
+        override fun onSpinnerSuccess() {
+            moveMain()
         }
     }
     private fun moveMain(){
