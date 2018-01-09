@@ -253,10 +253,9 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
     }
 
     override fun onBackPressed() {
-        if(slidingRootNav.isMenuClosed){
-            slidingRootNav.openMenu()
-        }else{
-            super.onBackPressed()
+        when{
+            slidingRootNav.isMenuClosed -> slidingRootNav.openMenu()
+            else -> super.onBackPressed()
         }
     }
 
