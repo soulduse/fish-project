@@ -12,6 +12,7 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        context = this
 
         Realm.init(this)
         val config = RealmConfiguration.Builder()
@@ -21,7 +22,6 @@ class MyApplication : Application() {
                 .build()
         Realm.setDefaultConfiguration(config)
 
-        context = this
     }
 
     companion object {

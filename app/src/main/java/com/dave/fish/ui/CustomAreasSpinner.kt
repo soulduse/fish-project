@@ -79,8 +79,8 @@ class CustomAreasSpinner : ConstraintLayout {
         spinnerLoc.onItemSelectedListener = spinnerListener
         spinnerMap.onItemSelectedListener = spinnerListener
 
-        setSpinnerAdapter(spinnerLoc, mRealmController.getSpinnerItems(realm))
-        selectedSpinner = mRealmController.findSelectedSpinnerItem(realm, isTodayTide)
+        setSpinnerAdapter(spinnerLoc, mRealmController.getSpinnerItems())
+        selectedSpinner = mRealmController.findSelectedSpinnerItem(isTodayTide)
         spinnerLoc.setSelection(selectedSpinner.firstPosition, false)
     }
 
@@ -92,7 +92,7 @@ class CustomAreasSpinner : ConstraintLayout {
 
     private val realmListener = object : RealmListener {
         override fun onSpinnerSuccess() {
-            setSpinnerAdapter(spinnerLoc, RealmController.instance.getSpinnerItems(realm))
+            setSpinnerAdapter(spinnerLoc, RealmController.instance.getSpinnerItems())
         }
 
         override fun onTransactionSuccess(listener: ()->Unit) {
@@ -121,7 +121,7 @@ class CustomAreasSpinner : ConstraintLayout {
 
             when(spinner){
                 spinnerLoc ->{
-                    setSpinnerAdapter(spinnerMap, mRealmController.getSelectedSpinnerItem(realm, spinnerLoc.selectedItem.toString())!!)
+                    setSpinnerAdapter(spinnerMap, mRealmController.getSelectedSpinnerItem(spinnerLoc.selectedItem.toString())!!)
                     firstSpinnerPosition = pos
                     selectedSpinner.let {
                         if(selectedSpinner.doNm == spinnerLoc.selectedItem.toString()){
@@ -135,7 +135,6 @@ class CustomAreasSpinner : ConstraintLayout {
                 spinnerMap->{
                     mRealmController
                             .setSelectedSpinnerItem(
-                                    realm,
                                     spinnerLoc.selectedItem.toString(),
                                     spinnerMap.selectedItem.toString(),
                                     firstSpinnerPosition,
@@ -149,7 +148,7 @@ class CustomAreasSpinner : ConstraintLayout {
     }
 
     fun getPickedValueOfTide(event : (values: SidePanelData)->Unit){
-        val secondSpinnerItem = mRealmController.findSelectedSecondModel(realm, isTodayTide)
+        val secondSpinnerItem = mRealmController.findSelectedSecondModel(isTodayTide)
         val postId = secondSpinnerItem.obsPostId
 
         postId.let {

@@ -4,13 +4,15 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.media.MediaPlayer
-import android.media.RingtoneManager
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.NumberPicker
+import com.dave.fish.MyApplication
 import com.dave.fish.R
-import com.dave.fish.ui.BaseFragment
 import kotlinx.android.synthetic.main.fragment_alaram.*
 import org.joda.time.DateTime
 
@@ -18,7 +20,7 @@ import org.joda.time.DateTime
 /**
  * Created by soul on 2017. 12. 16..
  */
-class AlarmFragment : BaseFragment() {
+class AlarmFragment : Fragment() {
 
     lateinit var alarmMgr: AlarmManager
 
@@ -26,15 +28,15 @@ class AlarmFragment : BaseFragment() {
 
     lateinit var pendingIntent: PendingIntent
 
-    override fun getContentId(): Int = R.layout.fragment_alaram
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        return inflater.inflate(R.layout.fragment_alaram, container, false)
+    }
 
-    override fun initViews(savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initNumberPicker()
         initAlarm()
         getAlarmTime()
-    }
-
-    override fun initData() {
         initAlarmData()
     }
 
@@ -55,9 +57,9 @@ class AlarmFragment : BaseFragment() {
     }
 
     private fun initAlarm() {
-        alarmMgr = mContext?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmMgr = MyApplication.context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmIntent = Intent("com.dave.fish.START_ALARM")
-        pendingIntent = PendingIntent.getBroadcast(mContext, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        pendingIntent = PendingIntent.getBroadcast(MyApplication.context, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         start_alarm.setOnClickListener {
             setExactAlarm(

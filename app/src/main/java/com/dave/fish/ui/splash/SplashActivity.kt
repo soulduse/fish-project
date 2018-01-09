@@ -1,30 +1,27 @@
 package com.dave.fish.ui.splash
 
 import android.content.Intent
+import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import com.dave.fish.api.ApiProvider
 import com.dave.fish.api.Network
 import com.dave.fish.api.NetworkCallback
 import com.dave.fish.db.RealmController
 import com.dave.fish.db.RealmListener
 import com.dave.fish.api.model.GisModel
-import com.dave.fish.ui.BaseActivity
 import com.dave.fish.ui.main.MainActivity
 import com.dave.fish.util.DLog
 
 /**
  * Created by soul on 2017. 11. 10..
  */
-class SplashActivity : BaseActivity(){
+class SplashActivity : AppCompatActivity(){
 
     private lateinit var mRealmController : RealmController
 
-    override fun getContentId(): Int = 0
-
-    override fun initViews() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         initRealm()
-    }
-
-    override fun initData() {
         initSpinnerData()
     }
 
@@ -43,7 +40,7 @@ class SplashActivity : BaseActivity(){
         moveMain()
     }
 
-    private fun isEmptyRealmSpinner(): Boolean = mRealmController.getSpinnerItems(realm).isEmpty()
+    private fun isEmptyRealmSpinner(): Boolean = mRealmController.getSpinnerItems().isEmpty()
 
     private fun initDataSpinner() {
         Network.request(ApiProvider.provideTideApi().getGisData(),
@@ -58,7 +55,7 @@ class SplashActivity : BaseActivity(){
                             it.key.isNotEmpty()
                         }
 
-                        mRealmController.setSpinner(realm, gisMap)
+                        mRealmController.setSpinner(gisMap)
                     }
 
                     error = {
@@ -70,7 +67,6 @@ class SplashActivity : BaseActivity(){
     private fun initSelectSpinner(){
         mRealmController
                 .initSelectedSpinnerItem(
-                        realm,
                         FIRST_SPINNER_AREA,
                         SECOND_SPINNER_AREA,
                         FIRST_SPINNER_POSITION,
@@ -94,7 +90,6 @@ class SplashActivity : BaseActivity(){
     }
 
     companion object {
-        private val TAG = SplashActivity::class.java.simpleName
         private val FIRST_SPINNER_AREA = "충청남도"
         private val SECOND_SPINNER_AREA = "안흥"
         private val FIRST_SPINNER_POSITION = 10

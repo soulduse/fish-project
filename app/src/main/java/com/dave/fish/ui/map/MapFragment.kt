@@ -10,13 +10,17 @@ import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.support.v4.content.LocalBroadcastManager
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
+import com.dave.fish.MyApplication
 import com.dave.fish.R
 import com.dave.fish.common.Constants
 import com.dave.fish.db.RealmController
 import com.dave.fish.db.model.SpinnerSecondModel
-import com.dave.fish.ui.BaseFragment
 import com.dave.fish.util.DLog
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
@@ -31,7 +35,7 @@ import java.util.*
 /**
  * Created by soul on 2017. 8. 27..
  */
-class MapFragment : BaseFragment(),
+class MapFragment : Fragment(),
         OnMapReadyCallback{
 
     private val mRealmController : RealmController = RealmController.instance
@@ -41,8 +45,6 @@ class MapFragment : BaseFragment(),
     private lateinit var mMap: GoogleMap
     private var mapView: MapView? = null
 
-    override fun getContentId(): Int = R.layout.fragment_menu_two
-
     private val locA = LatLng(37.4832, 126.421)
     private val locB = LatLng(37.4843, 126.522)
     private val locC = LatLng(37.4854, 126.623)
@@ -50,17 +52,22 @@ class MapFragment : BaseFragment(),
     private val locE = LatLng(37.4876, 126.825)
     private val locF = LatLng(37.4887, 126.926)
 
-    override fun initViews(savedInstanceState : Bundle?) {
-        selectedItem = mRealmController.findSelectedSecondModel(realm)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+            inflater.inflate(R.layout.fragment_menu_two, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        selectedItem = mRealmController.findSelectedSecondModel()
         MapsInitializer.initialize(this.activity)
 
-        val mapview = view?.findViewById<MapView>(R.id.google_map_view)
-        mapview?.isClickable = false
-        mapview?.onCreate(savedInstanceState)
-        mapview?.onResume()
-        mapview?.getMapAsync(this)
+        val mapview = view.findViewById<MapView>(R.id.google_map_view).apply {
+            isClickable = false
+            onCreate(savedInstanceState)
+            onResume()
+            getMapAsync(this@MapFragment)
+        }
 
-        val geocoder = Geocoder(context)
+        val geocoder = Geocoder(MyApplication.context)
         val locationList = geocoder.getFromLocation(selectedItem.obsLat, selectedItem.obsLon, 10)
         locationList?.let {
             val address = try{
@@ -94,9 +101,11 @@ class MapFragment : BaseFragment(),
                 btn_start_record.text = resources.getString(R.string.record_stop)
             }
         }
+
+        initData()
     }
 
-    override fun initData() {
+    private fun initData() {
         // response location values from service
         receiver = object : BroadcastReceiver(){
             override fun onReceive(context: Context?, intent: Intent) {
@@ -125,7 +134,7 @@ class MapFragment : BaseFragment(),
 
     override fun onMapReady(map: GoogleMap) {
         val mLatLng = LatLng(selectedItem.obsLat, selectedItem.obsLon)
-        selectedItem = mRealmController.findSelectedSecondModel(realm)
+        selectedItem = mRealmController.findSelectedSecondModel()
         mMap = map
         val mapUtil = mMap.uiSettings
         mapUtil.isScrollGesturesEnabled = false
@@ -153,12 +162,12 @@ class MapFragment : BaseFragment(),
         }
 
         override fun onPermissionDenied(deniedPermissions: ArrayList<String>?) {
-            Toast.makeText(context, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show()
+            Toast.makeText(MyApplication.context, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun enableMyLocation() {
-        TedPermission.with(context)
+        TedPermission.with(MyApplication.context)
                 .setPermissionListener(permissionlistener)
                 .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
                 .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -167,13 +176,13 @@ class MapFragment : BaseFragment(),
 
     override fun onStart() {
         super.onStart()
-        LocalBroadcastManager.getInstance(context!!).registerReceiver((receiver),
+        LocalBroadcastManager.getInstance(MyApplication.context!!).registerReceiver((receiver),
                 IntentFilter(Constants.LOCATION_SERVICE_RESULT)
         )
     }
 
     override fun onStop() {
-        LocalBroadcastManager.getInstance(mContext!!).unregisterReceiver(receiver)
+        LocalBroadcastManager.getInstance(MyApplication.context!!).unregisterReceiver(receiver)
         super.onStop()
     }
 

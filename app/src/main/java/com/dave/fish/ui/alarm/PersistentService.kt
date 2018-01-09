@@ -108,7 +108,7 @@ class PersistentService : Service() {
      */
     private fun registerRestartAlarm() {
         Log.i(TAG, "000 PersistentService registerRestartAlarm")
-        val intent = Intent(this@PersistentService, AlarmBroadCastReceiver::class.java)
+        val intent = Intent(this@PersistentService, AlarmReceiver::class.java)
         intent.action = "ACTION.RESTART.PersistentService"
         val sender = PendingIntent.getBroadcast(this@PersistentService, 0, intent, 0)
 
@@ -131,7 +131,7 @@ class PersistentService : Service() {
 
         Log.i(TAG, "000 PersistentService unregisterRestartAlarm")
 
-        val intent = Intent(this@PersistentService, AlarmBroadCastReceiver::class.java)
+        val intent = Intent(this@PersistentService, AlarmReceiver::class.java)
         intent.action = "ACTION.RESTART.PersistentService"
         val sender = PendingIntent.getBroadcast(this@PersistentService, 0, intent, 0)
 

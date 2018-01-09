@@ -6,30 +6,30 @@ import android.support.annotation.ColorRes
 import android.support.design.widget.AppBarLayout
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.dave.fish.R
+import com.dave.fish.api.model.SidePanelData
 import com.dave.fish.common.Constants
 import com.dave.fish.common.PickTideDialog
-import com.dave.fish.api.model.SidePanelData
-import com.dave.fish.util.DLog
 import com.dave.fish.ui.CustomAreasSpinner
 import com.dave.fish.ui.alarm.AlarmFragment
 import com.dave.fish.ui.calendar.CalendarFragment
-import com.dave.fish.ui.map.MapFragment
-import com.dave.fish.ui.web.WebFragment
 import com.dave.fish.ui.main.menu.DrawerAdapter
 import com.dave.fish.ui.main.menu.MenuDrawer
 import com.dave.fish.ui.main.menu.SimpleItem
+import com.dave.fish.ui.map.MapFragment
+import com.dave.fish.ui.web.WebFragment
+import com.dave.fish.util.DLog
 import com.yarolegovich.slidingrootnav.SlidingRootNav
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.menu_left_drawer.*
-import com.dave.fish.ui.BaseActivity
 
 
-class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
+class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
 
     private lateinit var slidingRootNav: SlidingRootNav
 
@@ -48,9 +48,10 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
     private lateinit var pickTideDialog :PickTideDialog
     private lateinit var customSpinner : CustomAreasSpinner
 
-    override fun getContentId(): Int = R.layout.activity_main
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-    override fun initViews() {
         customSpinner = findViewById<CustomAreasSpinner>(R.id.main_spinners)
         initFragments()
         initToolbar()
@@ -58,10 +59,6 @@ class MainActivity : BaseActivity(), DrawerAdapter.OnItemSelectedListener{
         initViewPager()
         initPickTide()
         initSpinner()
-    }
-
-    override fun initData() {
-
     }
 
     private fun initFragments() {

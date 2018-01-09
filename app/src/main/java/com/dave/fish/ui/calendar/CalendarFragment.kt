@@ -3,22 +3,24 @@ package com.dave.fish.ui.calendar
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.support.v4.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.dave.fish.R
 import com.dave.fish.api.ApiProvider
 import com.dave.fish.api.Network
 import com.dave.fish.api.NetworkCallback
+import com.dave.fish.api.model.WeeklyModel
 import com.dave.fish.db.RealmController
 import com.dave.fish.db.model.TideWeeklyModel
-import com.dave.fish.api.model.WeeklyModel
 import com.dave.fish.util.DLog
 import com.dave.fish.util.DateUtil
 import com.dave.fish.util.DateUtil.DATE_PATTERN_YEAR_MONTH_DAY
 import com.dave.fish.util.Global
 import com.dave.fish.util.TideUtil
-import com.dave.fish.ui.BaseFragment
 import com.sickmartian.calendarview.CalendarView
 import io.realm.RealmResults
 import kotlinx.android.synthetic.main.fragment_menu_one.*
@@ -32,7 +34,7 @@ import java.util.*
 /**
  * Created by soul on 2017. 8. 27..
  */
-class CalendarFragment : BaseFragment() {
+class CalendarFragment : Fragment() {
     private var firstDayOfWeek: Int? = null
     private var mYear: Int = 0
     private var mDay: Int = 0
@@ -43,13 +45,13 @@ class CalendarFragment : BaseFragment() {
 
     private val mRealmController: RealmController = RealmController.instance
 
-    override fun getContentId(): Int = R.layout.fragment_menu_one
-
-    override fun initViews(savedInstanceState: Bundle?) {
-        initView()
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_menu_one, container, false)
     }
 
-    override fun initData() {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initView()
         refreshCalendar()
     }
 
@@ -79,13 +81,13 @@ class CalendarFragment : BaseFragment() {
             monthView.setCurrentDay(0)
         }
 
-        val secondSpinnerItem = mRealmController.findSelectedSecondModel(realm)
+        val secondSpinnerItem = mRealmController.findSelectedSecondModel()
         val postId = secondSpinnerItem.obsPostId
         postId.let {
             val minDayOfMonth = getDateForState().dayOfMonth().withMinimumValue()
             val maxDayOfMonth = getDateForState().dayOfMonth().withMaximumValue()
             val currentDayOfMonth = getDateForState().dayOfMonth()
-            val tideMonthList = mRealmController.findTideMonth(realm, postId, getDateForState())
+            val tideMonthList = mRealmController.findTideMonth(postId, getDateForState())
 
             val dayOfMonthList = mutableListOf<DateTime>(
                     minDayOfMonth,
@@ -205,7 +207,7 @@ class CalendarFragment : BaseFragment() {
             var tideDate = DateTime()
             when (item) {
                 is WeeklyModel.WeeklyData -> {
-                    mRealmController.setTideWeekly(realm, item, postId)
+                    mRealmController.setTideWeekly(item, postId)
                     item.am.let {
                         val weatherIcon = getWeatherIcon(item.am)
                         if (weatherIcon != 0) {

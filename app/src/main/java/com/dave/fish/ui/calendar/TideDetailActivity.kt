@@ -1,5 +1,7 @@
 package com.dave.fish.ui.calendar
 
+import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
 import com.dave.fish.R
@@ -10,7 +12,6 @@ import com.dave.fish.db.RealmController
 import com.dave.fish.db.model.TideWeeklyModel
 import com.dave.fish.api.model.ForecastSpaceData
 import com.dave.fish.api.model.WeatherAndWaveModel
-import com.dave.fish.ui.BaseActivity
 import com.dave.fish.util.*
 import com.dave.fish.util.DateUtil.DATE_PATTERN_YEAR_MONTH_DAY
 import kotlinx.android.synthetic.main.activity_tide_detail.*
@@ -19,7 +20,7 @@ import org.joda.time.DateTime
 /**
  * Created by soul on 2017. 10. 3..
  */
-class TideDetailActivity : BaseActivity() {
+class TideDetailActivity : AppCompatActivity(){
 
     private val mRealmController: RealmController = RealmController.instance
     private var tideWeeklyItem: TideWeeklyModel = TideWeeklyModel()
@@ -34,21 +35,15 @@ class TideDetailActivity : BaseActivity() {
     private var pmWaveMin = Double.MAX_VALUE
     private var pmWaveMax = Double.MIN_VALUE
 
-    override fun getContentId(): Int {
-        return R.layout.activity_tide_detail
-    }
-
-    override fun initViews() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_tide_detail)
         initRealmData()
         initLayout()
     }
 
-    override fun initData() {
-        
-    }
-
     private fun initRealmData() {
-        val secondSpinnerItem = mRealmController.findSelectedSecondModel(realm)
+        val secondSpinnerItem = mRealmController.findSelectedSecondModel()
         val postId = secondSpinnerItem.obsPostId
         val postName = secondSpinnerItem.obsPostName
 
@@ -76,7 +71,7 @@ class TideDetailActivity : BaseActivity() {
         }
 
         try{
-            tideWeeklyItem = mRealmController.findTideWeekly(realm, key)
+            tideWeeklyItem = mRealmController.findTideWeekly(key)
             Log.w(TAG, "tideWeeklyItem --> " + tideWeeklyItem.toString())
             TideUtil.setTide(tideWeeklyItem)
 
