@@ -91,9 +91,9 @@ class AlarmFragment : Fragment() {
     }
 
     private fun setExactAlarm(type: Int, triggerAtMillis: Long, operation: PendingIntent ) {
-        if (Build.VERSION.SDK_INT >= 23)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             alarmMgr.setExactAndAllowWhileIdle(type, triggerAtMillis, operation)
-        else if (Build.VERSION.SDK_INT >= 19)
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
             alarmMgr.setExact(type, triggerAtMillis, operation)
         else
             alarmMgr.set(type, triggerAtMillis, operation)
