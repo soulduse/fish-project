@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.NumberPicker
 import com.dave.fish.MyApplication
 import com.dave.fish.R
+import com.dave.fish.util.DLog
 import kotlinx.android.synthetic.main.fragment_alaram.*
 import org.joda.time.DateTime
 
@@ -28,9 +29,8 @@ class AlarmFragment : Fragment() {
 
     lateinit var pendingIntent: PendingIntent
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.fragment_alaram, container, false)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+            inflater.inflate(R.layout.fragment_alaram, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,9 +62,29 @@ class AlarmFragment : Fragment() {
         pendingIntent = PendingIntent.getBroadcast(MyApplication.context, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         start_alarm.setOnClickListener {
+            DLog.w("""
+                |-----Current Time
+                |
+                |- Date : ${DateTime().toString("yyyyMMdd hh:mm:ss")}
+                |- Long : ${DateTime().millis}
+                |
+                |-----Plus Time
+                |
+                |- Date : ${DateTime(getAlarmTime()).toString("yyyyMMdd hh:mm:ss")}
+                |- Long : ${getAlarmTime()}
+                |
+                |-------------------
+            """.trimMargin())
+
+//            setExactAlarm(
+//                    AlarmManager.RTC_WAKEUP,
+//                    getAlarmTime(),
+//                    pendingIntent
+//            )
+
             setExactAlarm(
                     AlarmManager.RTC_WAKEUP,
-                    getAlarmTime(),
+                    DateTime().millis+3000,
                     pendingIntent
             )
         }
@@ -80,10 +100,10 @@ class AlarmFragment : Fragment() {
     }
 
     private fun getAlarmTime(): Long{
-        return DateTime().apply {
-            plusHours(num_picker_hour.value)
-            plusMinutes(num_picker_min.value * STEP_NUMBER)
-        }.millis
+        return DateTime()
+                .plusHours(num_picker_hour.value)
+                .plusMinutes(num_picker_min.value * STEP_NUMBER)
+                .millis
     }
 
     private fun initAlarmData(){
