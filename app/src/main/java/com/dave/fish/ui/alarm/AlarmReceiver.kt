@@ -1,69 +1,102 @@
 package com.dave.fish.ui.alarm
 
-import android.app.Notification
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.widget.RemoteViews
+import android.graphics.Color
+import android.graphics.PixelFormat
+import android.media.MediaPlayer
+import android.media.RingtoneManager
+import android.net.Uri
+import android.os.Vibrator
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import com.dave.fish.R
-import com.dave.fish.ui.main.MainActivity
+import kotlinx.android.synthetic.main.dialog_alarm_bottom_sheet.view.*
+
 
 /**
  * Created by soul on 2017. 9. 27..
  */
 class AlarmReceiver : BroadcastReceiver() {
 
-    fun showNotification(context: Context){
-        val remoteView = RemoteViews(context.packageName, R.layout.dialog_alarm_bottom_sheet)
-        remoteView.setOnClickPendingIntent(R.id.tv_off_alarm)
-        val intent = Intent(context, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        val contentIntent = PendingIntent.getActivity(context, 0, intent, 0)
+    private lateinit var mContext: Context
 
-        val noti = Notification.Builder(context)
-                .setContentTitle("간조시각 알림")
-                .setContentText("안전한 해루질을 위해 들어갑시다!")
-                .setSmallIcon(R.drawable.ic_toys_white_24dp)
-                .setFullScreenIntent(contentIntent, true)
-                .addAction(R.drawable.ic_wb_sunny_grey_500_24dp)
-                .setPriority(Notification.PRIORITY_HIGH)
-                .build()
+    private lateinit var mediaPlayer: MediaPlayer
 
-        val notificationMgr = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationMgr.notify(1, noti)
-    }
+    private val vibe by lazy { mContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator }
 
+    private val mView by lazy { View.inflate(mContext, R.layout.dialog_alarm_bottom_sheet, null) }
+
+    private val alarmUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
     override fun onReceive(context: Context, intent: Intent) {
-
-        showNotification(context)
+        mContext = context
 
 //        val intent = Intent(context, AlarmSoundService::class.java)
 //        context.startService(intent)
 
-//        Log.i(TAG, "000 RestartService RestartService called : " + intent.action)
-//
-//        /**
-//         * 서비스 죽일때 알람으로 다시 서비스 등록
-//         */
-//        if (intent.action == "ACTION.RESTART.PersistentService") {
-//
-//            Log.i(TAG, "000 RestartService ACTION.RESTART.PersistentService ")
-//
-//            val i = Intent(context, PersistentService::class.java)
-//            context.startService(i)
-//        }
-//
-//        /**
-//         * 폰 재시작 할때 서비스 등록
-//         */
-//        if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
-//
-//            Log.i(TAG, "ACTION_BOOT_COMPLETED")
-//            val i = Intent(context, PersistentService::class.java)
-//            context.startService(i)
-//
-//        }
+        initAlarmView()
+
+        initViewListener()
+
+        initAlarm()
+
+        startAlarm()
+
+        startVibrate()
+    }
+
+    private fun initViewListener(){
+        mView.setBackgroundColor(Color.WHITE)
+        mView.tv_off_alarm.setOnClickListener {
+            finishAlarm()
+        }
+    }
+
+    private fun initAlarmView() {
+        val mWindowManager = mContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+        val mLayoutParams = WindowManager.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 0, 0,
+                WindowManager.LayoutParams.TYPE_TOAST,
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                        or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                        or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON,
+                PixelFormat.RGBA_8888)/* | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON */
+
+        mWindowManager.addView(mView, mLayoutParams)
+    }
+
+    private fun finishAlarm(){
+        stopAlarm()
+        stopVibrate()
+        goneView()
+    }
+
+    private fun goneView(){
+        mView.visibility = View.GONE
+    }
+
+    private fun startVibrate(){
+        vibe.vibrate(longArrayOf(500, 5000),0)
+    }
+
+    private fun stopVibrate(){
+        vibe.cancel()
+    }
+
+    private fun initAlarm(){
+        mediaPlayer = MediaPlayer.create(mContext, alarmUri)
+        mediaPlayer.setVolume(40F, 40F)
+    }
+
+    private fun startAlarm(){
+        mediaPlayer.start()
+    }
+
+    private fun stopAlarm(){
+        mediaPlayer.stop()
     }
 }
