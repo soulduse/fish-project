@@ -39,7 +39,6 @@
         <activity android:name=".ui.calendar.TideDetailActivity" />
         <activity android:name=".ui.map.DetailMapActivity" />
         <service android:name=".ui.map.LocationService" />
-        <service android:name=".ui.alarm.AlarmSoundService" />
         <receiver android:name=".ui.alarm.AlarmReceiver">
             <intent-filter>
                 <action android:name="com.dave.fish.START_ALARM" />

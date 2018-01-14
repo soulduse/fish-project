@@ -43,7 +43,7 @@ class WebFragment : Fragment() {
             webViewClient = CustomWebViewClient(progressBar)
             webChromeClient = object: WebChromeClient(){
                 override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                    webview_progressbar.progress = newProgress
+                    webview_progressbar?.progress = newProgress
                 }
             }
             loadUrl(arguments?.getString("url"))

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.PixelFormat
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.net.Uri
@@ -23,18 +24,22 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private lateinit var mContext: Context
 
-    private lateinit var mediaPlayer: MediaPlayer
+    private lateinit var mMediaPlayer: MediaPlayer
 
-    private val vibe by lazy { mContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator }
+    private val mVibrator by lazy { mContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator }
+
+    private val mAudioMgr by lazy { mContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager }
 
     private val mView by lazy { View.inflate(mContext, R.layout.dialog_alarm_bottom_sheet, null) }
 
-    private val alarmUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+    private val mAlarmUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+
+    private var originalVolume = 0
+
     override fun onReceive(context: Context, intent: Intent) {
         mContext = context
 
-//        val intent = Intent(context, AlarmSoundService::class.java)
-//        context.startService(intent)
+        originalVolume = mAudioMgr.getStreamVolume(AudioManager.STREAM_MUSIC)
 
         initAlarmView()
 
@@ -70,6 +75,7 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
     private fun finishAlarm(){
+        setVolumeOriginal()
         stopAlarm()
         stopVibrate()
         goneView()
@@ -80,23 +86,31 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
     private fun startVibrate(){
-        vibe.vibrate(longArrayOf(500, 5000),0)
+        mVibrator.vibrate(longArrayOf(500, 3500),0)
     }
 
     private fun stopVibrate(){
-        vibe.cancel()
+        mVibrator.cancel()
     }
 
     private fun initAlarm(){
-        mediaPlayer = MediaPlayer.create(mContext, alarmUri)
-        mediaPlayer.setVolume(40F, 40F)
+        setVolumeMax()
+        mMediaPlayer = MediaPlayer.create(mContext, mAlarmUri)
+    }
+
+    private fun setVolumeMax() {
+        mAudioMgr.setStreamVolume(AudioManager.STREAM_MUSIC, mAudioMgr.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0)
+    }
+
+    private fun setVolumeOriginal(){
+        mAudioMgr.setStreamVolume(AudioManager.STREAM_MUSIC, originalVolume, 0)
     }
 
     private fun startAlarm(){
-        mediaPlayer.start()
+        mMediaPlayer.start()
     }
 
     private fun stopAlarm(){
-        mediaPlayer.stop()
+        mMediaPlayer.stop()
     }
 }

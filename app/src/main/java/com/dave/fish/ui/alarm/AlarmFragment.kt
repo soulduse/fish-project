@@ -23,11 +23,11 @@ import org.joda.time.DateTime
  */
 class AlarmFragment : Fragment() {
 
-    lateinit var alarmMgr: AlarmManager
+    private lateinit var alarmMgr: AlarmManager
 
-    lateinit var alarmIntent: Intent
+    private lateinit var alarmIntent: Intent
 
-    lateinit var pendingIntent: PendingIntent
+    private lateinit var pendingIntent: PendingIntent
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
             inflater.inflate(R.layout.fragment_alaram, container, false)
@@ -62,29 +62,9 @@ class AlarmFragment : Fragment() {
         pendingIntent = PendingIntent.getBroadcast(MyApplication.context, 0, alarmIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         start_alarm.setOnClickListener {
-            DLog.w("""
-                |-----Current Time
-                |
-                |- Date : ${DateTime().toString("yyyyMMdd hh:mm:ss")}
-                |- Long : ${DateTime().millis}
-                |
-                |-----Plus Time
-                |
-                |- Date : ${DateTime(getAlarmTime()).toString("yyyyMMdd hh:mm:ss")}
-                |- Long : ${getAlarmTime()}
-                |
-                |-------------------
-            """.trimMargin())
-
-//            setExactAlarm(
-//                    AlarmManager.RTC_WAKEUP,
-//                    getAlarmTime(),
-//                    pendingIntent
-//            )
-
             setExactAlarm(
                     AlarmManager.RTC_WAKEUP,
-                    DateTime().millis+3000,
+                    getAlarmTime(),
                     pendingIntent
             )
         }
@@ -124,7 +104,7 @@ class AlarmFragment : Fragment() {
         private val STEP_NUMBER = 5
         private val BASIC_HOUR = 2
 
-        private val MINUTES : Array<String> = Array(12, {(it*5).toString()})
+        private val MINUTES : Array<String> = Array(12, {( it * STEP_NUMBER ).toString()})
 
         fun newInstance(): AlarmFragment {
             val fragmemt = AlarmFragment()
