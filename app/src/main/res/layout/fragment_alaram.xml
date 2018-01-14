@@ -80,6 +80,56 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <TextView
+        android:id="@+id/tv_title_sound_range"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:drawableStart="@drawable/ic_update_grey_500_24dp"
+        android:gravity="center"
+        android:text="알람소리 시간"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/result_time" />
+
+    <TextView
+        android:id="@+id/tv_sound_range"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:drawableEnd="@drawable/ic_keyboard_arrow_right_grey_500_24dp"
+        android:gravity="center"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_title_sound_range"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/tv_title_sound_range"
+        tools:text="1 분" />
+
+    <TextView
+        android:id="@+id/alarm_music_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:drawableStart="@drawable/ic_queue_music_grey_500_24dp"
+        android:gravity="center"
+        android:text="알림소리"
+        app:layout_constraintBottom_toTopOf="@+id/start_alarm"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title_sound_range"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/tv_alarm_music"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:drawableEnd="@drawable/ic_keyboard_arrow_right_grey_500_24dp"
+        android:text="기본음"
+        app:layout_constraintBaseline_toBaselineOf="@+id/alarm_music_title"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
         android:id="@+id/start_alarm"
         android:layout_width="match_parent"
         android:layout_height="60dp"
@@ -89,8 +139,8 @@
         android:textColor="@color/tide_white"
         android:textSize="@dimen/tv_map_record_size"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
