@@ -35,6 +35,8 @@ class AlarmFragment : Fragment() {
 
     private var ringtoneUri: Uri ?= null
 
+    private var idxRangeOfSound = 0
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
             inflater.inflate(R.layout.fragment_alaram, container, false)
 
@@ -87,7 +89,11 @@ class AlarmFragment : Fragment() {
         }
 
         tv_sound_range.setOnClickListener {
-
+            if(idxRangeOfSound == RANGE_SOUNDS.size){
+                idxRangeOfSound = 0
+            }
+            tv_sound_range.text = getSecondOrMinute(RANGE_SOUNDS[idxRangeOfSound])
+            idxRangeOfSound++
         }
 
         tv_alarm_music.setOnClickListener {
@@ -99,6 +105,14 @@ class AlarmFragment : Fragment() {
             }
             startActivityForResult(intent, REQUEST_CODE_RINGTONE)
         }
+    }
+
+    private fun getSecondOrMinute(sec: Int): String{
+        if(sec % 60 == 0){
+            return (sec / 60).toString()+" 분"
+        }
+
+        return sec.toString()+" 초"
     }
 
     private fun setExactAlarm(type: Int, triggerAtMillis: Long, operation: PendingIntent ) {
@@ -147,6 +161,7 @@ class AlarmFragment : Fragment() {
         private val STEP_NUMBER = 5
         private val BASIC_HOUR = 2
         private const val REQUEST_CODE_RINGTONE = 1000
+        private val RANGE_SOUNDS = intArrayOf(15, 30, 60, 120)
 
         private val MINUTES : Array<String> = Array(12, {( it * STEP_NUMBER ).toString()})
 
