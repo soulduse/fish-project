@@ -92,7 +92,7 @@
         app:layout_constraintTop_toBottomOf="@+id/result_time" />
 
     <TextView
-        android:id="@+id/tv_sound_range"
+        android:id="@+id/tv_sound_duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"

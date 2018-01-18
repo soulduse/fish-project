@@ -18,6 +18,9 @@ import com.dave.fish.MyApplication
 import com.dave.fish.R
 import com.dave.fish.common.Constants.EXTRA_RINGTONE_URI
 import com.dave.fish.util.DLog
+import com.dave.fish.util.PreferenceKeys
+import com.dave.fish.util.getDefaultSharedPreferences
+import com.dave.fish.util.put
 import kotlinx.android.synthetic.main.fragment_alaram.*
 import org.joda.time.DateTime
 
@@ -35,13 +38,17 @@ class AlarmFragment : Fragment() {
 
     private var ringtoneUri: Uri ?= null
 
-    private var idxRangeOfSound = 0
+    private var idxDuration = 0
+
+    private lateinit var mContext: Context
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
             inflater.inflate(R.layout.fragment_alaram, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        mContext = view.context
 
         initNumberPicker()
 
@@ -69,7 +76,7 @@ class AlarmFragment : Fragment() {
     }
 
     private fun initAlarm() {
-        alarmMgr = MyApplication.context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmMgr = mContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         start_alarm.setOnClickListener {
             alarmIntent = Intent("com.dave.fish.START_ALARM").apply {
@@ -79,7 +86,7 @@ class AlarmFragment : Fragment() {
                 }
             }
 
-            pendingIntent = PendingIntent.getBroadcast(MyApplication.context, 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+            pendingIntent = PendingIntent.getBroadcast(mContext, 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT)
 
             setExactAlarm(
                     AlarmManager.RTC_WAKEUP,
@@ -88,12 +95,13 @@ class AlarmFragment : Fragment() {
             )
         }
 
-        tv_sound_range.setOnClickListener {
-            if(idxRangeOfSound == RANGE_SOUNDS.size){
-                idxRangeOfSound = 0
+        tv_sound_duration.setOnClickListener {
+            if(idxDuration == SOUND_DURATIONS.size){
+                idxDuration = 0
             }
-            tv_sound_range.text = getSecondOrMinute(RANGE_SOUNDS[idxRangeOfSound])
-            idxRangeOfSound++
+            tv_sound_duration.text = getSecondOrMinute(SOUND_DURATIONS[idxDuration])
+            mContext.getDefaultSharedPreferences().put(PreferenceKeys.KEY_SOUND_DURATION, SOUND_DURATIONS[idxDuration])
+            idxDuration++
         }
 
         tv_alarm_music.setOnClickListener {
@@ -148,7 +156,7 @@ class AlarmFragment : Fragment() {
 
         if(requestCode == REQUEST_CODE_RINGTONE && resultCode == RESULT_OK){
             ringtoneUri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
-            val ringToneName = RingtoneManager.getRingtone(MyApplication.context, ringtoneUri).getTitle(MyApplication.context)
+            val ringToneName = RingtoneManager.getRingtone(mContext, ringtoneUri).getTitle(mContext)
             ringtoneUri?.let {
                 tv_alarm_music.text = ringToneName
             }
@@ -161,7 +169,7 @@ class AlarmFragment : Fragment() {
         private val STEP_NUMBER = 5
         private val BASIC_HOUR = 2
         private const val REQUEST_CODE_RINGTONE = 1000
-        private val RANGE_SOUNDS = intArrayOf(15, 30, 60, 120)
+        private val SOUND_DURATIONS = intArrayOf(15, 30, 60, 120)
 
         private val MINUTES : Array<String> = Array(12, {( it * STEP_NUMBER ).toString()})
 

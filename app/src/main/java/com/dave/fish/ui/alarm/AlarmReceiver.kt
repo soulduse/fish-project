@@ -15,9 +15,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import com.dave.fish.R
 import com.dave.fish.common.Constants.EXTRA_RINGTONE_URI
-import com.dave.fish.util.DLog
 import kotlinx.android.synthetic.main.dialog_alarm_bottom_sheet.view.*
-
 
 /**
  * Created by soul on 2017. 9. 27..
@@ -42,7 +40,6 @@ class AlarmReceiver : BroadcastReceiver() {
         mContext = context
 
         ringtoneUri = intent.getParcelableExtra(EXTRA_RINGTONE_URI)
-        DLog.w("ringtoneUri --> $ringtoneUri")
 
         originalVolume = mAudioMgr.getStreamVolume(AudioManager.STREAM_MUSIC)
 
@@ -100,7 +97,6 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private fun initAlarm(){
         setVolumeMax()
-        DLog.w("ringtoneUri 002 --> $ringtoneUri")
         mMediaPlayer = MediaPlayer.create(mContext, ringtoneUri?:RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
     }
 
