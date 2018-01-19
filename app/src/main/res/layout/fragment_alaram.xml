@@ -73,11 +73,24 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:text="test"
-        android:textSize="30sp"
+        tools:text="2시간 0분후 알람 실행"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+    <TextView
+        android:id="@+id/result_time_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        tools:text="2018-01-20 (목) 23:00:00"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/result_time" />
 
     <TextView
         android:id="@+id/tv_title_sound_range"
@@ -89,7 +102,7 @@
         android:gravity="center"
         android:text="알람소리 시간"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/result_time" />
+        app:layout_constraintTop_toBottomOf="@+id/result_time_detail" />
 
     <TextView
         android:id="@+id/tv_sound_duration"
@@ -102,7 +115,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/tv_title_sound_range"
-        tools:text="1 분" />
+        android:text="1 분" />
 
     <TextView
         android:id="@+id/alarm_music_title"

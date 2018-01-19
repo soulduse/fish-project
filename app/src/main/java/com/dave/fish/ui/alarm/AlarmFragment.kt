@@ -14,7 +14,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
-import com.dave.fish.MyApplication
 import com.dave.fish.R
 import com.dave.fish.common.Constants.EXTRA_RINGTONE_URI
 import com.dave.fish.util.DLog
@@ -78,6 +77,30 @@ class AlarmFragment : Fragment() {
     private fun initAlarm() {
         alarmMgr = mContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
+        setStartAlarm()
+
+        setSoundDuration()
+
+        setAlarmMusic()
+    }
+
+    private fun setAlarmMusic() {
+        val ringtoneSound: String ?= mContext.getDefaultSharedPreferences().getString(PreferenceKeys.KEY_RINGTONE_SOUND, null)
+
+        tv_alarm_music.text = ringtoneSound?.let { it }
+
+        tv_alarm_music.setOnClickListener {
+            val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
+                putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "알람 벨소리를 선택하세요")  // 제목을 넣는다.
+                putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false)  // 무음을 선택 리스트에서 제외
+                putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true) // 기본 벨소리는 선택 리스트에 넣는다.
+                putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
+            }
+            startActivityForResult(intent, REQUEST_CODE_RINGTONE)
+        }
+    }
+
+    private fun setStartAlarm() {
         start_alarm.setOnClickListener {
             alarmIntent = Intent("com.dave.fish.START_ALARM").apply {
                 DLog.w("ringtoneUri 000 --> $ringtoneUri")
@@ -94,24 +117,21 @@ class AlarmFragment : Fragment() {
                     pendingIntent
             )
         }
+    }
 
-        tv_sound_duration.setOnClickListener {
-            if(idxDuration == SOUND_DURATIONS.size){
-                idxDuration = 0
-            }
-            tv_sound_duration.text = getSecondOrMinute(SOUND_DURATIONS[idxDuration])
-            mContext.getDefaultSharedPreferences().put(PreferenceKeys.KEY_SOUND_DURATION, SOUND_DURATIONS[idxDuration])
-            idxDuration++
+    private fun setSoundDuration() {
+        val soundDuration: Int = mContext.getDefaultSharedPreferences().getInt(PreferenceKeys.KEY_SOUND_DURATION, 0)
+        if (soundDuration != 0) {
+            tv_sound_duration.text = getSecondOrMinute(soundDuration)
         }
 
-        tv_alarm_music.setOnClickListener {
-            val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
-                putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "알람 벨소리를 선택하세요")  // 제목을 넣는다.
-                putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false)  // 무음을 선택 리스트에서 제외
-                putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true) // 기본 벨소리는 선택 리스트에 넣는다.
-                putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
+        tv_sound_duration.setOnClickListener {
+            if (idxDuration == SOUND_DURATIONS.size) {
+                idxDuration = 0
             }
-            startActivityForResult(intent, REQUEST_CODE_RINGTONE)
+            mContext.getDefaultSharedPreferences().put(PreferenceKeys.KEY_SOUND_DURATION, SOUND_DURATIONS[idxDuration])
+            tv_sound_duration.text = getSecondOrMinute(SOUND_DURATIONS[idxDuration])
+            idxDuration++
         }
     }
 
@@ -145,6 +165,8 @@ class AlarmFragment : Fragment() {
                 num_picker_hour.value,
                 num_picker_min.value * STEP_NUMBER
         )
+
+        result_time_detail.text = DateTime(getAlarmTime()).toString("MM/dd (E) kk:mm")
     }
 
     private val changedListener = NumberPicker.OnValueChangeListener { _, _, _ ->
@@ -158,6 +180,7 @@ class AlarmFragment : Fragment() {
             ringtoneUri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
             val ringToneName = RingtoneManager.getRingtone(mContext, ringtoneUri).getTitle(mContext)
             ringtoneUri?.let {
+                mContext.getDefaultSharedPreferences().put(PreferenceKeys.KEY_RINGTONE_SOUND, ringToneName)
                 tv_alarm_music.text = ringToneName
             }
         }
