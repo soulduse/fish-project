@@ -40,9 +40,9 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private val mView by lazy { View.inflate(mContext, R.layout.dialog_alarm, null) }
 
-    private var originalVolume = 0
-
     private var ringtoneUri: Uri ?= null
+
+    private var originalVolume = 0
 
     private var ringtoneDuration: Int = 0
 
