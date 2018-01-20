@@ -3,8 +3,10 @@ package com.dave.fish.ui.alarm
 import android.app.Activity.RESULT_OK
 import android.app.AlarmManager
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
@@ -28,17 +30,17 @@ import org.joda.time.DateTime
  */
 class AlarmFragment : Fragment() {
 
-    private lateinit var alarmMgr: AlarmManager
+    private lateinit var mContext: Context
 
     private lateinit var alarmIntent: Intent
 
-    private lateinit var pendingIntent: PendingIntent
-
-    private var idxDuration = 0
+    private var pendingIntent: PendingIntent?= null
 
     private val sharedPreference by lazy { mContext.getDefaultSharedPreferences() }
 
-    private lateinit var mContext: Context
+    private val alarmMgr: AlarmManager by lazy { mContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager }
+
+    private var idxDuration = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
             inflater.inflate(R.layout.fragment_alaram, container, false)
@@ -74,8 +76,6 @@ class AlarmFragment : Fragment() {
     }
 
     private fun initAlarm() {
-        alarmMgr = mContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
         setStartAlarm()
 
         setSoundDuration()
@@ -90,7 +90,7 @@ class AlarmFragment : Fragment() {
 
         tv_alarm_music.setOnClickListener {
             val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
-                putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "알람 벨소리를 선택하세요")  // 제목을 넣는다.
+                putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, mContext.getString(R.string.alarm_list_title))  // 제목을 넣는다.
                 putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false)  // 무음을 선택 리스트에서 제외
                 putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true) // 기본 벨소리는 선택 리스트에 넣는다.
                 putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM)
@@ -101,26 +101,64 @@ class AlarmFragment : Fragment() {
 
     private fun setStartAlarm() {
         start_alarm.setOnClickListener {
-            val ringtoneUri: Uri = Uri.parse(sharedPreference.getString(PreferenceKeys.KEY_RINGTONE_URI,""))
-            val ringtoneDuration = sharedPreference.getInt(PreferenceKeys.KEY_SOUND_DURATION,0)
-            alarmIntent = Intent("com.dave.fish.START_ALARM").apply {
+            sharedPreference.put(PreferenceKeys.KEY_IS_ALARM_FINISHED, start_alarm.isSelected)
+            updateAlarmTriggerUI()
+            doAlarm()
+        }
+    }
 
-                if(ringtoneUri.toString().isNotEmpty()){
-                    putExtra(Constants.EXTRA_RINGTONE_URI, ringtoneUri)
-                }
+    private fun updateAlarmTriggerUI(){
+        val isAlarmFinished = sharedPreference.getBoolean(PreferenceKeys.KEY_IS_ALARM_FINISHED, true)
+        when(isAlarmFinished){
+            true -> {
+                start_alarm.text = mContext.getString(R.string.start_alarm)
+                start_alarm.isSelected = false
+            }
+            false -> {
+                start_alarm.text = mContext.getString(R.string.stop_alarm)
+                start_alarm.isSelected = true
+            }
+        }
+    }
 
-                if(ringtoneDuration != 0){
-                    putExtra(Constants.EXTRA_RINGTONE_DURATION, ringtoneDuration)
-                }
+    private fun doAlarm() {
+        when (start_alarm.isSelected) {
+            true -> startAlarm()
+            false -> stopAlarm()
+        }
+    }
+
+    private fun stopAlarm() {
+        pendingIntent?.let {
+            alarmMgr.cancel(it)
+            it.cancel()
+        }
+    }
+
+    private fun startAlarm() {
+        initAlarmIntentData()
+
+        pendingIntent = PendingIntent.getBroadcast(mContext, 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+
+        setExactAlarm(
+                AlarmManager.RTC_WAKEUP,
+                getAlarmTime(),
+                pendingIntent!!
+        )
+    }
+
+    private fun initAlarmIntentData() {
+        val ringtoneUri: Uri = Uri.parse(sharedPreference.getString(PreferenceKeys.KEY_RINGTONE_URI, ""))
+        val ringtoneDuration = sharedPreference.getInt(PreferenceKeys.KEY_SOUND_DURATION, 0)
+        alarmIntent = Intent("com.dave.fish.START_ALARM").apply {
+
+            if (ringtoneUri.toString().isNotEmpty()) {
+                putExtra(Constants.EXTRA_RINGTONE_URI, ringtoneUri)
             }
 
-            pendingIntent = PendingIntent.getBroadcast(mContext, 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT)
-
-            setExactAlarm(
-                    AlarmManager.RTC_WAKEUP,
-                    getAlarmTime(),
-                    pendingIntent
-            )
+            if (ringtoneDuration != 0) {
+                putExtra(Constants.EXTRA_RINGTONE_DURATION, ringtoneDuration)
+            }
         }
     }
 
@@ -190,6 +228,23 @@ class AlarmFragment : Fragment() {
                 sharedPreference.put(PreferenceKeys.KEY_RINGTONE_NAME, ringToneName)
                 tv_alarm_music.text = ringToneName
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateAlarmTriggerUI()
+        mContext.registerReceiver(mMessageReceiver, IntentFilter(Constants.INTENT_FILTER_ALARM_ACTION))
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mContext.unregisterReceiver(mMessageReceiver)
+    }
+
+    private val mMessageReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            updateAlarmTriggerUI()
         }
     }
 

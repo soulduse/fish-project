@@ -15,7 +15,11 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import com.dave.fish.R
 import com.dave.fish.common.Constants
-import kotlinx.android.synthetic.main.dialog_alarm_bottom_sheet.view.*
+import com.dave.fish.util.DLog
+import com.dave.fish.util.PreferenceKeys
+import com.dave.fish.util.getDefaultSharedPreferences
+import com.dave.fish.util.put
+import kotlinx.android.synthetic.main.dialog_alarm.view.*
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
@@ -34,7 +38,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private val mAudioMgr by lazy { mContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager }
 
-    private val mView by lazy { View.inflate(mContext, R.layout.dialog_alarm_bottom_sheet, null) }
+    private val mView by lazy { View.inflate(mContext, R.layout.dialog_alarm, null) }
 
     private var originalVolume = 0
 
@@ -85,10 +89,17 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
     private fun finishAlarm(){
+        mContext.getDefaultSharedPreferences().put(PreferenceKeys.KEY_IS_ALARM_FINISHED, true)
         setVolumeOriginal()
         stopAlarm()
         stopVibrate()
         goneView()
+        notifyFinishedAlarm()
+    }
+
+    private fun notifyFinishedAlarm() {
+        val intent = Intent(Constants.INTENT_FILTER_ALARM_ACTION)
+        mContext.sendBroadcast(intent)
     }
 
     private fun goneView(){
@@ -104,8 +115,7 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
     private fun initAlarm(){
-//        setVolumeMax()
-        setVolumeOriginal()
+        setVolumeMax()
         // 값이 없을 경우 기본 알람으로 실행한다.
         mMediaPlayer = MediaPlayer.create(mContext, ringtoneUri?:RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
 

@@ -24,4 +24,7 @@ object Constants {
     // INTENT EXTRA
     val EXTRA_RINGTONE_URI = "RINGTONE_URI"
     val EXTRA_RINGTONE_DURATION = "RINGTONE_DURATION"
+
+    // Alarm BroadcastReceiver
+    val INTENT_FILTER_ALARM_ACTION = "FILTER_ALARM_ACTION"
 }
