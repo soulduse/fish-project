@@ -54,8 +54,6 @@ class AlarmFragment : Fragment() {
 
         initAlarm()
 
-        getAlarmTime()
-
         initAlarmData()
     }
 
@@ -65,6 +63,7 @@ class AlarmFragment : Fragment() {
             maxValue = HOUR_OF_DAY
             value = BASIC_HOUR
         }
+
         num_picker_min.run {
             minValue = 0
             maxValue = (MINUTES_OF_HOUR / STEP_NUMBER) - 1
@@ -74,6 +73,11 @@ class AlarmFragment : Fragment() {
         num_picker_hour.setOnValueChangedListener(changedListener)
         num_picker_min.setOnValueChangedListener(changedListener)
     }
+
+    private val changedListener = NumberPicker.OnValueChangeListener { _, _, _ ->
+        initAlarmData()
+    }
+
 
     private fun initAlarm() {
         setStartAlarm()
@@ -129,10 +133,8 @@ class AlarmFragment : Fragment() {
     }
 
     private fun stopAlarm() {
-        pendingIntent?.let {
-            alarmMgr.cancel(it)
-            it.cancel()
-        }
+        pendingIntent?.cancel()
+        alarmMgr.cancel(pendingIntent)
     }
 
     private fun startAlarm() {
@@ -210,10 +212,6 @@ class AlarmFragment : Fragment() {
         )
 
         result_time_detail.text = DateTime(getAlarmTime()).toString("MM/dd (E) kk:mm")
-    }
-
-    private val changedListener = NumberPicker.OnValueChangeListener { _, _, _ ->
-        initAlarmData()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
