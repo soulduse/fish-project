@@ -31,50 +31,51 @@ android {
 }
 
 dependencies {
-    compile "com.android.support:appcompat-v7:$supportLibVersion"
-    compile "com.android.support:design:$supportLibVersion"
-    compile "com.android.support:support-vector-drawable:$supportLibVersion"
-    compile "com.android.support.constraint:constraint-layout:1.0.2"
+    implementation "com.android.support:appcompat-v7:$supportLibVersion"
+    implementation "com.android.support:design:$supportLibVersion"
+    implementation "com.android.support:support-vector-drawable:$supportLibVersion"
+    implementation "com.android.support.constraint:constraint-layout:1.0.2"
 
     // Retrofit Lib
-    compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    compile "com.squareup.retrofit2:converter-gson:$retrofitVersion"
-    compile "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-experimental-adapter:$retrofitConverterVersion"
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-experimental-adapter:$retrofitConverterVersion"
 
     // OKHttp Lib
-    compile "com.squareup.okhttp3:okhttp:$okHttpVersion"
-    compile "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
-    compile "com.squareup.okhttp3:okhttp-urlconnection:$okHttpVersion"
+    implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
+    implementation "com.squareup.okhttp3:okhttp-urlconnection:$okHttpVersion"
 
     // Glide Lib
-    compile "com.github.bumptech.glide:glide:$glideVersion"
-    annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"
+    implementation "com.github.bumptech.glide:glide:$glideVersion"
 
     // Joda-time
-    compile "joda-time:joda-time:$jodatimeVersion"
+    implementation "joda-time:joda-time:$jodatimeVersion"
 
     // Calendar Lib
-    compile "com.sickmartian.calendarview:calendarview:$calendarLibVersion"
+    implementation "com.sickmartian.calendarview:calendarview:$calendarLibVersion"
 
     // Google Lib
-    compile "com.google.android.gms:play-services-maps:$googleLibVersion"
-    compile "com.google.android.gms:play-services-location:$googleLibVersion"
+    implementation "com.google.android.gms:play-services-maps:$googleLibVersion"
+    implementation "com.google.android.gms:play-services-location:$googleLibVersion"
 
     // Ted Permission
-    compile "gun0912.ted:tedpermission:$tedPermissionVersion"
+    implementation "gun0912.ted:tedpermission:$tedPermissionVersion"
 
     // Main UI Lib
-    compile "com.yarolegovich:sliding-root-nav:$slideRootVersion"
+    implementation "com.yarolegovich:sliding-root-nav:$slideRootVersion"
 
     // Kotlin
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion"
 
     // Test
-    testCompile "junit:junit:$junitVersion"
-    testCompile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
-    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
+
+    kapt "com.github.bumptech.glide:compiler:$glideVersion"
 }
 
 repositories {
