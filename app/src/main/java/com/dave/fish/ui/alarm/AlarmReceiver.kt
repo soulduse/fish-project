@@ -14,8 +14,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import com.dave.fish.R
-import com.dave.fish.common.Constants.EXTRA_RINGTONE_URI
+import com.dave.fish.common.Constants
 import kotlinx.android.synthetic.main.dialog_alarm_bottom_sheet.view.*
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by soul on 2017. 9. 27..
@@ -36,10 +40,14 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private var ringtoneUri: Uri ?= null
 
+    private var ringtoneDuration: Int = 0
+
     override fun onReceive(context: Context, intent: Intent) {
         mContext = context
 
-        ringtoneUri = intent.getParcelableExtra(EXTRA_RINGTONE_URI)
+        ringtoneUri = intent.getParcelableExtra(Constants.EXTRA_RINGTONE_URI)
+
+        ringtoneDuration = intent.getIntExtra(Constants.EXTRA_RINGTONE_DURATION, 60)
 
         originalVolume = mAudioMgr.getStreamVolume(AudioManager.STREAM_MUSIC)
 
@@ -96,8 +104,15 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
     private fun initAlarm(){
-        setVolumeMax()
+//        setVolumeMax()
+        setVolumeOriginal()
+        // 값이 없을 경우 기본 알람으로 실행한다.
         mMediaPlayer = MediaPlayer.create(mContext, ringtoneUri?:RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
+
+        launch(UI){
+            delay(ringtoneDuration.toLong(), TimeUnit.SECONDS)
+            finishAlarm()
+        }
     }
 
     private fun setVolumeMax() {

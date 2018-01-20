@@ -15,8 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.NumberPicker
 import com.dave.fish.R
-import com.dave.fish.common.Constants.EXTRA_RINGTONE_URI
-import com.dave.fish.util.DLog
+import com.dave.fish.common.Constants
 import com.dave.fish.util.PreferenceKeys
 import com.dave.fish.util.getDefaultSharedPreferences
 import com.dave.fish.util.put
@@ -35,9 +34,9 @@ class AlarmFragment : Fragment() {
 
     private lateinit var pendingIntent: PendingIntent
 
-    private var ringtoneUri: Uri ?= null
-
     private var idxDuration = 0
+
+    private val sharedPreference by lazy { mContext.getDefaultSharedPreferences() }
 
     private lateinit var mContext: Context
 
@@ -85,9 +84,9 @@ class AlarmFragment : Fragment() {
     }
 
     private fun setAlarmMusic() {
-        val ringtoneSound: String ?= mContext.getDefaultSharedPreferences().getString(PreferenceKeys.KEY_RINGTONE_SOUND, null)
-
-        tv_alarm_music.text = ringtoneSound?.let { it }
+        sharedPreference.getString(PreferenceKeys.KEY_RINGTONE_NAME, null)?.let {
+            tv_alarm_music.text = it
+        }
 
         tv_alarm_music.setOnClickListener {
             val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
@@ -102,10 +101,16 @@ class AlarmFragment : Fragment() {
 
     private fun setStartAlarm() {
         start_alarm.setOnClickListener {
+            val ringtoneUri: Uri = Uri.parse(sharedPreference.getString(PreferenceKeys.KEY_RINGTONE_URI,""))
+            val ringtoneDuration = sharedPreference.getInt(PreferenceKeys.KEY_SOUND_DURATION,0)
             alarmIntent = Intent("com.dave.fish.START_ALARM").apply {
-                DLog.w("ringtoneUri 000 --> $ringtoneUri")
-                ringtoneUri?.let {
-                    putExtra(EXTRA_RINGTONE_URI, ringtoneUri)
+
+                if(ringtoneUri.toString().isNotEmpty()){
+                    putExtra(Constants.EXTRA_RINGTONE_URI, ringtoneUri)
+                }
+
+                if(ringtoneDuration != 0){
+                    putExtra(Constants.EXTRA_RINGTONE_DURATION, ringtoneDuration)
                 }
             }
 
@@ -120,7 +125,7 @@ class AlarmFragment : Fragment() {
     }
 
     private fun setSoundDuration() {
-        val soundDuration: Int = mContext.getDefaultSharedPreferences().getInt(PreferenceKeys.KEY_SOUND_DURATION, 0)
+        val soundDuration: Int = sharedPreference.getInt(PreferenceKeys.KEY_SOUND_DURATION, 0)
         if (soundDuration != 0) {
             tv_sound_duration.text = getSecondOrMinute(soundDuration)
         }
@@ -129,7 +134,7 @@ class AlarmFragment : Fragment() {
             if (idxDuration == SOUND_DURATIONS.size) {
                 idxDuration = 0
             }
-            mContext.getDefaultSharedPreferences().put(PreferenceKeys.KEY_SOUND_DURATION, SOUND_DURATIONS[idxDuration])
+            sharedPreference.put(PreferenceKeys.KEY_SOUND_DURATION, SOUND_DURATIONS[idxDuration])
             tv_sound_duration.text = getSecondOrMinute(SOUND_DURATIONS[idxDuration])
             idxDuration++
         }
@@ -177,10 +182,12 @@ class AlarmFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if(requestCode == REQUEST_CODE_RINGTONE && resultCode == RESULT_OK){
-            ringtoneUri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+            val ringtoneUri: Uri? = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+
             val ringToneName = RingtoneManager.getRingtone(mContext, ringtoneUri).getTitle(mContext)
             ringtoneUri?.let {
-                mContext.getDefaultSharedPreferences().put(PreferenceKeys.KEY_RINGTONE_SOUND, ringToneName)
+                sharedPreference.put(PreferenceKeys.KEY_RINGTONE_URI, ringtoneUri.toString())
+                sharedPreference.put(PreferenceKeys.KEY_RINGTONE_NAME, ringToneName)
                 tv_alarm_music.text = ringToneName
             }
         }
