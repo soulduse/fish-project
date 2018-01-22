@@ -100,7 +100,7 @@
         android:layout_marginTop="32dp"
         android:drawableStart="@drawable/ic_update_grey_500_24dp"
         android:gravity="center"
-        android:text="알람소리 시간"
+        android:text="@string/alarm_duration"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/result_time_detail" />
 
@@ -115,7 +115,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/tv_title_sound_range"
-        android:text="1 분" />
+        android:text="@string/alarm_base_duration" />
 
     <TextView
         android:id="@+id/alarm_music_title"
@@ -126,7 +126,7 @@
         android:layout_marginTop="32dp"
         android:drawableStart="@drawable/ic_queue_music_grey_500_24dp"
         android:gravity="center"
-        android:text="알림소리"
+        android:text="@string/alarm_sound"
         app:layout_constraintBottom_toTopOf="@+id/start_alarm"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_title_sound_range"
@@ -138,7 +138,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:drawableEnd="@drawable/ic_keyboard_arrow_right_grey_500_24dp"
-        android:text="기본음"
+        android:text="@string/alarm_base_sound"
         app:layout_constraintBaseline_toBaselineOf="@+id/alarm_music_title"
         app:layout_constraintEnd_toEndOf="parent" />
 

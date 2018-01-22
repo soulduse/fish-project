@@ -76,6 +76,7 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
 
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
+    androidTestCompile 'junit:junit:4.12'
 }
 
 repositories {

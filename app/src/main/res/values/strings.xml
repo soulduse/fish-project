@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Fish_project</string>
+    <string name="app_name">해루질러</string>
 
     <string name="kma_opemapi_key">IEUdGrjr8gLf11x5UyDgUpeQpgogxGYoPC8ZZfdvFtp+CMgU969WgPaXLOmEaXM/UcYbzZYrb9OBHTz58I4zaA==</string>
     <string name="sea_openapi_key">SpGC4MjwhAPJosLja1g8ApaDhGbk/hWZ2kOV8ZcCNB8ymdluVZNSuQ4hm4X/atHo5/QhX72g8hUMdwAu1Kg==</string>
@@ -31,6 +31,7 @@
     <string name="warning_empty_address">해당되는 주소 정보는 없습니다.</string>
     <string name="korea">대한민국</string>
 
+    <!-- ALARM -->
     <string name="number_picker_hour">시간</string>
     <string name="number_picker_min">분</string>
     <string name="number_picker_selected_values">%1$d시간 %2$d분후 알람실행</string>
@@ -39,6 +40,11 @@
     <string name="tv_alarm">알람</string>
     <string name="alarm_notice">간조 알람이예요! 안전한 해루질을 위해\n슬슬 해루질을 마무리 합시다!</string>
     <string name="alarm_list_title">알람 벨소리를 선택하세요</string>
+    <string name="alarm_sound">알람 소리</string>
+    <string name="alarm_duration">알람지속 시간</string>
+    <string name="alarm_base_duration">1 분</string>
+    <string name="alarm_base_sound">기본음</string>
+
 
 
     <!--    Permissions    -->
