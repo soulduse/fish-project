@@ -1,5 +1,6 @@
 package com.dave.fish.ui.calendar
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.dave.fish.R
@@ -16,7 +18,6 @@ import com.dave.fish.api.NetworkCallback
 import com.dave.fish.api.model.WeeklyModel
 import com.dave.fish.db.RealmController
 import com.dave.fish.db.model.TideWeeklyModel
-import com.dave.fish.util.DLog
 import com.dave.fish.util.DateUtil
 import com.dave.fish.util.DateUtil.DATE_PATTERN_YEAR_MONTH_DAY
 import com.dave.fish.util.Global
@@ -27,7 +28,6 @@ import kotlinx.android.synthetic.main.fragment_menu_one.*
 import kotlinx.android.synthetic.main.view_item_add_calendar.view.*
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
-import org.joda.time.LocalDate
 import java.util.*
 
 
@@ -36,11 +36,8 @@ import java.util.*
  */
 class CalendarFragment : Fragment() {
     private var firstDayOfWeek: Int? = null
-    private var mYear: Int = 0
-    private var mDay: Int = 0
-    private var mMonth: Int = 0
+    private var mDate: DateTime = DateTime()
 
-    private var changingDate = LocalDate()
     private var lockSelect = false
 
     private val mRealmController: RealmController = RealmController.instance
@@ -59,11 +56,14 @@ class CalendarFragment : Fragment() {
         super.onCreate(savedInstanceState)
         firstDayOfWeek = CalendarView.MONDAY_SHIFT
         if (savedInstanceState == null) {
-            setStateByCalendar()
+            setCurrentDate()
         } else {
-            mDay = savedInstanceState.getInt(DAY_PARAMETER)
-            mMonth = savedInstanceState.getInt(MONTH_PARAMETER)
-            mYear = savedInstanceState.getInt(YEAR_PARAMETER)
+            mDate = DateTime(
+                    savedInstanceState.getInt(YEAR_PARAMETER),
+                    savedInstanceState.getInt(MONTH_PARAMETER),
+                    savedInstanceState.getInt(DAY_PARAMETER),
+                    0,0,0,0
+            )
             firstDayOfWeek = savedInstanceState.getInt(FIRST_DAY_OF_WEEK_PARAMETER)
         }
     }
@@ -74,8 +74,7 @@ class CalendarFragment : Fragment() {
     }
 
     private fun refreshCalendar() {
-        val yearAndMonth = "${changingDate.year}${changingDate.monthOfYear}"
-        if(yearAndMonth == getCurrentDate()){
+        if(isCurrentDate(mDate)){
             monthView.setCurrentDay(getCalendarForState())
         }else{
             monthView.setCurrentDay(0)
@@ -100,7 +99,6 @@ class CalendarFragment : Fragment() {
             initDataOnThisMonth(postId, currentDayOfMonth.dateTime)
 
             dayOfMonthList.forEach {
-                DLog.w("dayOfMonthList --> $it")
                 initCalendarData(postId, it, tideMonthList)
             }
 
@@ -110,7 +108,6 @@ class CalendarFragment : Fragment() {
 
     private fun initMonthView(){
         monthView.firstDayOfTheWeek = CalendarView.SUNDAY_SHIFT
-        DLog.d("getCalendarForState() --> ${getCalendarForState()}")
         monthView.setCurrentDay(getCalendarForState())
 
         monthView.setDaySelectedListener(object : CalendarView.DaySelectionListener {
@@ -118,7 +115,7 @@ class CalendarFragment : Fragment() {
             }
 
             override fun onTapEnded(p0: CalendarView, p1: CalendarView.DayMetadata) {
-                val date = "${p1.year}-${addZeroToDate(p1.month)}-${addZeroToDate(p1.day)}"
+                val date = DateTime(p1.year, p1.month, p1.day, 0, 0, 0).toString("yyyy-MM-dd")
                 val intent = Intent(context, TideDetailActivity::class.java)
                 intent.putExtra(Global.INTENT_DATE, date)
                 activity?.startActivity(intent)
@@ -129,7 +126,7 @@ class CalendarFragment : Fragment() {
 
     private fun onMoveCalendar() {
         tv_prev_month.setOnClickListener {
-            setPrevDateByStateDependingOnView()
+            movePrevMonth()
             refreshCalendar()
         }
 
@@ -139,19 +136,16 @@ class CalendarFragment : Fragment() {
         }
 
         tv_next_month.setOnClickListener {
-            setNextDateByStateDependingOnView()
+            moveNextMonth()
             refreshCalendar()
         }
     }
 
     private fun initCalendarData(postId: String, dateTime: DateTime, tideMonthList : RealmResults<TideWeeklyModel>) {
-        DLog.d("tideMonthList size --> ${tideMonthList.size}")
         if(!lockSelect && tideMonthList.isNotEmpty()){
             addDataToCalendar(tideMonthList, postId)
             lockSelect = true
-            DLog.d("initCalendarData --> true")
         }else if(tideMonthList.size < MINIMUM_DAY_SIZE){
-            DLog.d("initCalendarData --> false")
             requestMonthData(postId, dateTime)
         }
     }
@@ -181,28 +175,7 @@ class CalendarFragment : Fragment() {
     private fun addDataToCalendar(itemList: List<Any>, postId: String) {
         itemList.forEach { item ->
             val calendarItemView = layoutInflater.inflate(R.layout.view_item_add_calendar, null)
-            val lowTideList = getLowTide(item)
-            for (i in 0..lowTideList.size) {
-                when (i) {
-                    0 -> {
-                        calendarItemView.tv_tide_level.text = TideUtil.getHeight(lowTideList[i])
-                        if (TideUtil.getHeight(lowTideList[i]).toInt() <= 100) {
-                            calendarItemView.tv_tide_level.setTextColor(Color.RED)
-                        }
-                    }
-
-                    1 -> {
-                        try {
-                            calendarItemView.tv_tide_level2.text = TideUtil.getHeight(lowTideList[i])
-                            if (TideUtil.getHeight(lowTideList[i]).toInt() <= 100) {
-                                calendarItemView.tv_tide_level2.setTextColor(Color.RED)
-                            }
-                        } catch (e: IndexOutOfBoundsException) {
-                            calendarItemView.tv_tide_level2.text = ""
-                        }
-                    }
-                }
-            }
+            drawTideValues(item, calendarItemView)
 
             var tideDate = DateTime()
             when (item) {
@@ -235,11 +208,26 @@ class CalendarFragment : Fragment() {
             }
 
             if (isEmptyInMonthView(tideDate)) {
-                DLog.w("Item instanceOf --> passed Date (${tideDate.year}/${tideDate.monthOfYear}/${tideDate.dayOfMonth})")
                 monthView.addViewToDay(CalendarView.DayMetadata(tideDate.year, tideDate.monthOfYear, tideDate.dayOfMonth),
                         calendarItemView)
             }
 
+        }
+    }
+
+    private fun drawTideValues(item: Any, calendarItemView: View) {
+        val lowTideList = getLowTide(item)
+        drawTideLevel(calendarItemView.tv_tide_level, lowTideList[0])
+        if(lowTideList.size > 1){
+            drawTideLevel(calendarItemView.tv_tide_level2, lowTideList[1])
+        }
+    }
+
+    private fun drawTideLevel(tv: TextView, lowTide: String){
+        tv.text = TideUtil.getHeight(lowTide)
+
+        if (TideUtil.getHeight(lowTide).toInt() <= 100) {
+            tv.setTextColor(Color.RED)
         }
     }
 
@@ -259,100 +247,73 @@ class CalendarFragment : Fragment() {
         return false
     }
 
-    private fun getWeatherIcon(weather: String): Int {
-        return when (weather.toUpperCase()) {
-            WeatherIcons.CLOUD.name -> R.drawable.icon_cloud_sun
-            WeatherIcons.MORECLOUD.name -> R.drawable.ic_cloud_grey_500_24dp
-            WeatherIcons.RAIN.name -> R.drawable.icon_rain
-            WeatherIcons.SUN.name -> R.drawable.ic_wb_sunny_grey_500_24dp
-            WeatherIcons.CLOUDRAIN.name -> R.drawable.icon_rain
-            else -> 0
-        }
+    private fun getWeatherIcon(weather: String): Int = when (weather.toUpperCase()) {
+        WeatherIcons.CLOUD.name -> R.drawable.icon_cloud_sun
+        WeatherIcons.MORECLOUD.name -> R.drawable.ic_cloud_grey_500_24dp
+        WeatherIcons.RAIN.name -> R.drawable.icon_rain
+        WeatherIcons.SUN.name -> R.drawable.ic_wb_sunny_grey_500_24dp
+        WeatherIcons.CLOUDRAIN.name -> R.drawable.icon_rain
+        else -> 0
     }
 
-    fun getLowTide(item: Any): MutableList<String> {
+    private fun getLowTide(item: Any): MutableList<String> {
         when (item) {
-            is WeeklyModel.WeeklyData -> {
-                TideUtil.setTide(item)
-            }
+            is WeeklyModel.WeeklyData -> TideUtil.setTide(item)
 
-            is TideWeeklyModel -> {
-                TideUtil.setTide(item)
-            }
+            is TideWeeklyModel -> TideUtil.setTide(item)
         }
         return TideUtil.getLowItemList()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(DAY_PARAMETER, mDay)
-        outState.putInt(MONTH_PARAMETER, mMonth)
-        outState.putInt(YEAR_PARAMETER, mYear)
-        outState.putInt(FIRST_DAY_OF_WEEK_PARAMETER, monthView.firstDayOfTheWeek)
-    }
-
-    private fun addZeroToDate(dateNum: Int): String {
-        if (dateNum < 10) {
-            return "0" + dateNum
+        with(outState){
+            putInt(DAY_PARAMETER, mDate.dayOfMonth)
+            putInt(MONTH_PARAMETER, mDate.monthOfYear)
+            putInt(YEAR_PARAMETER, mDate.year)
+            putInt(FIRST_DAY_OF_WEEK_PARAMETER, monthView.firstDayOfTheWeek)
         }
-
-        return "$dateNum"
     }
 
-    fun setStateByCalendar() {
+    private fun setCurrentDate() {
         val seoul = DateTimeZone.forID("Asia/Seoul")
-        val dateTime = DateTime(seoul)
-        mYear = dateTime.year
-        mMonth = dateTime.monthOfYear
-        mDay = dateTime.dayOfMonth
+        mDate = DateTime(seoul)
     }
 
-    private fun getDateForState(): DateTime {
-        return DateTime(mYear, mMonth, mDay, 0, 0, 0, 0)
+    private fun getDateForState() = DateTime(
+            mDate.year,
+            mDate.monthOfYear,
+            mDate.dayOfMonth,
+            0,
+            0,
+            0,
+            0
+    )
+
+    private fun getCalendarForState() = getDateForState().toCalendar(Locale.KOREA)
+
+    private fun isCurrentDate(compareDate: DateTime) =
+            DateTime().toString(DATE_PATTERN_YEAR_AND_MONTH) == compareDate.toString(DATE_PATTERN_YEAR_AND_MONTH)
+
+    private fun movePrevMonth() {
+        mDate = mDate.minusMonths(1)
+        setMonthViewDate()
     }
 
-    private fun getCalendarForState(): Calendar {
-        val newDateTime = DateTime(mYear, mMonth, mDay, 0, 0, 0, 0)
-        return newDateTime.toCalendar(Locale.KOREA)
-    }
-
-    private fun getCurrentDate() : String{
-        return DateTime().toString("yyyyMM")
-    }
-
-    private fun setPrevDateByStateDependingOnView() {
-        changeYearAndMonth(--mMonth)
-        monthView.setDate(mMonth, mYear)
-        changingDate = changingDate.minusMonths(1)
-        calendar_date.text = "$mYear.$mMonth"
-    }
-
-    private fun setNextDateByStateDependingOnView() {
-        changeYearAndMonth(++mMonth)
-        monthView.setDate(mMonth, mYear)
-        changingDate = changingDate.plusMonths(1)
-        calendar_date.text = "$mYear.$mMonth"
+    private fun moveNextMonth() {
+        mDate = mDate.plusMonths(1)
+        setMonthViewDate()
     }
 
     private fun setDateByStateDependingOnView() {
-        setStateByCalendar()
-        monthView.setDate(mMonth, mYear)
-        changingDate = LocalDate.now()
-        calendar_date.text = "$mYear.$mMonth"
+        setCurrentDate()
+        setMonthViewDate()
     }
 
-    private fun changeYearAndMonth(month: Int) {
-        when {
-            month < 1 -> {
-                --mYear
-                mMonth = 12
-            }
-
-            month > 12 -> {
-                ++mYear
-                mMonth = 1
-            }
-        }
+    @SuppressLint("SetTextI18n")
+    private fun setMonthViewDate() {
+        monthView.setDate(mDate.monthOfYear, mDate.year)
+        calendar_date.text = "${mDate.year}.${mDate.monthOfYear}"
     }
 
     fun setVisibleNavigationCalendar(visible : Int){
@@ -363,6 +324,7 @@ class CalendarFragment : Fragment() {
         private val DAY_PARAMETER = "day"
         private val MONTH_PARAMETER = "month"
         private val YEAR_PARAMETER = "year"
+        private val DATE_PATTERN_YEAR_AND_MONTH = "yyyyMM"
         private val FIRST_DAY_OF_WEEK_PARAMETER = "firstDay"
         private val MINIMUM_DAY_SIZE = 28
 
