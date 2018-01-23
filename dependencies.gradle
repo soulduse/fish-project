@@ -25,4 +25,10 @@ ext {
     coroutineVersion = '0.21'
     retrofitConverterVersion = '1.0.0'
     realmVersion = '3.5.0'
+
+    // Firebase
+    fabricVersion = '1.25.1'
+    firebaseVersion = '11.8.0'
+    crashlyticsVersion = '2.7.1@aar'
+    googleServiceVersion = '3.1.1'
 }

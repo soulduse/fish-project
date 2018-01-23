@@ -6,11 +6,16 @@ buildscript {
     repositories {
         jcenter()
         google()
+        maven {
+            url 'https://maven.fabric.io/public'
+        }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$androidPluginVersion"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath "io.realm:realm-gradle-plugin:$realmVersion"
+        classpath "io.fabric.tools:gradle:$fabricVersion"
+        classpath "com.google.gms:google-services:$googleServiceVersion"
     }
 }
 
@@ -18,6 +23,9 @@ allprojects {
     repositories {
         jcenter()
         google()
+        maven {
+            url 'https://maven.google.com/'
+        }
     }
 }
 
