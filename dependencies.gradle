@@ -31,4 +31,5 @@ ext {
     firebaseVersion = '11.8.0'
     crashlyticsVersion = '2.7.1@aar'
     googleServiceVersion = '3.1.1'
+    firebaseFluginVersion = '1.1.5'
 }
