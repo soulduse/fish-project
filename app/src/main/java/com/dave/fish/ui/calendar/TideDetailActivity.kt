@@ -49,7 +49,7 @@ class TideDetailActivity : AppCompatActivity(){
 
         val selectedDate = intent.getStringExtra(Global.INTENT_DATE)
         val key = postName + "_" + selectedDate
-        Log.w(TAG, "What is key --> $key")
+        DLog.w("What is key --> $key")
 
         postId.let {
             Network.request(ApiProvider.provideTideApi().getWeatherAndWave(
@@ -72,7 +72,7 @@ class TideDetailActivity : AppCompatActivity(){
 
         try{
             tideWeeklyItem = mRealmController.findTideWeekly(key)
-            Log.w(TAG, "tideWeeklyItem --> " + tideWeeklyItem.toString())
+            DLog.w("tideWeeklyItem --> " + tideWeeklyItem.toString())
             TideUtil.setTide(tideWeeklyItem)
 
             setWeatherInfoFromApi()
@@ -146,8 +146,6 @@ class TideDetailActivity : AppCompatActivity(){
         tv_detail_etc.text = "${getDetailViewItem(tideWeeklyItem.moolNormal)} " +
                 "/ ${getDetailViewItem(tideWeeklyItem.mool7)} " +
                 "/ ${getDetailViewItem(tideWeeklyItem.mool8)}"
-
-
     }
 
     private fun setWeatherInfoFromApi() {
@@ -167,7 +165,7 @@ class TideDetailActivity : AppCompatActivity(){
                 Global.ParserType.JSON.toString().toLowerCase()
         ), NetworkCallback<ForecastSpaceData>().apply {
             success = { forecast->
-                Log.w(TAG, "api result --> ${forecast.response.toString()}")
+                DLog.w("api result --> ${forecast.response.toString()}")
                 val resultCode = forecast.response.header.resultCode
                 when (resultCode) {
                     SUCCESS -> {
@@ -189,6 +187,9 @@ class TideDetailActivity : AppCompatActivity(){
 
                     }
                 }
+            }
+            error = { error ->
+                DLog.w("error code ---> $error")
             }
         })
     }
@@ -263,7 +264,6 @@ class TideDetailActivity : AppCompatActivity(){
     }
 
     companion object {
-        val TAG = TideDetailActivity::class.java.simpleName
         val SUCCESS = "0000"
         val BEFORE_DATE = "99"
     }
