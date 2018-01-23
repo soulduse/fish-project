@@ -23,6 +23,10 @@ import com.dave.fish.ui.main.menu.SimpleItem
 import com.dave.fish.ui.map.MapFragment
 import com.dave.fish.ui.web.WebFragment
 import com.dave.fish.util.DLog
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
 import com.yarolegovich.slidingrootnav.SlidingRootNav
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder
 import kotlinx.android.synthetic.main.activity_main.*
@@ -48,17 +52,41 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
     private lateinit var pickTideDialog :PickTideDialog
     private lateinit var customSpinner : CustomAreasSpinner
 
+    // admob
+    private lateinit var mInterstitialAd: InterstitialAd
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        customSpinner = findViewById<CustomAreasSpinner>(R.id.main_spinners)
-        initFragments()
-        initToolbar()
-        initSlidingMenu()
-        initViewPager()
-        initPickTide()
+        initInterstitialAd()
+
         initSpinner()
+
+        initFragments()
+
+        initToolbar()
+
+        initSlidingMenu()
+
+        initViewPager()
+
+        initPickTide()
+    }
+
+    private fun initInterstitialAd() {
+        MobileAds.initialize(this, getString(R.string.admob_app_id))
+        mInterstitialAd = InterstitialAd(this).apply {
+            adUnitId = getString(R.string.admob_interstitial_id)
+            loadAd(AdRequest.Builder().build())
+            adListener = object : AdListener() {
+                override fun onAdLoaded() {
+                    if (mInterstitialAd.isLoaded) {
+                        mInterstitialAd.show()
+                    }
+                }
+            }
+        }
     }
 
     private fun initFragments() {
@@ -180,6 +208,7 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
     }
 
     private fun initSpinner(){
+        customSpinner = findViewById<CustomAreasSpinner>(R.id.main_spinners)
         customSpinner.run {
             init(false)
             initListener {

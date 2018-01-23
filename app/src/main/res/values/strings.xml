@@ -1,9 +1,13 @@
 <resources>
     <string name="app_name">해루질러</string>
 
+    <!-- keys -->
     <string name="kma_opemapi_key">IEUdGrjr8gLf11x5UyDgUpeQpgogxGYoPC8ZZfdvFtp+CMgU969WgPaXLOmEaXM/UcYbzZYrb9OBHTz58I4zaA==</string>
     <string name="sea_openapi_key">SpGC4MjwhAPJosLja1g8ApaDhGbk/hWZ2kOV8ZcCNB8ymdluVZNSuQ4hm4X/atHo5/QhX72g8hUMdwAu1Kg==</string>
     <string name="naver_map_key">zZJw_IMQXLr5pnSuxaLQ</string>
+    <string name="admob_app_id">ca-app-pub-1908860913688060~5198635806</string>
+    <string name="admob_interstitial_id">ca-app-pub-1908860913688060/1917511127</string>
+    <string name="admob_banner_id">ca-app-pub-1908860913688060/7711272599</string>
 
     <string name="no_data_time">--:--</string>
     <string name="no_data_wave">--/--</string>
