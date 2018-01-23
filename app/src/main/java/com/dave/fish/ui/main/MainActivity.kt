@@ -96,10 +96,8 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
                 createItemFor(MenuDrawer.KMA),
                 createItemFor(MenuDrawer.MARIN_KMA),
                 createItemFor(MenuDrawer.CATCH),
-                createItemFor(MenuDrawer.CHAT),
-                createItemFor(MenuDrawer.ALARM),
-                createItemFor(MenuDrawer.MAIL),
-                createItemFor(MenuDrawer.SHARE))
+                createItemFor(MenuDrawer.ALARM)
+        )
 
         val menuAdapter = DrawerAdapter(menuList)
 
