@@ -24,7 +24,7 @@ import com.dave.fish.util.Global
 import com.dave.fish.util.TideUtil
 import com.sickmartian.calendarview.CalendarView
 import io.realm.RealmResults
-import kotlinx.android.synthetic.main.fragment_menu_one.*
+import kotlinx.android.synthetic.main.fragment_menu_calendar.*
 import kotlinx.android.synthetic.main.view_item_add_calendar.view.*
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
@@ -42,9 +42,8 @@ class CalendarFragment : Fragment() {
 
     private val mRealmController: RealmController = RealmController.instance
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_menu_one, container, false)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+            inflater.inflate(R.layout.fragment_menu_calendar, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

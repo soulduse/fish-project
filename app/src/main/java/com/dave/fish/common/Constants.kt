@@ -8,7 +8,7 @@ object Constants {
     // WebView URL
     val KMA_M_URL = "http://m.kma.go.kr/m/index.jsp"
     val MARIN_KMA_M_URL = "http://marine.kma.go.kr/m/main.html"
-    val WINDYTY_M_URL = "https://www.windy.com/?36.408,127.895,6"
+    val FLOW_M_URL = "https://www.windy.com/?36.408,127.895,6"
 
     // Notification
     val NOTIFICATION_CHANEL = "notification_chanel"
@@ -27,4 +27,7 @@ object Constants {
 
     // Alarm BroadcastReceiver
     val INTENT_FILTER_ALARM_ACTION = "FILTER_ALARM_ACTION"
+
+    // bundle
+    val BUNDLE_FRAGMENT_URL = "fragment_url"
 }

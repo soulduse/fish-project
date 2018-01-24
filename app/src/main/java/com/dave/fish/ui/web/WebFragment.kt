@@ -13,6 +13,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import com.dave.fish.R
+import com.dave.fish.common.Constants
 import com.dave.fish.ui.main.MainActivity
 import kotlinx.android.synthetic.main.fragment_web.*
 
@@ -25,6 +26,7 @@ class WebFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
             inflater.inflate(R.layout.fragment_web, container, false)
+
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,7 +48,7 @@ class WebFragment : Fragment() {
                     webview_progressbar?.progress = newProgress
                 }
             }
-            loadUrl(arguments?.getString("url"))
+            loadUrl(arguments?.getString(Constants.BUNDLE_FRAGMENT_URL))
 
             setOnKeyListener(View.OnKeyListener { _, keyCode, keyEvent ->
                 when {

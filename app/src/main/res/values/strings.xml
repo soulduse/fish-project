@@ -49,7 +49,15 @@
     <string name="alarm_base_duration">1 분</string>
     <string name="alarm_base_sound">기본음</string>
 
-
+    <!-- MENU -->
+    <string name="menu_tide_calendar">물때표</string>
+    <string name="menu_map">지도</string>
+    <string name="menu_weather_basic">전국날씨</string>
+    <string name="menu_weather_sea">해양날씨</string>
+    <string name="menu_weather_flow">날씨흐름</string>
+    <string name="menu_alarm">알림설정</string>
+    <string name="menu_mail">메일문의</string>
+    <string name="menu_share">공유하기</string>
 
     <!--    Permissions    -->
     <string name="permission_rationale_location">Access to the location service is required to demonstrate the \'my location\' feature, which shows your current location on the map.</string>

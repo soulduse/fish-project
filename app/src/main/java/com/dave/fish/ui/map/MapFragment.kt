@@ -31,7 +31,6 @@ import com.gun0912.tedpermission.TedPermission
 import kotlinx.android.synthetic.main.fragment_menu_two.*
 import java.util.*
 
-
 /**
  * Created by soul on 2017. 8. 27..
  */
@@ -211,3 +210,4 @@ class MapFragment : Fragment(),
         }
     }
 }
+

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
 import android.support.design.widget.AppBarLayout
+import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
 
     private lateinit var toolbarParams :AppBarLayout.LayoutParams
     private lateinit var toolbarLayoutParams : AppBarLayout.LayoutParams
+    private lateinit var menuAdapter: DrawerAdapter
 
     // fragments
     private lateinit var fragmentCalendar : CalendarFragment
@@ -51,7 +53,6 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
 
     // admob
     private lateinit var mInterstitialAd: InterstitialAd
-    private lateinit var mAdView: AdView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,15 +91,42 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
     }
 
     private fun initFragments() {
-        fragmentCalendar = CalendarFragment.newInstance()
-        fragmentMap = MapFragment.newInstance()
-        fragmentKma = WebFragment.newInstance()
-        fragmentKma.arguments = Bundle().apply { putString("url", Constants.KMA_M_URL) }
-        fragmentMarinKma = WebFragment.newInstance()
-        fragmentMarinKma.arguments = Bundle().apply { putString("url", Constants.MARIN_KMA_M_URL) }
-        fragmentWindyty = WebFragment.newInstance()
-        fragmentWindyty.arguments = Bundle().apply { putString("url", Constants.WINDYTY_M_URL) }
-        fragmentAlarm = AlarmFragment.newInstance()
+        fragmentCalendar = instanceFragment(
+                CalendarFragment.newInstance()
+        )
+
+        fragmentMap = instanceFragment(
+                MapFragment.newInstance()
+        )
+
+        fragmentKma = instanceFragment(
+                WebFragment.newInstance(),
+                Constants.KMA_M_URL
+        )
+
+        fragmentMarinKma = instanceFragment(
+                WebFragment.newInstance(),
+                Constants.MARIN_KMA_M_URL
+        )
+
+        fragmentWindyty = instanceFragment(
+                WebFragment.newInstance(),
+                Constants.FLOW_M_URL
+        )
+
+        fragmentAlarm = instanceFragment(
+                AlarmFragment.newInstance()
+        )
+    }
+
+    private fun <T : Fragment>instanceFragment(mFragment: T, url: String? = ""): T{
+        url?.let {
+            mFragment.arguments = Bundle().apply {
+                putString(Constants.BUNDLE_FRAGMENT_URL, url)
+            }
+        }
+
+        return mFragment
     }
 
     private fun initToolbar(){
@@ -127,15 +155,17 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
                 createItemFor(MenuDrawer.ALARM)
         )
 
-        val menuAdapter = DrawerAdapter(menuList)
+        menuAdapter = DrawerAdapter(menuList).apply {
+            setListener(this@MainActivity)
+            setSelected(0)
+        }
 
-        menuAdapter.setListener(this)
         val list = findViewById<RecyclerView>(R.id.menu_drawer_list)
-        list.isNestedScrollingEnabled = false
-        list.layoutManager = LinearLayoutManager(this)
-        list.adapter = menuAdapter
-
-        menuAdapter.setSelected(0)
+        with(list){
+            isNestedScrollingEnabled = false
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = menuAdapter
+        }
     }
 
     private fun initViewPager() {
@@ -147,6 +177,8 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
             }
 
             override fun onPageSelected(position: Int) {
+                toolbar.title = main_viewpager.adapter?.getPageTitle(position)
+                menuAdapter.setSelected(position)
                 when(position){
                     PAGE_CALENDAR -> {
                         visibleCollapsingToolbar()
@@ -165,13 +197,30 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
         })
         // 스크롤 되게 하기 위해 해당 값을 true 로 해줘야한다.
         nest_scrollview.isFillViewport = true
+
         main_viewpager.adapter = ViewPagerAdapter(supportFragmentManager).apply {
-            addFragment(fragmentCalendar)
-            addFragment(fragmentMap)
-            addFragment(fragmentKma)
-            addFragment(fragmentMarinKma)
-            addFragment(fragmentWindyty)
-            addFragment(fragmentAlarm)
+            addFragment(fragmentCalendar, getString(R.string.menu_tide_calendar))
+            addFragment(fragmentMap, getString(R.string.menu_map))
+            addFragment(fragmentKma, getString(R.string.menu_weather_basic))
+            addFragment(fragmentMarinKma, getString(R.string.menu_weather_sea))
+            addFragment(fragmentWindyty, getString(R.string.menu_weather_flow))
+            addFragment(fragmentAlarm, getString(R.string.menu_alarm))
+        }
+    }
+
+    override fun onItemSelected(position: Int) {
+        slidingRootNav.closeMenu()
+        toolbar.title = main_viewpager.adapter?.getPageTitle(position)
+        when(position){
+            in 0 .. 1 -> {
+                visibleCollapsingToolbar()
+                main_viewpager.currentItem = position
+            }
+
+            else -> {
+                goneCollapsingToolbar()
+                main_viewpager.currentItem = position
+            }
         }
     }
 
@@ -224,22 +273,6 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
     @ColorInt
     private fun color(@ColorRes res: Int): Int = ContextCompat.getColor(this, res)
 
-    override fun onItemSelected(position: Int) {
-        slidingRootNav.closeMenu()
-        when(position){
-            in 0 .. 1 -> {
-                visibleCollapsingToolbar()
-                main_viewpager.currentItem = position
-            }
-
-            else -> {
-                goneCollapsingToolbar()
-                main_viewpager.currentItem = position
-//                Toast.makeText(applicationContext, "개발 진행중인 기능입니다.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
     private fun goneCollapsingToolbar(){
         if(toolbar_layout.visibility == View.VISIBLE){
             toolbar_layout.visibility = View.GONE
@@ -278,6 +311,7 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
                 AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                 AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
     }
+
 
     override fun onBackPressed() {
         when{
