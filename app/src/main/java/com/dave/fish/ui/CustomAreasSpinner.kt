@@ -167,10 +167,4 @@ class CustomAreasSpinner : ConstraintLayout {
                     })
         }
     }
-
-    fun closeRealm(){
-        if(!realm.isClosed){
-            realm.close()
-        }
-    }
 }
