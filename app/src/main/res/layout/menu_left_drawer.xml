@@ -9,24 +9,22 @@
         android:layout_width="wrap_content"
         android:layout_height="14dp" />
 
-    <TextView
-        android:id="@+id/tv_pick_tide_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="24dp"
-        android:paddingRight="24dp"
-        android:paddingStart="24dp"
-        android:text="@string/today_tide"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
-
     <LinearLayout
+        android:id="@+id/side_tide_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:baselineAligned="false"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:paddingLeft="24dp"
         android:paddingRight="24dp">
+
+        <TextView
+            android:id="@+id/tv_pick_tide_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/today_tide"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/tv_pick_tide_values"
