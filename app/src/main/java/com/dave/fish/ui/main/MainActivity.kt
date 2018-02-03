@@ -11,10 +11,16 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import android.widget.Toast
 import com.dave.fish.R
+import com.dave.fish.api.ApiProvider
+import com.dave.fish.api.Network
+import com.dave.fish.api.NetworkCallback
 import com.dave.fish.api.model.SidePanelData
+import com.dave.fish.api.model.SidePanelModel
 import com.dave.fish.common.Constants
 import com.dave.fish.common.PickTideDialog
+import com.dave.fish.db.RealmProvider
 import com.dave.fish.ui.CustomAreasSpinner
 import com.dave.fish.ui.alarm.AlarmFragment
 import com.dave.fish.ui.calendar.CalendarFragment
@@ -31,25 +37,25 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.menu_left_drawer.*
 
 
-class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
+class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
 
     private lateinit var slidingRootNav: SlidingRootNav
 
-    private lateinit var toolbarParams :AppBarLayout.LayoutParams
-    private lateinit var toolbarLayoutParams : AppBarLayout.LayoutParams
+    private lateinit var toolbarParams: AppBarLayout.LayoutParams
+    private lateinit var toolbarLayoutParams: AppBarLayout.LayoutParams
     private lateinit var menuAdapter: DrawerAdapter
 
     // fragments
-    private lateinit var fragmentCalendar : CalendarFragment
-    private lateinit var fragmentMap : MapFragment
-    private lateinit var fragmentKma : WebFragment
-    private lateinit var fragmentMarinKma : WebFragment
-    private lateinit var fragmentWindyty : WebFragment
-    private lateinit var fragmentAlarm : AlarmFragment
+    private lateinit var fragmentCalendar: CalendarFragment
+    private lateinit var fragmentMap: MapFragment
+    private lateinit var fragmentKma: WebFragment
+    private lateinit var fragmentMarinKma: WebFragment
+    private lateinit var fragmentWindyty: WebFragment
+    private lateinit var fragmentAlarm: AlarmFragment
 
     // dialog
-    private lateinit var pickTideDialog :PickTideDialog
-    private lateinit var customSpinner : CustomAreasSpinner
+    private lateinit var pickTideDialog: PickTideDialog
+    private val mainSpinner: CustomAreasSpinner by lazy { findViewById<CustomAreasSpinner>(R.id.main_spinners) }
 
     // admob
     private lateinit var mInterstitialAd: InterstitialAd
@@ -58,9 +64,7 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        adView.loadAd(AdRequest.Builder().build())
-
-        initInterstitialAd()
+        initAd()
 
         initSpinner()
 
@@ -75,11 +79,23 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
         initPickTide()
     }
 
-    private fun initInterstitialAd() {
+    private fun initAd() {
+        val adRequest = AdRequest.Builder().build()
+
+        initBannerAd(adRequest)
+
+        initInterstitialAd(adRequest)
+    }
+
+    private fun initBannerAd(adRequest: AdRequest?) {
+        adView.loadAd(adRequest)
+    }
+
+    private fun initInterstitialAd(adRequest: AdRequest) {
         MobileAds.initialize(this, getString(R.string.admob_app_id))
         mInterstitialAd = InterstitialAd(this).apply {
             adUnitId = getString(R.string.admob_interstitial_id)
-            loadAd(AdRequest.Builder().build())
+            loadAd(adRequest)
             adListener = object : AdListener() {
                 override fun onAdLoaded() {
                     if (mInterstitialAd.isLoaded) {
@@ -119,7 +135,7 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
         )
     }
 
-    private fun <T : Fragment>instanceFragment(mFragment: T, url: String? = ""): T{
+    private fun <T : Fragment> instanceFragment(mFragment: T, url: String? = ""): T {
         url?.let {
             mFragment.arguments = Bundle().apply {
                 putString(Constants.BUNDLE_FRAGMENT_URL, url)
@@ -129,13 +145,13 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
         return mFragment
     }
 
-    private fun initToolbar(){
+    private fun initToolbar() {
         setSupportActionBar(toolbar)
         toolbarParams = toolbar.layoutParams as AppBarLayout.LayoutParams
         toolbarLayoutParams = toolbar_layout.layoutParams as AppBarLayout.LayoutParams
     }
 
-    private fun initSlidingMenu(){
+    private fun initSlidingMenu() {
         slidingRootNav = SlidingRootNavBuilder(this)
                 .withMenuLayout(R.layout.menu_left_drawer)
                 .withToolbarMenuToggle(toolbar)
@@ -161,7 +177,7 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
         }
 
         val list = findViewById<RecyclerView>(R.id.menu_drawer_list)
-        with(list){
+        with(list) {
             isNestedScrollingEnabled = false
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = menuAdapter
@@ -169,7 +185,7 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
     }
 
     private fun initViewPager() {
-        main_viewpager.addOnPageChangeListener(object: ViewPager.OnPageChangeListener{
+        main_viewpager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
             }
 
@@ -179,16 +195,16 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
             override fun onPageSelected(position: Int) {
                 toolbar.title = main_viewpager.adapter?.getPageTitle(position)
                 menuAdapter.setSelected(position)
-                when(position){
+                when (position) {
                     PAGE_CALENDAR -> {
                         visibleCollapsingToolbar()
                         setScrollAble(true)
                     }
-                    PAGE_MAP_RECORD ->{
+                    PAGE_MAP_RECORD -> {
                         visibleCollapsingToolbar()
                         setScrollAble(false)
                     }
-                    else->{
+                    else -> {
                         goneCollapsingToolbar()
                         setScrollAble(false)
                     }
@@ -211,8 +227,8 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
     override fun onItemSelected(position: Int) {
         slidingRootNav.closeMenu()
         toolbar.title = main_viewpager.adapter?.getPageTitle(position)
-        when(position){
-            in 0 .. 1 -> {
+        when (position) {
+            in 0..1 -> {
                 visibleCollapsingToolbar()
                 main_viewpager.currentItem = position
             }
@@ -232,19 +248,11 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
                 .withSelectedTextTint(color(R.color.colorAccent))
     }
 
-    private fun initPickTide(){
-        val mListener : (values: SidePanelData)->Unit = {
-            val tideList = arrayListOf(it.lvl1, it.lvl2, it.lvl3, it.lvl4)
-            DLog.w(tideList.toString())
-            tv_pick_tide_name.text = applicationContext.resources.getString(R.string.today_tide, it.title)
-            tv_pick_tide_values.text = tideList.joinToString ("\n")
-        }
+    private fun initPickTide() {
+        initSideTide()
 
-        customSpinner.run {
-            init(true)
-            getPickedValueOfTide {
-                it.run(mListener)
-            }
+        val mListener: (values: SidePanelData) -> Unit = {
+            setSideTide(it)
         }
 
         pickTideDialog = PickTideDialog().apply {
@@ -252,14 +260,40 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
                 it.run(mListener)
             })
         }
-        tv_pick_tide_name.setOnClickListener(setOnClickPickTide)
-        tv_pick_tide_values.setOnClickListener(setOnClickPickTide)
+
+        side_tide_container.setOnClickListener(setOnClickPickTide)
     }
 
-    private fun initSpinner(){
-        customSpinner = findViewById<CustomAreasSpinner>(R.id.main_spinners)
-        customSpinner.run {
-            init(false)
+    private fun setSideTide(it: SidePanelData) {
+        val tideList = arrayListOf(it.lvl1, it.lvl2, it.lvl3, it.lvl4)
+        DLog.w(tideList.toString())
+        tv_pick_tide_name.text = applicationContext.resources.getString(R.string.today_tide, it.title)
+        tv_pick_tide_values.text = tideList.joinToString("\n")
+    }
+
+    private fun initSideTide() {
+        val postId: String? = RealmProvider.instance.getSecondSpinnerItem(Constants.KEY_TIDE_SIDE_SPINNER)?.obsPostId
+
+        postId?.let {
+            Network.request(ApiProvider.provideTideApi().getSidePanelData(postId),
+                    NetworkCallback<SidePanelModel>().apply {
+                        success = { sidePanelModel ->
+                            val tideList = sidePanelModel.data
+                            if (tideList.isNotEmpty()) {
+                                setSideTide(tideList.first())
+                            }
+                        }
+
+                        error = {
+                            Toast.makeText(this@MainActivity, "데이터를 읽어오는데 실패하였습니다.\n다시 시도해주세요.", Toast.LENGTH_LONG).show()
+                        }
+                    })
+        }
+    }
+
+    private fun initSpinner() {
+        mainSpinner.apply {
+            init(Constants.KEY_TIDE_MAIN_SPINNER)
             initListener {
                 main_viewpager.adapter?.notifyDataSetChanged()
             }
@@ -273,23 +307,23 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
     @ColorInt
     private fun color(@ColorRes res: Int): Int = ContextCompat.getColor(this, res)
 
-    private fun goneCollapsingToolbar(){
-        if(toolbar_layout.visibility == View.VISIBLE){
+    private fun goneCollapsingToolbar() {
+        if (toolbar_layout.visibility == View.VISIBLE) {
             toolbar_layout.visibility = View.GONE
         }
     }
 
-    private fun visibleCollapsingToolbar(){
-        if(toolbar_layout.visibility == View.GONE){
+    private fun visibleCollapsingToolbar() {
+        if (toolbar_layout.visibility == View.GONE) {
             toolbar_layout.visibility = View.VISIBLE
         }
     }
 
-    private fun setScrollAble(isAble : Boolean){
-        if(isAble){
+    private fun setScrollAble(isAble: Boolean) {
+        if (isAble) {
             fragmentCalendar.setVisibleNavigationCalendar(View.VISIBLE)
             enableScroll()
-        }else{
+        } else {
             fragmentCalendar.setVisibleNavigationCalendar(View.GONE)
             unableScroll()
         }
@@ -298,23 +332,23 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener{
         toolbar_layout.requestLayout()
     }
 
-    private fun unableScroll(){
+    private fun unableScroll() {
         toolbarParams.scrollFlags = 0
         toolbarLayoutParams.scrollFlags = 0
     }
 
-    private fun enableScroll(){
+    private fun enableScroll() {
         toolbarParams.scrollFlags =
                 AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
-                AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+                        AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
         toolbarLayoutParams.scrollFlags =
                 AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
-                AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+                        AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
     }
 
 
     override fun onBackPressed() {
-        when{
+        when {
             slidingRootNav.isMenuClosed -> slidingRootNav.openMenu()
             else -> super.onBackPressed()
         }

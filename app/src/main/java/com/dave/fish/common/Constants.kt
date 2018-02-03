@@ -5,6 +5,9 @@ package com.dave.fish.common
  */
 object Constants {
 
+    val KEY_TIDE_MAIN_SPINNER = 0
+    val KEY_TIDE_SIDE_SPINNER = 1
+
     // WebView URL
     val KMA_M_URL = "http://m.kma.go.kr/m/index.jsp"
     val MARIN_KMA_M_URL = "http://marine.kma.go.kr/m/main.html"
