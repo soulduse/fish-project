@@ -16,12 +16,14 @@ import com.dave.fish.api.ApiProvider
 import com.dave.fish.api.Network
 import com.dave.fish.api.NetworkCallback
 import com.dave.fish.api.model.WeeklyModel
-import com.dave.fish.db.RealmController
+import com.dave.fish.db.RealmProvider
 import com.dave.fish.db.model.TideWeeklyModel
+import com.dave.fish.util.DLog
 import com.dave.fish.util.DateUtil
 import com.dave.fish.util.DateUtil.DATE_PATTERN_YEAR_MONTH_DAY
 import com.dave.fish.util.Global
 import com.dave.fish.util.TideUtil
+import com.google.gson.Gson
 import com.sickmartian.calendarview.CalendarView
 import io.realm.RealmResults
 import kotlinx.android.synthetic.main.fragment_menu_calendar.*
@@ -40,7 +42,7 @@ class CalendarFragment : Fragment() {
 
     private var lockSelect = false
 
-    private val mRealmController: RealmController = RealmController.instance
+    private val mRealmController: RealmProvider = RealmProvider.instance
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
             inflater.inflate(R.layout.fragment_menu_calendar, container, false)
@@ -79,9 +81,9 @@ class CalendarFragment : Fragment() {
             monthView.setCurrentDay(0)
         }
 
-        val secondSpinnerItem = mRealmController.findSelectedSecondModel()
-        val postId = secondSpinnerItem.obsPostId
-        postId.let {
+        val postId = mRealmController.getSecondSpinnerItem()?.obsPostId
+        DLog.w("postid ---> $postId")
+        postId?.let {
             val minDayOfMonth = getDateForState().dayOfMonth().withMinimumValue()
             val maxDayOfMonth = getDateForState().dayOfMonth().withMaximumValue()
             val currentDayOfMonth = getDateForState().dayOfMonth()
@@ -156,6 +158,17 @@ class CalendarFragment : Fragment() {
         ), NetworkCallback<WeeklyModel>().apply {
             success = { tideModel->
                 val weeklyDataList = tideModel.weeklyDataList
+
+                weeklyDataList.forEach {
+                    val weeklyModel = getWeeklyFromJson(it).apply {
+                        this.key = it.obsPostName + "_" + it.searchDate
+                        this.postId = postId
+                    }
+
+                    mRealmController.writeData(weeklyModel)
+                }
+
+
                 addDataToCalendar(weeklyDataList, postId)
             }
 
@@ -171,6 +184,12 @@ class CalendarFragment : Fragment() {
         }
     }
 
+    private fun getWeeklyFromJson(data: WeeklyModel.WeeklyData): TideWeeklyModel {
+        val gson = Gson()
+        val weeklyJson = gson.toJson(data)
+        return gson.fromJson<TideWeeklyModel>(weeklyJson, TideWeeklyModel::class.java)
+    }
+
     private fun addDataToCalendar(itemList: List<Any>, postId: String) {
         itemList.forEach { item ->
             val calendarItemView = layoutInflater.inflate(R.layout.view_item_add_calendar, null)
@@ -179,7 +198,13 @@ class CalendarFragment : Fragment() {
             var tideDate = DateTime()
             when (item) {
                 is WeeklyModel.WeeklyData -> {
-                    mRealmController.setTideWeekly(item, postId)
+                    val weeklyModel = getWeeklyFromJson(item).apply {
+                        this.key = item.obsPostName + "_" + item.searchDate
+                        this.postId = postId
+                    }
+
+                    mRealmController.writeData(weeklyModel)
+
                     item.am.let {
                         val weatherIcon = getWeatherIcon(item.am)
                         if (weatherIcon != 0) {
