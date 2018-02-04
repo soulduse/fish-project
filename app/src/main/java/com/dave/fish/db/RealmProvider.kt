@@ -89,12 +89,22 @@ class RealmProvider {
         }
     }
 
+    /**
+     * @return - 전체 스피너 데이터 반환.
+     */
     fun getSpinner(): List<SpinnerFirstModel>{
         val realm = getRealm()
         return realm.where(SpinnerFirstModel::class.java)
                 .findAll().toList()
     }
 
+    /**
+     * @param keyTide 어디서 사용하는 Spinner인지 구분
+     * @return - 마지막에 선택했던 Spinner 값 반환.
+     *
+     * Constants.KEY_TIDE_MAIN_SPINNER - 메인에서 사용
+     * Constants.KEY_TIDE_SIDE_SPINNER - 사이드에서 사용
+     */
     fun getSelectedItem(keyTide: Int = Constants.KEY_TIDE_MAIN_SPINNER): SelectItemModel{
         val realm = getRealm()
         return realm.where(SelectItemModel::class.java)
