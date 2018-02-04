@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
@@ -22,15 +23,15 @@
             android:id="@+id/tv_pick_tide_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/today_tide"
             android:textSize="18sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            tools:text="@string/today_tide" />
 
         <TextView
             android:id="@+id/tv_pick_tide_values"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"/>
+            android:textSize="14sp" />
     </LinearLayout>
 
     <Space
@@ -47,30 +48,30 @@
         android:layout_height="40dp" />
 
     <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
         android:layout_marginStart="40dp"
-        android:layout_gravity="left"
-        android:src="@drawable/ic_crab_50px"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:src="@drawable/ic_crab_50px" />
 
     <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
         android:layout_marginStart="20dp"
-        android:layout_gravity="left"
-        android:src="@drawable/ic_fish_50px"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:src="@drawable/ic_fish_50px" />
 
     <ImageView
-        android:layout_gravity="left"
-        android:layout_marginStart="60dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:layout_marginStart="60dp" />
 
     <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
         android:layout_marginStart="10dp"
-        android:layout_gravity="left"
-        android:src="@drawable/ic_octopus_50px"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:src="@drawable/ic_octopus_50px" />
 
 </LinearLayout>
