@@ -1,7 +1,9 @@
 package com.dave.fish.ui.web
 
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.KeyEvent
@@ -9,20 +11,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
 import com.dave.fish.R
 import com.dave.fish.common.Constants
 import com.dave.fish.ui.main.MainActivity
+import com.dave.fish.util.DLog
 import kotlinx.android.synthetic.main.fragment_web.*
 
 /**
  * Created by soul on 2017. 12. 3..
  */
 class WebFragment : Fragment() {
-
-    private val progressBar by lazy { webview_progressbar }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
             inflater.inflate(R.layout.fragment_web, container, false)
@@ -42,7 +44,7 @@ class WebFragment : Fragment() {
             settings.javaScriptEnabled = true
             isFocusable = true
             isFocusableInTouchMode = true
-            webViewClient = CustomWebViewClient(progressBar)
+            webViewClient = CustomWebViewClient(webview_progressbar)
             webChromeClient = object: WebChromeClient(){
                 override fun onProgressChanged(view: WebView?, newProgress: Int) {
                     webview_progressbar?.progress = newProgress
@@ -80,7 +82,7 @@ class WebFragment : Fragment() {
 
         override fun onPageFinished(view: WebView?, url: String?) {
             super.onPageFinished(view, url)
-            progressBar.visibility = View.INVISIBLE
+            progressBar.visibility = View.GONE
         }
     }
 
