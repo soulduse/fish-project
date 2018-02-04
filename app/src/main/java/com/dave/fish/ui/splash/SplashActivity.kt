@@ -9,6 +9,8 @@ import com.dave.fish.api.NetworkCallback
 import com.dave.fish.db.RealmProvider
 import com.dave.fish.db.RealmListener
 import com.dave.fish.api.model.GisModel
+import com.dave.fish.common.Constants
+import com.dave.fish.db.model.SelectItemModel
 import com.dave.fish.ui.main.MainActivity
 import com.dave.fish.util.DLog
 
@@ -64,6 +66,17 @@ class SplashActivity : AppCompatActivity(){
     }
 
     private fun initSelectSpinner(){
+        val selectItemModel = SelectItemModel().apply {
+            this.keyTide = Constants.KEY_TIDE_SIDE_SPINNER
+            this.doNm = FIRST_SPINNER_AREA
+            this.postName = SECOND_SPINNER_AREA
+
+        }
+
+        // side
+        mRealmController.writeData(selectItemModel)
+
+        // main
         mRealmController
                 .setSelectSpinner(
                         FIRST_SPINNER_AREA,
