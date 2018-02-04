@@ -2,6 +2,7 @@ package com.dave.fish.util
 
 import com.dave.fish.api.model.WeeklyModel
 import com.dave.fish.db.model.TideWeeklyModel
+import com.google.gson.Gson
 
 /**
  * Created by soul on 2017. 10. 4..
@@ -15,6 +16,7 @@ object TideUtil{
     private var lvlLowItemList: MutableList<String> = mutableListOf()
     private var lvlHighItemList: MutableList<String> = mutableListOf()
 
+    // TODO 중복 처리를 하나로 합칠 수 있지 않을까?
     fun setTide(tideWeekly: Any){
         clearTideList()
 
@@ -32,6 +34,12 @@ object TideUtil{
                 makeTideList(tideWeekly.lvl4)
             }
         }
+    }
+
+    private fun getTideWeeklyFromJson(tideWeekly: Any):TideWeeklyModel{
+        val gson = Gson()
+        val tideWeekly = gson.toJson(tideWeekly)
+        return gson.fromJson<TideWeeklyModel>(tideWeekly, TideWeeklyModel::class.java)
     }
 
     private fun clearTideList(){
@@ -58,19 +66,11 @@ object TideUtil{
         }
     }
 
-    fun getTime(lvl : String) : String{
-        return lvl.split(SPLITE).first()
-    }
+    fun getTime(lvl : String) : String = lvl.split(SPLITE).first()
 
-    fun getHeight(lvl : String) : String{
-        return lvl.split(SPLITE).last()
-    }
+    fun getHeight(lvl : String) : String = lvl.split(SPLITE).last()
 
-    fun getLowItemList() : MutableList<String>{
-        return lvlLowItemList
-    }
+    fun getLowItemList() : MutableList<String> = lvlLowItemList
 
-    fun getHighItemList() : MutableList<String>{
-        return lvlHighItemList
-    }
+    fun getHighItemList() : MutableList<String> = lvlHighItemList
 }
