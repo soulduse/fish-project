@@ -2,13 +2,12 @@ package com.dave.fish.ui.calendar
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.widget.Toast
 import com.dave.fish.R
 import com.dave.fish.api.ApiProvider
 import com.dave.fish.api.Network
 import com.dave.fish.api.NetworkCallback
-import com.dave.fish.db.RealmController
+import com.dave.fish.db.RealmProvider
 import com.dave.fish.db.model.TideWeeklyModel
 import com.dave.fish.api.model.ForecastSpaceData
 import com.dave.fish.api.model.WeatherAndWaveModel
@@ -22,7 +21,7 @@ import org.joda.time.DateTime
  */
 class TideDetailActivity : AppCompatActivity(){
 
-    private val mRealmController: RealmController = RealmController.instance
+    private val mRealmController: RealmProvider = RealmProvider.instance
     private var tideWeeklyItem: TideWeeklyModel = TideWeeklyModel()
 
     private var amWindSpeedMin = Double.MAX_VALUE
@@ -43,17 +42,17 @@ class TideDetailActivity : AppCompatActivity(){
     }
 
     private fun initRealmData() {
-        val secondSpinnerItem = mRealmController.findSelectedSecondModel()
-        val postId = secondSpinnerItem.obsPostId
-        val postName = secondSpinnerItem.obsPostName
+        val secondSpinnerItem = mRealmController.getSecondSpinnerItem()
+        val postId = secondSpinnerItem?.obsPostId
+        val postName = secondSpinnerItem?.obsPostName
 
         val selectedDate = intent.getStringExtra(Global.INTENT_DATE)
         val key = postName + "_" + selectedDate
-        DLog.w("What is key --> $key")
+        DLog.w("What is keyTide --> $key")
 
         postId.let {
             Network.request(ApiProvider.provideTideApi().getWeatherAndWave(
-                    postId,
+                    postId!!,
                     DateTime(selectedDate).toString(DATE_PATTERN_YEAR_MONTH_DAY)
             ), NetworkCallback<WeatherAndWaveModel>().apply {
                 success = { weatherAndWave ->

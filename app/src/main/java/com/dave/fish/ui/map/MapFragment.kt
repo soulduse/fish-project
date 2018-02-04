@@ -19,7 +19,7 @@ import android.widget.Toast
 import com.dave.fish.MyApplication
 import com.dave.fish.R
 import com.dave.fish.common.Constants
-import com.dave.fish.db.RealmController
+import com.dave.fish.db.RealmProvider
 import com.dave.fish.db.model.SpinnerSecondModel
 import com.dave.fish.util.DLog
 import com.google.android.gms.maps.*
@@ -37,8 +37,7 @@ import java.util.*
 class MapFragment : Fragment(),
         OnMapReadyCallback{
 
-    private val mRealmController : RealmController = RealmController.instance
-    private lateinit var selectedItem : SpinnerSecondModel
+    private val mRealmController : RealmProvider = RealmProvider.instance
     private lateinit var receiver: BroadcastReceiver
 
     private lateinit var mMap: GoogleMap
@@ -56,7 +55,6 @@ class MapFragment : Fragment(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        selectedItem = mRealmController.findSelectedSecondModel()
         MapsInitializer.initialize(this.activity)
 
         val mapview = view.findViewById<MapView>(R.id.google_map_view).apply {
@@ -67,15 +65,19 @@ class MapFragment : Fragment(),
         }
 
         val geocoder = Geocoder(MyApplication.context)
-        val locationList = geocoder.getFromLocation(selectedItem.obsLat, selectedItem.obsLon, 10)
-        locationList?.let {
-            val address = try{
-                locationList[0].getAddressLine(0).filterNot { c->resources.getString(R.string.korea).contains(c) }
-            }catch (e : IndexOutOfBoundsException){
-                resources.getString(R.string.warning_empty_address)
-            }
 
-            tv_record_address.text = address
+
+        mRealmController.getSecondSpinnerItem()?.let{
+            val locationList = geocoder.getFromLocation(it.obsLat, it.obsLon, 10)
+            locationList?.let {
+                val address = try{
+                    locationList[0].getAddressLine(0).filterNot { c->resources.getString(R.string.korea).contains(c) }
+                }catch (e : IndexOutOfBoundsException){
+                    resources.getString(R.string.warning_empty_address)
+                }
+
+                tv_record_address.text = address
+            }
         }
 
         btn_start_record.isSelected = LocationService.isRecordServiceStarting
@@ -132,25 +134,27 @@ class MapFragment : Fragment(),
     }
 
     override fun onMapReady(map: GoogleMap) {
-        val mLatLng = LatLng(selectedItem.obsLat, selectedItem.obsLon)
-        selectedItem = mRealmController.findSelectedSecondModel()
-        mMap = map
-        val mapUtil = mMap.uiSettings
-        mapUtil.isScrollGesturesEnabled = false
-        mapUtil.isZoomGesturesEnabled = false
 
-        mMap.setMinZoomPreference(12.0f)
-        mMap.setMaxZoomPreference(15.0f)
-        mMap.addMarker(MarkerOptions().position(mLatLng).title(selectedItem.obsPostName))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(mLatLng))
+        mRealmController.getSecondSpinnerItem()?.let { selected->
+            val mLatLng = LatLng(selected.obsLat, selected.obsLon)
+            mMap = map
+            val mapUtil = mMap.uiSettings
+            mapUtil.isScrollGesturesEnabled = false
+            mapUtil.isZoomGesturesEnabled = false
 
-        enableMyLocation()
+            mMap.setMinZoomPreference(12.0f)
+            mMap.setMaxZoomPreference(15.0f)
+            mMap.addMarker(MarkerOptions().position(mLatLng).title(selected.obsPostName))
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(mLatLng))
 
-        mMap.setOnMapClickListener {
-            val detailMapIntent = Intent(activity, DetailMapActivity::class.java)
-            detailMapIntent.putExtra("lat", selectedItem.obsLat)
-            detailMapIntent.putExtra("lon", selectedItem.obsLon)
-            startActivity(detailMapIntent)
+            enableMyLocation()
+
+            mMap.setOnMapClickListener {
+                val detailMapIntent = Intent(activity, DetailMapActivity::class.java)
+                detailMapIntent.putExtra("lat", selected.obsLat)
+                detailMapIntent.putExtra("lon", selected.obsLon)
+                startActivity(detailMapIntent)
+            }
         }
     }
 
