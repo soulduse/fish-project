@@ -147,13 +147,15 @@ class RealmProvider {
                 .findFirst()
     }
 
-    private fun findSizeOfTideWeekly(): Int {
-        val realm = getRealm()
-        return realm.where(TideWeeklyModel::class.java).findAll().size
-    }
-
     fun setListener(realmListener: RealmListener?) {
         this.realmListener = realmListener
+    }
+
+    fun <T: Class<out RealmModel>> deleteData(t: T, field: String, value: Long){
+        getRealm().use {
+            val result = it.where(t).equalTo(field, value).findAll()
+            it.executeTransaction { result.deleteAllFromRealm() }
+        }
     }
 
     fun <T> writeData(item: T){
