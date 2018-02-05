@@ -2,10 +2,7 @@ package com.dave.fish.db
 
 import com.dave.fish.api.model.GisModel
 import com.dave.fish.common.Constants
-import com.dave.fish.db.model.SelectItemModel
-import com.dave.fish.db.model.SpinnerFirstModel
-import com.dave.fish.db.model.SpinnerSecondModel
-import com.dave.fish.db.model.TideWeeklyModel
+import com.dave.fish.db.model.*
 import com.dave.fish.util.DLog
 import io.realm.Realm
 import io.realm.RealmModel
@@ -150,6 +147,12 @@ class RealmProvider {
     fun setListener(realmListener: RealmListener?) {
         this.realmListener = realmListener
     }
+
+    fun <T: Class<out RealmModel>> findData(t: T): List<RealmModel> =
+            getRealm().where(t).findAll().toList()
+
+    fun <T: Class<out RealmModel>> findData(t: T, field: String, value: Long): RealmModel =
+            getRealm().where(t).equalTo(field, value).findFirst()
 
     fun <T: Class<out RealmModel>> deleteData(t: T, field: String, value: Long){
         getRealm().use {
