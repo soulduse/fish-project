@@ -17,6 +17,7 @@ object Constants {
     val NOTIFICATION_CHANEL = "notification_chanel"
     val EXTRA_NOTIFICATION_ID = 1001
     val EXTRA_NOTIFIER = "EXTRA_NOTIFIER"
+    val EXTRA_LOCATION_MAP_KEY = "EXTRA_LOCATION_MAP_KEY"
 
     // Location
     val UPDATE_COMPLETE_LOCATION = 200

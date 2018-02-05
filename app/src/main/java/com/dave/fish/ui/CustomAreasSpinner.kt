@@ -68,7 +68,7 @@ class CustomAreasSpinner : ConstraintLayout {
         setSpinnerAdapter(spinner_loc, firstNames)
 
         RealmProvider.instance.getSelectedItem(keyTide).let {
-            val firstPosition = getFirstSpinnerPosition(it)
+            val firstPosition = getFirstSpinnerPosition(it!!)
             spinner_loc.setSelection(firstPosition)
         }
     }
@@ -125,7 +125,7 @@ class CustomAreasSpinner : ConstraintLayout {
                     setSpinnerAdapter(spinner_map, getSecondSpinner(selectedDoNm).map { it.obsPostName })
 
                     RealmProvider.instance.getSelectedItem(keyTide).let{
-                        if(it.doNm == selectedDoNm){
+                        if(it!!.doNm == selectedDoNm){
                             val secondPosition = getSecondSpinnerPosition(it)
                             spinner_map.setSelection(secondPosition)
                             return

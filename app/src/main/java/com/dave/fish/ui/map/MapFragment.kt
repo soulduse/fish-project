@@ -126,9 +126,6 @@ class MapFragment : Fragment(),
                 mMap.setMinZoomPreference(16.0f)
                 mMap.setMaxZoomPreference(21.0f)
                 polyLine.tag = "내경로"
-
-                tv_record_time.text = locationMsg
-
             }
         }
     }
