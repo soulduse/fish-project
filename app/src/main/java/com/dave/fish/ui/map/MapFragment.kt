@@ -20,6 +20,8 @@ import com.dave.fish.MyApplication
 import com.dave.fish.R
 import com.dave.fish.common.Constants
 import com.dave.fish.db.RealmProvider
+import com.dave.fish.db.model.LatLonModel
+import com.dave.fish.db.model.LocationModel
 import com.dave.fish.db.model.SpinnerSecondModel
 import com.dave.fish.util.DLog
 import com.google.android.gms.maps.*
@@ -28,7 +30,9 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
+import io.realm.RealmList
 import kotlinx.android.synthetic.main.fragment_menu_two.*
+import org.joda.time.DateTime
 import java.util.*
 
 /**
@@ -42,13 +46,7 @@ class MapFragment : Fragment(),
 
     private lateinit var mMap: GoogleMap
     private var mapView: MapView? = null
-
-    private val locA = LatLng(37.4832, 126.421)
-    private val locB = LatLng(37.4843, 126.522)
-    private val locC = LatLng(37.4854, 126.623)
-    private val locD = LatLng(37.4865, 126.724)
-    private val locE = LatLng(37.4876, 126.825)
-    private val locF = LatLng(37.4887, 126.926)
+    private var realmLocationIndex = 0L
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
             inflater.inflate(R.layout.fragment_menu_two, container, false)
@@ -67,7 +65,7 @@ class MapFragment : Fragment(),
         val geocoder = Geocoder(MyApplication.context)
 
 
-        mRealmController.getSecondSpinnerItem()?.let{
+        RealmProvider.instance.getSecondSpinnerItem()?.let{
             val locationList = geocoder.getFromLocation(it.obsLat, it.obsLon, 10)
             locationList?.let {
                 val address = try{
@@ -89,8 +87,9 @@ class MapFragment : Fragment(),
 
         btn_start_record.setOnClickListener {
             val isRecorded = btn_start_record.isSelected
-            val intentService = Intent(activity, LocationService::class.java)
-            intentService.putExtra(Constants.EXTRA_NOTIFIER, Constants.EXTRA_NOTIFICATION_ID)
+            val intentService = Intent(activity, LocationService::class.java).apply {
+                putExtra(Constants.EXTRA_NOTIFIER, Constants.EXTRA_NOTIFICATION_ID)
+            }
 
             btn_start_record.isSelected = isRecorded.not()
 
@@ -98,6 +97,7 @@ class MapFragment : Fragment(),
                 activity?.stopService(intentService)
                 btn_start_record.text = resources.getString(R.string.record_start)
             }else{
+                realmLocationIndex = DateTime.now().millis / 1000
                 activity?.startService(intentService)
                 btn_start_record.text = resources.getString(R.string.record_stop)
             }
@@ -115,6 +115,8 @@ class MapFragment : Fragment(),
                     LatLng(it.latitude, it.longitude)
                 }
 
+                setRealmLocation(locationValues)
+
                 DLog.w("[locationValues]\nsize : ${locationValues.size}\npoints :$locationValues")
                 val polyLine = mMap.addPolyline(PolylineOptions()
                         .addAll(locationValues)
@@ -127,12 +129,48 @@ class MapFragment : Fragment(),
                 mMap.setMaxZoomPreference(21.0f)
                 polyLine.tag = "내경로"
             }
+
+            private fun setRealmLocation(locationValues: List<LatLng>) {
+                val selectedSecondSpinner = RealmProvider.instance.getSecondSpinnerItem()
+
+                val latLonList = RealmList<LatLonModel>()
+                locationValues.forEach { item ->
+                    val latlonModel = LatLonModel().apply {
+                        latitude = item.latitude
+                        longtitude = item.longitude
+                    }
+                    latLonList.add(latlonModel)
+                }
+
+                val locationModel = LocationModel().apply {
+                    id = realmLocationIndex
+                    locations = latLonList
+                    selectedSecondSpinner?.let {
+                        fixedLat = it.obsLat
+                        fixedLon = it.obsLon
+                    }
+                }
+
+                DLog.w("""location values -->
+                    id : ${locationModel.id}
+                    createdAt : ${locationModel.createdAt}
+                    updatedAt : ${locationModel.updatedAt}
+                    fixedLat : ${locationModel.fixedLat}
+                    fixedLon : ${locationModel.fixedLon}
+                    locations : ${locationModel.locations.toString()}
+                    locations.size : ${locationModel.locations.size}
+                    """)
+
+                RealmProvider.instance.writeData(locationModel)
+            }
         }
     }
 
     override fun onMapReady(map: GoogleMap) {
+        val getSecondSpinnerItem = RealmProvider.instance.getSecondSpinnerItem()
+        val secondItem = RealmProvider.instance.copyData(getSecondSpinnerItem!!) as SpinnerSecondModel
 
-        mRealmController.getSecondSpinnerItem()?.let { selected->
+        secondItem.let { selected->
             val mLatLng = LatLng(selected.obsLat, selected.obsLon)
             mMap = map
             val mapUtil = mMap.uiSettings

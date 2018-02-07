@@ -28,20 +28,20 @@ import java.util.*
  */
 class LocationService : Service() {
 
-    private lateinit var mFusedLocationClient : FusedLocationProviderClient
-    private lateinit var mSettingsClient : SettingsClient
+    private lateinit var mFusedLocationClient: FusedLocationProviderClient
+    private lateinit var mSettingsClient: SettingsClient
     private lateinit var locationCallback: LocationCallback
     private lateinit var mLocationRequest: LocationRequest
-    private lateinit var mLocationSettingsRequest : LocationSettingsRequest
-    private lateinit var broadcaster : LocalBroadcastManager
+    private lateinit var mLocationSettingsRequest: LocationSettingsRequest
+    private lateinit var broadcaster: LocalBroadcastManager
 
-    private val locationList : ArrayList<Location> = arrayListOf()
+    private val locationList: ArrayList<Location> = arrayListOf()
     private lateinit var mLocation: Location
     private var requestingLocationUpdates = false
     private var lastUpdateTime = ""
     private var textLog = ""
 
-    private lateinit var intent : Intent
+    private lateinit var intent: Intent
 
     @SuppressLint("MissingPermission")
     override fun onCreate() {
@@ -80,9 +80,25 @@ class LocationService : Service() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
                 mLocation = locationResult.lastLocation
-                addLocationList(mLocation)
-                lastUpdateTime = DateFormat.getTimeInstance().format(Date())
+
+                // 위치 정보가 비정상적인 경우 값 저장안함
+                if (!isBadLocation()){
+                    addLocationList(mLocation)
+                    lastUpdateTime = DateFormat.getTimeInstance().format(Date())
+                }
                 sendResultLocation()
+            }
+
+            private fun isBadLocation(): Boolean {
+                DLog.w("location value hasAccuracy: ${mLocation.hasAccuracy()}, accuracy: ${mLocation.accuracy}")
+                if (!mLocation.hasAccuracy()) {
+                    return true
+                }
+
+                if (mLocation.accuracy.toInt() >= 20) {
+                    return true
+                }
+                return false
             }
         }
     }
@@ -100,16 +116,18 @@ class LocationService : Service() {
                 Bearing= ${mLocation.bearing}
                 Time= $lastUpdateTime """.trimMargin()
 
-            val intent = Intent(Constants.LOCATION_SERVICE_RESULT)
-            intent.putExtra(Constants.LOCATION_SERVICE_MESSAGE, textLog)
-            intent.putExtra(Constants.RESPONSE_LOCATION_VALUES, getLocationList())
+            val intent = Intent(Constants.LOCATION_SERVICE_RESULT).apply {
+                putExtra(Constants.LOCATION_SERVICE_MESSAGE, textLog)
+                putExtra(Constants.RESPONSE_LOCATION_VALUES, getLocationList())
+            }
+
             broadcaster.sendBroadcast(intent)
 
             initForegroundService()
         }
     }
 
-    private fun initForegroundService(){
+    private fun initForegroundService() {
         val mId = this.intent.getIntExtra(Constants.EXTRA_NOTIFIER, 0)
         val mBuilder = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANEL)
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -151,7 +169,7 @@ class LocationService : Service() {
                 mFusedLocationClient.requestLocationUpdates(mLocationRequest, locationCallback, Looper.myLooper())
             }
 
-            addOnFailureListener { e->
+            addOnFailureListener { e ->
                 val statusCode = (e as ApiException).statusCode
                 when (statusCode) {
                     LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
@@ -176,8 +194,8 @@ class LocationService : Service() {
         requestingLocationUpdates = true
     }
 
-    private fun stopLocationUpdates(){
-        if(!requestingLocationUpdates){
+    private fun stopLocationUpdates() {
+        if (!requestingLocationUpdates) {
             return
         }
 
@@ -187,21 +205,19 @@ class LocationService : Service() {
                 }
     }
 
-    private fun getLocationList() : ArrayList<Location>{
-        return locationList
-    }
+    private fun getLocationList(): ArrayList<Location> = locationList
 
-    private fun addLocationList(location:Location){
+    private fun addLocationList(location: Location) {
         locationList.add(location)
     }
 
-    private fun clearLocationList(){
+    private fun clearLocationList() {
         locationList.clear()
     }
 
     companion object {
-        private val INTERVAL : Long = 1000 * 10
-        private val FASTEST_INTERVAL : Long = 1000 * 5
+        private val INTERVAL: Long = 1000 * 10
+        private val FASTEST_INTERVAL: Long = 1000 * 5
         var isRecordServiceStarting = false
     }
 }

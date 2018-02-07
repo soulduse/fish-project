@@ -2,12 +2,15 @@ package com.dave.fish.ui.map
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.location.Location
 import android.widget.Toast
 import com.dave.fish.MyApplication
+import com.dave.fish.common.DistanceUtil
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import java.util.*
@@ -22,17 +25,22 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
     private lateinit var mMap : GoogleMap
     private var lat = 0.0
     private var lon = 0.0
+    private var locationValues: MutableList<LatLng> = mutableListOf()
 
-    fun initMap(mapView : MapView, lat: Double, lon:Double){
+    fun initMap(mapView : MapView, lat: Double, lon:Double): GoogleMapUtil{
         mapView.getMapAsync(this)
         this.lat = lat
         this.lon = lon
+
+        return this@GoogleMapUtil
     }
 
-    fun initMap(mapView : SupportMapFragment, lat: Double, lon:Double){
+    fun initMap(mapView : SupportMapFragment, lat: Double, lon:Double): GoogleMapUtil{
         mapView.getMapAsync(this)
         this.lat = lat
         this.lon = lon
+
+        return this@GoogleMapUtil
     }
 
     private fun enableMyLocation() {
@@ -63,13 +71,13 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
     }
 
     override fun onMyLocationClick(p0: Location) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 
     override fun onMapReady(map: GoogleMap) {
         mMap = map
         val mLatLng = LatLng(lat, lon)
-        mMap?.run {
+        mMap.run {
             setOnMyLocationButtonClickListener(this@GoogleMapUtil)
             setOnMyLocationClickListener(this@GoogleMapUtil)
             setMinZoomPreference(7.0f)
@@ -79,7 +87,61 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
             moveCamera(CameraUpdateFactory.zoomTo(12.0f))
         }
 
+        drawPolyLine()
         enableMyLocation()
+    }
+
+    fun initPolyLine(locationValues: List<LatLng>){
+        this.locationValues = locationValues.toMutableList()
+    }
+
+    private fun drawPolyLine(){
+        if(locationValues.isNotEmpty()){
+            addPolyLine()
+            moveCamera()
+            setZoom()
+        }
+    }
+
+    private fun addPolyLine() {
+        mMap.addPolyline(PolylineOptions()
+                .addAll(locationValues)
+                .width(10f)
+                .color(Color.RED)
+                .geodesic(true))
+    }
+
+    private fun moveCamera() {
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(locationValues.last()))
+    }
+
+    private fun setZoom() {
+        with(mMap){
+            setMinZoomPreference(8.0f)
+            setMaxZoomPreference(21.0f)
+        }
+    }
+
+    /**
+     * @method 5초 이내 갱신된 거리가 50미터 미만이라면 값을 추가
+     * @reason 단말 GPS 수신 이상으로 비정상 값이 들어오는 것을 방지
+     */
+    private fun isAbleAddPolyLine(location1 : Location, location2 : Location) : Boolean{
+
+        val distance = DistanceUtil.distance(
+                location1.latitude,
+                location1.longitude,
+                location2.latitude,
+                location2.longitude,
+                "M")
+
+        val meterOfDistance = Math.round(distance)
+
+        if(meterOfDistance <= 50){
+            return true
+        }
+
+        return false
     }
 
 
