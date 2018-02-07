@@ -44,6 +44,7 @@ class MapFragment : Fragment(){
     private var realmLocationIndex = 0L
     private lateinit var mapView: MapView
     private var selectedLocation: LatLng ?= null
+    private var googleMapUtil: GoogleMapUtil ?= null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
             inflater.inflate(R.layout.fragment_menu_two, container, false)
@@ -56,6 +57,8 @@ class MapFragment : Fragment(){
 
         setSelectedLocation()
 
+        setGoogleMap()
+
         initGeocoder()
 
         initRecord()
@@ -66,15 +69,24 @@ class MapFragment : Fragment(){
     // GoogleMap에 그려준다.
     private fun drawPolyLine() {
         val latLonList = loadGPSValues()
-        setGoogleMap(latLonList)
+        googleMapUtil?.initPolyLine(latLonList)
     }
 
-    private fun setGoogleMap(latLonList: List<LatLng>) {
-        selectedLocation?.let {
-            GoogleMapUtil.instance
-                    .initMap(mapView, it.latitude, it.latitude)
-                    .initPolyLine(latLonList)
+    private fun setGoogleMap() {
+        selectedLocation?.let { selected ->
+            googleMapUtil = GoogleMapUtil.instance
+                    .initMap(mapView, selected.latitude, selected.longitude)
                     .initZoomLevel(12.0f, 15.0f)
+                    .setStartLisetner {
+                        btn_start_record.isSelected
+                    }
+
+            mapView.setOnClickListener {
+                val detailMapIntent = Intent(activity, DetailMapActivity::class.java)
+                detailMapIntent.putExtra("lat", selected.latitude)
+                detailMapIntent.putExtra("lon", selected.longitude)
+                startActivity(detailMapIntent)
+            }
         }
     }
 

@@ -28,6 +28,7 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
     private var minZoom = 0.0f
     private var maxZoom = 0.0f
     private var locationValues: MutableList<LatLng> = mutableListOf()
+    private var drawTrigger: ()-> Boolean = { false }
 
     fun initMap(mapView : MapView, lat: Double, lon:Double): GoogleMapUtil{
         mapView.getMapAsync(this)
@@ -45,9 +46,15 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
         return this@GoogleMapUtil
     }
 
+    fun initPolyLine(locationValues: List<LatLng>?): GoogleMapUtil{
+        locationValues?.let {
+            this.locationValues = locationValues.toMutableList()
+        }
+        return this@GoogleMapUtil
+    }
 
-    fun initPolyLine(locationValues: List<LatLng>): GoogleMapUtil{
-        this.locationValues = locationValues.toMutableList()
+    fun setStartLisetner(drawTrigger: ()-> Boolean): GoogleMapUtil{
+        this.drawTrigger = drawTrigger
         return this@GoogleMapUtil
     }
 
@@ -100,10 +107,13 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
             setOnMyLocationClickListener(this@GoogleMapUtil)
             addMarker(MarkerOptions().position(mLatLng))
             moveCamera(CameraUpdateFactory.newLatLng(mLatLng))
+            addMarker(MarkerOptions().position(mLatLng))
             moveCamera(CameraUpdateFactory.zoomTo(12.0f))
         }
 
-        drawPolyLine()
+        if(drawTrigger()){
+            drawPolyLine()
+        }
         enableMyLocation()
     }
 
