@@ -25,6 +25,8 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
     private lateinit var mMap : GoogleMap
     private var lat = 0.0
     private var lon = 0.0
+    private var minZoom = 0.0f
+    private var maxZoom = 0.0f
     private var locationValues: MutableList<LatLng> = mutableListOf()
 
     fun initMap(mapView : MapView, lat: Double, lon:Double): GoogleMapUtil{
@@ -40,6 +42,22 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
         this.lat = lat
         this.lon = lon
 
+        return this@GoogleMapUtil
+    }
+
+
+    fun initPolyLine(locationValues: List<LatLng>): GoogleMapUtil{
+        this.locationValues = locationValues.toMutableList()
+        return this@GoogleMapUtil
+    }
+
+    /**
+     * Map Fragment     -> 12.0f / 15.0f
+     * Detail Activity  -> 8.0f / 21.0f
+     */
+    fun initZoomLevel(minZoom: Float, maxZoom: Float): GoogleMapUtil{
+        this.minZoom = minZoom
+        this.maxZoom = maxZoom
         return this@GoogleMapUtil
     }
 
@@ -80,8 +98,6 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
         mMap.run {
             setOnMyLocationButtonClickListener(this@GoogleMapUtil)
             setOnMyLocationClickListener(this@GoogleMapUtil)
-            setMinZoomPreference(7.0f)
-            setMaxZoomPreference(17.0f)
             addMarker(MarkerOptions().position(mLatLng))
             moveCamera(CameraUpdateFactory.newLatLng(mLatLng))
             moveCamera(CameraUpdateFactory.zoomTo(12.0f))
@@ -89,10 +105,6 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
 
         drawPolyLine()
         enableMyLocation()
-    }
-
-    fun initPolyLine(locationValues: List<LatLng>){
-        this.locationValues = locationValues.toMutableList()
     }
 
     private fun drawPolyLine(){
@@ -117,33 +129,10 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
 
     private fun setZoom() {
         with(mMap){
-            setMinZoomPreference(8.0f)
-            setMaxZoomPreference(21.0f)
+            setMinZoomPreference(minZoom)
+            setMaxZoomPreference(maxZoom)
         }
     }
-
-    /**
-     * @method 5초 이내 갱신된 거리가 50미터 미만이라면 값을 추가
-     * @reason 단말 GPS 수신 이상으로 비정상 값이 들어오는 것을 방지
-     */
-    private fun isAbleAddPolyLine(location1 : Location, location2 : Location) : Boolean{
-
-        val distance = DistanceUtil.distance(
-                location1.latitude,
-                location1.longitude,
-                location2.latitude,
-                location2.longitude,
-                "M")
-
-        val meterOfDistance = Math.round(distance)
-
-        if(meterOfDistance <= 50){
-            return true
-        }
-
-        return false
-    }
-
 
     private object Holder {
         val INSTANCE = GoogleMapUtil()

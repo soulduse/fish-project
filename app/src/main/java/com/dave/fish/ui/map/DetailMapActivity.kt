@@ -31,5 +31,6 @@ class DetailMapActivity : AppCompatActivity() {
         GoogleMapUtil.instance
                 .initMap(mapFragment, lat, lon)
                 .initPolyLine(latLonList)
+                .initZoomLevel(8.0f, 21.0f)
     }
 }
