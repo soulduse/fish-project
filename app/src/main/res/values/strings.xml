@@ -28,6 +28,7 @@
 
     <string name="today_tide">오늘의 물때 : %s</string>
 
+    <string name="record_show">기록보기</string>
     <string name="record_start">기록시작</string>
     <string name="record_stop">기록중지</string>
     <string name="record_time">현시각 : </string>

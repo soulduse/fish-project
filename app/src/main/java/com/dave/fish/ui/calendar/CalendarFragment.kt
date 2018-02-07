@@ -1,6 +1,7 @@
 package com.dave.fish.ui.calendar
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -40,6 +41,8 @@ class CalendarFragment : Fragment() {
     private var firstDayOfWeek: Int? = null
     private var mDate: DateTime = DateTime()
 
+    private lateinit var mContext: Context
+
     private var lockSelect = false
 
     private val mRealmController: RealmProvider = RealmProvider.instance
@@ -49,6 +52,7 @@ class CalendarFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        mContext = view.context
         initView()
         refreshCalendar()
     }
@@ -117,7 +121,7 @@ class CalendarFragment : Fragment() {
 
             override fun onTapEnded(p0: CalendarView, p1: CalendarView.DayMetadata) {
                 val date = DateTime(p1.year, p1.month, p1.day, 0, 0, 0).toString("yyyy-MM-dd")
-                val intent = Intent(context, TideDetailActivity::class.java)
+                val intent = Intent(mContext, TideDetailActivity::class.java)
                 intent.putExtra(Global.INTENT_DATE, date)
                 activity?.startActivity(intent)
             }
@@ -173,7 +177,7 @@ class CalendarFragment : Fragment() {
             }
 
             error = { e->
-                Toast.makeText(context, e.localizedMessage, Toast.LENGTH_LONG).show()
+                Toast.makeText(mContext, e.localizedMessage, Toast.LENGTH_LONG).show()
             }
         })
     }
@@ -208,7 +212,7 @@ class CalendarFragment : Fragment() {
                     item.am.let {
                         val weatherIcon = getWeatherIcon(item.am)
                         if (weatherIcon != 0) {
-                            Glide.with(context)
+                            Glide.with(mContext)
                                     .load(getWeatherIcon(item.am))
                                     .into(calendarItemView.iv_tide_state)
                             calendarItemView.iv_tide_state.visibility = View.VISIBLE
@@ -221,7 +225,7 @@ class CalendarFragment : Fragment() {
                     item.am.let {
                         val weatherIcon = getWeatherIcon(item.am)
                         if (weatherIcon != 0) {
-                            Glide.with(context)
+                            Glide.with(mContext)
                                     .load(getWeatherIcon(item.am))
                                     .into(calendarItemView.iv_tide_state)
                             calendarItemView.iv_tide_state.visibility = View.VISIBLE
