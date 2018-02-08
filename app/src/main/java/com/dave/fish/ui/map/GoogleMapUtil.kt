@@ -53,7 +53,7 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
         return this@GoogleMapUtil
     }
 
-    fun setStartLisetner(drawTrigger: ()-> Boolean): GoogleMapUtil{
+    fun setStartListener(drawTrigger: ()-> Boolean): GoogleMapUtil{
         this.drawTrigger = drawTrigger
         return this@GoogleMapUtil
     }

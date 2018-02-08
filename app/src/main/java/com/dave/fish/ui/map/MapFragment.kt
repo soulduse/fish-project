@@ -1,12 +1,11 @@
 package com.dave.fish.ui.map
 
-import android.Manifest
-import android.annotation.SuppressLint
+import android.app.ActivityManager
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
@@ -15,7 +14,6 @@ import android.support.v4.content.LocalBroadcastManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import com.dave.fish.MyApplication
 import com.dave.fish.R
 import com.dave.fish.common.Constants
@@ -24,16 +22,12 @@ import com.dave.fish.db.model.LatLonModel
 import com.dave.fish.db.model.LocationModel
 import com.dave.fish.db.model.SpinnerSecondModel
 import com.dave.fish.util.DLog
-import com.google.android.gms.maps.*
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolylineOptions
-import com.gun0912.tedpermission.PermissionListener
-import com.gun0912.tedpermission.TedPermission
 import io.realm.RealmList
 import kotlinx.android.synthetic.main.fragment_menu_two.*
 import org.joda.time.DateTime
-import java.util.*
 
 /**
  * Created by soul on 2017. 8. 27..
@@ -77,7 +71,7 @@ class MapFragment : Fragment(){
             googleMapUtil = GoogleMapUtil.instance
                     .initMap(mapView, selected.latitude, selected.longitude)
                     .initZoomLevel(12.0f, 15.0f)
-                    .setStartLisetner {
+                    .setStartListener {
                         btn_start_record.isSelected
                     }
 
@@ -138,8 +132,18 @@ class MapFragment : Fragment(){
         }
     }
 
+    private fun <T: Class<*>> isRunningService(t: T): Boolean{
+        val manager = MyApplication.context?.getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        manager.getRunningServices(Integer.MAX_VALUE).forEach {
+            if(t.name == it.service.className){
+                return true
+            }
+        }
+        return false
+    }
+
     private fun initSelectedStartRecord() {
-        btn_start_record.isSelected = LocationService.isRecordServiceStarting
+        btn_start_record.isSelected = isRunningService(LocationService::class.java)
         if (btn_start_record.isSelected) {
             btn_start_record.text = resources.getString(R.string.record_stop)
         } else {
