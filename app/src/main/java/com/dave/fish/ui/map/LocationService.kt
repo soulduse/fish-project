@@ -60,7 +60,6 @@ class LocationService : Service() {
     @SuppressLint("MissingPermission")
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         DLog.d("service [StartCommand]")
-        isRecordServiceStarting = true
         this.intent = intent
         startLocationUpdates()
 
@@ -69,7 +68,6 @@ class LocationService : Service() {
 
     override fun onDestroy() {
         DLog.w("service [DESTROY]")
-        isRecordServiceStarting = true
         stopLocationUpdates()
         clearLocationList()
         super.onDestroy()
@@ -218,6 +216,5 @@ class LocationService : Service() {
     companion object {
         private val INTERVAL: Long = 1000 * 10
         private val FASTEST_INTERVAL: Long = 1000 * 5
-        var isRecordServiceStarting = false
     }
 }

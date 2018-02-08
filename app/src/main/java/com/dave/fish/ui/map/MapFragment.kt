@@ -24,6 +24,7 @@ import com.dave.fish.db.model.LatLonModel
 import com.dave.fish.db.model.LocationModel
 import com.dave.fish.db.model.SpinnerSecondModel
 import com.dave.fish.util.DLog
+import com.dave.fish.util.SystemUtil
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -41,11 +42,9 @@ import java.util.*
 class MapFragment : Fragment(),
         OnMapReadyCallback{
 
-    private val mRealmController : RealmProvider = RealmProvider.instance
     private lateinit var receiver: BroadcastReceiver
 
     private lateinit var mMap: GoogleMap
-    private var mapView: MapView? = null
     private var realmLocationIndex = 0L
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
@@ -55,36 +54,35 @@ class MapFragment : Fragment(),
         super.onViewCreated(view, savedInstanceState)
         MapsInitializer.initialize(this.activity)
 
-        val mapview = view.findViewById<MapView>(R.id.google_map_view).apply {
+        initMapView(savedInstanceState)
+
+        initAddress()
+
+        initRecord()
+
+        btn_show_record.setOnClickListener {
+
+        }
+
+        initData()
+    }
+
+    private fun initMapView(savedInstanceState: Bundle?) {
+        google_map_view.apply {
             isClickable = false
             onCreate(savedInstanceState)
             onResume()
             getMapAsync(this@MapFragment)
         }
+    }
 
-        val geocoder = Geocoder(MyApplication.context)
+    private fun initRecord() {
+        initRecordText()
 
+        initRecordClick()
+    }
 
-        RealmProvider.instance.getSecondSpinnerItem()?.let{
-            val locationList = geocoder.getFromLocation(it.obsLat, it.obsLon, 10)
-            locationList?.let {
-                val address = try{
-                    locationList[0].getAddressLine(0).filterNot { c->resources.getString(R.string.korea).contains(c) }
-                }catch (e : IndexOutOfBoundsException){
-                    resources.getString(R.string.warning_empty_address)
-                }
-
-                tv_record_address.text = address
-            }
-        }
-
-        btn_start_record.isSelected = LocationService.isRecordServiceStarting
-        if(btn_start_record.isSelected){
-            btn_start_record.text = resources.getString(R.string.record_stop)
-        }else{
-            btn_start_record.text = resources.getString(R.string.record_start)
-        }
-
+    private fun initRecordClick() {
         btn_start_record.setOnClickListener {
             val isRecorded = btn_start_record.isSelected
             val intentService = Intent(activity, LocationService::class.java).apply {
@@ -93,24 +91,46 @@ class MapFragment : Fragment(),
 
             btn_start_record.isSelected = isRecorded.not()
 
-            if(isRecorded){
+            if (isRecorded) {
                 activity?.stopService(intentService)
                 btn_start_record.text = resources.getString(R.string.record_start)
-            }else{
+            } else {
                 realmLocationIndex = DateTime.now().millis / 1000
                 activity?.startService(intentService)
                 btn_start_record.text = resources.getString(R.string.record_stop)
             }
         }
+    }
 
-        initData()
+    private fun initRecordText() {
+        btn_start_record.isSelected = SystemUtil.isRunningService(LocationService::class.java)
+        if (btn_start_record.isSelected) {
+            btn_start_record.text = resources.getString(R.string.record_stop)
+        } else {
+            btn_start_record.text = resources.getString(R.string.record_start)
+        }
+    }
+
+    private fun initAddress() {
+        val geoCoder = Geocoder(MyApplication.context)
+        RealmProvider.instance.getSecondSpinnerItem()?.let {
+            val locationList = geoCoder.getFromLocation(it.obsLat, it.obsLon, 10)
+            locationList?.let {
+                val address = try {
+                    locationList[0].getAddressLine(0).filterNot { c -> resources.getString(R.string.korea).contains(c) }
+                } catch (e: IndexOutOfBoundsException) {
+                    resources.getString(R.string.warning_empty_address)
+                }
+
+                tv_record_address.text = address
+            }
+        }
     }
 
     private fun initData() {
         // response location values from service
         receiver = object : BroadcastReceiver(){
             override fun onReceive(context: Context?, intent: Intent) {
-                val locationMsg = intent.getStringExtra(Constants.LOCATION_SERVICE_MESSAGE)
                 val locationValues = intent.getParcelableArrayListExtra<Location>(Constants.RESPONSE_LOCATION_VALUES).map {
                     LatLng(it.latitude, it.longitude)
                 }
@@ -173,27 +193,32 @@ class MapFragment : Fragment(),
         secondItem.let { selected->
             val mLatLng = LatLng(selected.obsLat, selected.obsLon)
             mMap = map
-            val mapUtil = mMap.uiSettings
-            mapUtil.isScrollGesturesEnabled = false
-            mapUtil.isZoomGesturesEnabled = false
 
-            mMap.setMinZoomPreference(12.0f)
-            mMap.setMaxZoomPreference(15.0f)
-            mMap.addMarker(MarkerOptions().position(mLatLng).title(selected.obsPostName))
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(mLatLng))
+            with(mMap){
+                val mapUtil = mMap.uiSettings
+                with(mapUtil){
+                    isScrollGesturesEnabled = false
+                    isZoomGesturesEnabled = false
+                }
+
+                setMinZoomPreference(12.0f)
+                setMaxZoomPreference(15.0f)
+                addMarker(MarkerOptions().position(mLatLng).title(selected.obsPostName))
+                moveCamera(CameraUpdateFactory.newLatLng(mLatLng))
+
+                setOnMapClickListener {
+                    val detailMapIntent = Intent(activity, DetailMapActivity::class.java)
+                    detailMapIntent.putExtra("lat", selected.obsLat)
+                    detailMapIntent.putExtra("lon", selected.obsLon)
+                    startActivity(detailMapIntent)
+                }
+            }
 
             enableMyLocation()
-
-            mMap.setOnMapClickListener {
-                val detailMapIntent = Intent(activity, DetailMapActivity::class.java)
-                detailMapIntent.putExtra("lat", selected.obsLat)
-                detailMapIntent.putExtra("lon", selected.obsLon)
-                startActivity(detailMapIntent)
-            }
         }
     }
 
-    private var permissionlistener: PermissionListener = object : PermissionListener {
+    private var permissionListener: PermissionListener = object : PermissionListener {
         @SuppressLint("MissingPermission")
         override fun onPermissionGranted() {
             mMap.isMyLocationEnabled = true
@@ -206,7 +231,7 @@ class MapFragment : Fragment(),
 
     private fun enableMyLocation() {
         TedPermission.with(MyApplication.context)
-                .setPermissionListener(permissionlistener)
+                .setPermissionListener(permissionListener)
                 .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
                 .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
                 .check()
@@ -222,21 +247,6 @@ class MapFragment : Fragment(),
     override fun onStop() {
         LocalBroadcastManager.getInstance(MyApplication.context!!).unregisterReceiver(receiver)
         super.onStop()
-    }
-
-    override fun onResume() {
-        mapView?.onResume()
-        super.onResume()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mapView?.onDestroy()
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        mapView?.onLowMemory()
     }
 
     companion object {
