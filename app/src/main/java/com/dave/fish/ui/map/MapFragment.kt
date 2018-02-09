@@ -23,6 +23,8 @@ import com.dave.fish.db.RealmProvider
 import com.dave.fish.db.model.LatLonModel
 import com.dave.fish.db.model.LocationModel
 import com.dave.fish.db.model.SpinnerSecondModel
+import com.dave.fish.ui.map.detail.DetailMapActivity
+import com.dave.fish.ui.map.record.RecordActivity
 import com.dave.fish.util.DLog
 import com.dave.fish.util.SystemUtil
 import com.google.android.gms.maps.*
@@ -61,7 +63,7 @@ class MapFragment : Fragment(),
         initRecord()
 
         btn_show_record.setOnClickListener {
-
+            startActivity(Intent(activity, RecordActivity::class.java))
         }
 
         initData()

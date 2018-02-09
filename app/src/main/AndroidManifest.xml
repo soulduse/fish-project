@@ -38,7 +38,8 @@
 
         <activity android:name=".ui.main.MainActivity" />
         <activity android:name=".ui.calendar.TideDetailActivity" />
-        <activity android:name=".ui.map.DetailMapActivity" />
+        <activity android:name=".ui.map.detail.DetailMapActivity" />
+        <activity android:name=".ui.map.record.RecordActivity" />
         <service android:name=".ui.map.LocationService" />
         <receiver android:name=".ui.alarm.AlarmReceiver">
             <intent-filter>
