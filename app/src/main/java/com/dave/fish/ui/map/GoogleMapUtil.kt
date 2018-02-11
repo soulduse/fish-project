@@ -7,6 +7,7 @@ import android.location.Location
 import android.widget.Toast
 import com.dave.fish.MyApplication
 import com.dave.fish.common.DistanceUtil
+import com.dave.fish.util.DLog
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -14,6 +15,8 @@ import com.google.android.gms.maps.model.PolylineOptions
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 import java.util.*
+import com.google.android.gms.maps.model.CameraPosition
+
 
 /**
  * Created by soul on 2017. 10. 27..
@@ -26,6 +29,7 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
     private var lat = 0.0
     private var lon = 0.0
     private var locationValues: MutableList<LatLng> = mutableListOf()
+    private var isMyLocation = false
 
     fun initMap(mapView : MapView, lat: Double, lon:Double): GoogleMapUtil {
         mapView.getMapAsync(this)
@@ -45,17 +49,22 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
 
     private fun enableMyLocation() {
         TedPermission.with(MyApplication.context)
-                .setPermissionListener(permissionlistener)
+                .setPermissionListener(permissionListener)
                 .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
                 .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
                 .check()
     }
 
+    /**
+     * TODO MyLocation 버튼 3가지 옵션으로 확장하여 카메라 이동시키기 { 내위치, 마커위치, 둘사이의 중간 위치 }
+     * 참고하면 좋은 Url :
+     * https://stackoverflow.com/questions/16764002/how-to-center-the-camera-so-that-marker-is-at-the-bottom-of-screen-google-map
+     * https://developers.google.com/maps/documentation/android-api/views?hl=fr-FR#moving_the_camera
+     * */
 
-    private var permissionlistener: PermissionListener = object : PermissionListener {
+    private var permissionListener: PermissionListener = object : PermissionListener {
         @SuppressLint("MissingPermission")
         override fun onPermissionGranted() {
-            Toast.makeText(MyApplication.context, "Permission Granted", Toast.LENGTH_SHORT).show()
             mMap.isMyLocationEnabled = true
         }
 
@@ -84,7 +93,20 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
             setMaxZoomPreference(17.0f)
             addMarker(MarkerOptions().position(mLatLng))
             moveCamera(CameraUpdateFactory.newLatLng(mLatLng))
-            moveCamera(CameraUpdateFactory.zoomTo(16.0f))
+            moveCamera(CameraUpdateFactory.zoomTo(14.0f))
+
+            // 카메라 스위칭 : 현재위치, 타겟위치
+            setOnMyLocationButtonClickListener {
+                isMyLocation = isMyLocation.not()
+                DLog.w("setOnMyLocationButtonClickListener clicked!")
+                val cameraPosition = CameraPosition.Builder()
+                        .target(LatLng(lat, lon))
+                        .zoom(14f)
+                        .build()
+
+                animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+                isMyLocation
+            }
         }
 
         drawPolyLine()
