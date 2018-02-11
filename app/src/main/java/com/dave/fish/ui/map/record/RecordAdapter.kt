@@ -31,14 +31,17 @@ class RecordAdapter : RecyclerView.Adapter<RecordAdapter.ViewHolder>() {
         holder?.itemView?.run {
 
             with(items[position]) {
-                val address = GeoUtil.getAddress(fixedLat, fixedLon)
+                if(locations != null && locations!!.isNotEmpty()){
+                    val location = locations!!.first()
+                    val address = GeoUtil.getAddress(location.latitude, location.longtitude)
 
-                tv_title.text = address.split(" ").filterNot { it.isEmpty() }.first()
-                tv_address.text = address
-                tv_recorded_time.text = (
-                        DateUtil.getDate(createdAt) + " ~ " + DateUtil.getDate(updatedAt) +
-                                "\n(${DateUtil.getSubtractMin(createdAt, updatedAt)}분 기록됨)"
-                        )
+                    tv_title.text = address.split(" ").filterNot { it.isEmpty() }.first()
+                    tv_address.text = address
+                    tv_recorded_time.text = (
+                            DateUtil.getDate(createdAt) + " ~ " + DateUtil.getDate(updatedAt) +
+                                    "\n(${DateUtil.getSubtractMin(createdAt, updatedAt)}분 기록됨)"
+                            )
+                }
             }
         }
     }
