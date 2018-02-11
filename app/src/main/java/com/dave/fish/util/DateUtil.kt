@@ -1,8 +1,13 @@
 package com.dave.fish.util
 
+import com.dave.fish.MyApplication
+import com.dave.fish.R
 import org.joda.time.DateTime
 
 import org.joda.time.DateTimeZone
+import org.joda.time.Period
+import java.util.*
+
 /**
  * Created by soul on 2017. 8. 23..
  */
@@ -11,14 +16,37 @@ object DateUtil {
     val DATE_PATTERN_YEAR_MONTH_DAY = "yyyyMMdd"
     val DATE_PATTERN_YEAR_MONTH_DAY_ADD_DASH = "yyyy-MM-dd"
     val DATE_PATTERN_YEAR_MONTH = "yyyy-MM"
+    val DATE_PATTERN_HOUR_MINUTE = "hh:mm"
     val DATE_PATTERN_TIME_OF_DATE = "mmss"
     val DATE_PATTERN_ALL = "yyyy-MM-dd hh:mm:ss"
     val DATE_TIME_ZONE_SEOUL = "Asia/Seoul"
+
+    fun getSubtractMin(startAt: Date?, endAt: Date): String{
+        if(startAt == null){
+            return MyApplication.context?.getString(R.string.no_time_found)!!
+        }
+        val period = Period(startAt.time, endAt.time)
+        return period.minutes.toString()
+    }
+
+    fun getDate(date: Date?): String {
+        if(date == null){
+            return MyApplication.context?.getString(R.string.no_time_found)!!
+        }
+
+        return DateTime(date).toString("yy-MM-dd hh:mm")
+    }
 
     fun getCurrentDate(pattern:String) : String{
         val seoul = DateTimeZone.forID(DATE_TIME_ZONE_SEOUL)
         val currentTime = DateTime(seoul)
         return currentTime.toString(pattern)
+    }
+
+    fun getDate(millis: Long): String{
+        val seoul = DateTimeZone.forID(DATE_TIME_ZONE_SEOUL)
+        val dateTime = DateTime(millis, seoul)
+        return dateTime.toString(DATE_PATTERN_HOUR_MINUTE)
     }
 
     fun getCurrentDate() : DateTime{
