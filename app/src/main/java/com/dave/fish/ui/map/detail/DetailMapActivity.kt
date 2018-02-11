@@ -1,10 +1,12 @@
-package com.dave.fish.ui.map
+package com.dave.fish.ui.map.detail
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.dave.fish.R
 import com.dave.fish.db.RealmProvider
 import com.dave.fish.db.model.LocationModel
+import com.dave.fish.ui.map.GoogleMapUtil
+import com.dave.fish.util.DLog
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -26,10 +28,16 @@ class DetailMapActivity : AppCompatActivity() {
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map_detail) as SupportMapFragment
         val locationList = (RealmProvider.instance.findData(LocationModel::class.java) as List<LocationModel>).last()
-        val latLonList = locationList.locations.map { LatLng(it.latitude, it.longtitude) }
+        val latLonList = locationList.locations?.map { LatLng(it.latitude, it.longtitude) }
 
-        GoogleMapUtil.instance
-                .initMap(mapFragment, lat, lon)
-                .initPolyLine(latLonList)
+
+        DLog.w("c size 1 --> ${locationList.locations?.size}")
+        DLog.w("latlonList size 2 --> ${latLonList?.size}")
+        latLonList?.let {
+            GoogleMapUtil.instance
+                    .initMap(mapFragment, lat, lon)
+                    .initPolyLine(it)
+        }
+
     }
 }

@@ -1,13 +1,11 @@
 package com.dave.fish.db
 
+import com.crashlytics.android.Crashlytics
 import com.dave.fish.api.model.GisModel
 import com.dave.fish.common.Constants
 import com.dave.fish.db.model.*
 import com.dave.fish.util.DLog
-import io.realm.Realm
-import io.realm.RealmModel
-import io.realm.RealmObject
-import io.realm.RealmResults
+import io.realm.*
 import org.joda.time.DateTime
 
 

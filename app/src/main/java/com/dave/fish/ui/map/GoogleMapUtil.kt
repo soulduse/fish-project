@@ -27,7 +27,7 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
     private var lon = 0.0
     private var locationValues: MutableList<LatLng> = mutableListOf()
 
-    fun initMap(mapView : MapView, lat: Double, lon:Double): GoogleMapUtil{
+    fun initMap(mapView : MapView, lat: Double, lon:Double): GoogleMapUtil {
         mapView.getMapAsync(this)
         this.lat = lat
         this.lon = lon
@@ -35,7 +35,7 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
         return this@GoogleMapUtil
     }
 
-    fun initMap(mapView : SupportMapFragment, lat: Double, lon:Double): GoogleMapUtil{
+    fun initMap(mapView : SupportMapFragment, lat: Double, lon:Double): GoogleMapUtil {
         mapView.getMapAsync(this)
         this.lat = lat
         this.lon = lon
@@ -84,7 +84,7 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
             setMaxZoomPreference(17.0f)
             addMarker(MarkerOptions().position(mLatLng))
             moveCamera(CameraUpdateFactory.newLatLng(mLatLng))
-            moveCamera(CameraUpdateFactory.zoomTo(12.0f))
+            moveCamera(CameraUpdateFactory.zoomTo(16.0f))
         }
 
         drawPolyLine()
