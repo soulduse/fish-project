@@ -1,11 +1,15 @@
 package com.dave.fish.ui.map.record
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.dave.fish.R
 import com.dave.fish.db.model.LocationModel
+import com.dave.fish.ui.map.GeoUtil
+import com.dave.fish.util.DateUtil
 import kotlinx.android.synthetic.main.record_item.view.*
 
 /**
@@ -15,15 +19,27 @@ class RecordAdapter : RecyclerView.Adapter<RecordAdapter.ViewHolder>() {
 
     private var items: MutableList<LocationModel> = mutableListOf()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.record_item, parent, false))
+    private lateinit var context: Context
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        context = parent.context
+        return ViewHolder(LayoutInflater.from(context).inflate(R.layout.record_item, parent, false))
+    }
+
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
         holder?.itemView?.run {
-            tv_title.text = "타이틀"
-            tv_address.text = "주소주소"
-            tv_recorded_time.text = "2시간 50분"
-            goto_mapview.text = "지도보기"
+
+            with(items[position]) {
+                val address = GeoUtil.getAddress(fixedLat, fixedLon)
+
+                tv_title.text = address.split(" ").filterNot { it.isEmpty() }.first()
+                tv_address.text = address
+                tv_recorded_time.text = (
+                        DateUtil.getDate(createdAt) + " ~ " + DateUtil.getDate(updatedAt) +
+                                "\n(${DateUtil.getSubtractMin(createdAt, updatedAt)}분 기록됨)"
+                        )
+            }
         }
     }
 
@@ -33,7 +49,7 @@ class RecordAdapter : RecyclerView.Adapter<RecordAdapter.ViewHolder>() {
         this.items = items.toMutableList()
     }
 
-    fun clearItems(){
+    fun clearItems() {
         this.items.clear()
     }
 

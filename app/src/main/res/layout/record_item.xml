@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/tide_white"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@color/tide_white">
 
     <TextView
         android:id="@+id/tv_title"
@@ -25,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toStartOf="@+id/goto_mapview"
         app:layout_constraintHorizontal_bias="0.0"
@@ -38,7 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toStartOf="@+id/goto_mapview"
         app:layout_constraintHorizontal_bias="0.0"
@@ -55,10 +55,10 @@
         android:layout_marginTop="32dp"
         android:background="@drawable/selector_record_location"
         android:padding="10dp"
+        android:text="@string/record_show_map"
         android:textColor="@color/tide_white"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="지도보기" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

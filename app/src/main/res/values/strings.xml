@@ -28,12 +28,16 @@
 
     <string name="today_tide">오늘의 물때 : %s</string>
 
+    <string name="record_show_map">지도보기</string>
     <string name="record_show">기록보기</string>
     <string name="record_start">기록시작</string>
     <string name="record_stop">기록중지</string>
     <string name="record_time">현시각 : </string>
     <string name="record_address">주소 : </string>
-    <string name="warning_empty_address">해당되는 주소 정보는 없습니다.</string>
+    <string name="no_address_found">해당되는 주소를 찾을 수 없습니다.</string>
+    <string name="no_time_found">날짜정보 읽어올 수 없음</string>
+    <string name="service_not_available">네트워크 불안정으로 주소를 가져올 수 없습니다.</string>
+    <string name="invalid_lat_long_used">GPS 주소를 읽어올 수 없습니다.</string>
     <string name="korea">대한민국</string>
 
     <!-- ALARM -->
