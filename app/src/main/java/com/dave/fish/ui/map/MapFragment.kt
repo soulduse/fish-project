@@ -175,8 +175,8 @@ class MapFragment : Fragment(),
 
                 setOnMapClickListener {
                     val detailMapIntent = Intent(activity, DetailMapActivity::class.java)
-                    detailMapIntent.putExtra("lat", selected.obsLat)
-                    detailMapIntent.putExtra("lon", selected.obsLon)
+                    detailMapIntent.putExtra(Constants.EXTRA_LOCATION_LAT, selected.obsLat)
+                    detailMapIntent.putExtra(Constants.EXTRA_LOCATION_LON, selected.obsLon)
                     startActivity(detailMapIntent)
                 }
             }
