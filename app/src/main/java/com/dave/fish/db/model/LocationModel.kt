@@ -11,11 +11,11 @@ import java.util.*
 open class LocationModel: RealmObject() {
     @PrimaryKey
     var id: Long = 0L
-    var createdAt: Date = Date()
+    var createdAt: Date ?= null
     var updatedAt: Date = Date()
     var fixedLat: Double = 0.0
     var fixedLon: Double = 0.0
-    lateinit var locations: RealmList<LatLonModel>
+    var locations: RealmList<LatLonModel> ?= null
 }
 
 open class LatLonModel: RealmObject() {

@@ -14,11 +14,16 @@ import android.support.v4.content.LocalBroadcastManager
 import android.widget.Toast
 import com.dave.fish.R
 import com.dave.fish.common.Constants
+import com.dave.fish.db.RealmProvider
+import com.dave.fish.db.model.LatLonModel
+import com.dave.fish.db.model.LocationModel
 import com.dave.fish.util.DLog
 import com.dave.fish.ui.main.MainActivity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
+import io.realm.RealmList
+import org.joda.time.DateTime
 import java.text.DateFormat
 import java.util.*
 
@@ -39,9 +44,13 @@ class LocationService : Service() {
     private lateinit var mLocation: Location
     private var requestingLocationUpdates = false
     private var lastUpdateTime = ""
-    private var textLog = ""
 
-    private lateinit var intent: Intent
+    // Get intent values
+    private var locationId: Long = 0L
+    private var locationLat: Double = 0.0
+    private var locationLon: Double = 0.0
+    private var notificationId: Int = 0
+    private var locationCreatedAt: String = ""
 
     @SuppressLint("MissingPermission")
     override fun onCreate() {
@@ -60,7 +69,14 @@ class LocationService : Service() {
     @SuppressLint("MissingPermission")
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         DLog.d("service [StartCommand]")
-        this.intent = intent
+        with(intent){
+            locationId = getLongExtra(Constants.EXTRA_LOCATION_MODEL_IDX, 0L)
+            locationLat = getDoubleExtra(Constants.EXTRA_LOCATION_LAT, 0.0)
+            locationLon = getDoubleExtra(Constants.EXTRA_LOCATION_LON, 0.0)
+            notificationId = getIntExtra(Constants.EXTRA_NOTIFIER, 0)
+            locationCreatedAt = getStringExtra(Constants.EXTRA_LOCATION_CREATED_AT) ?: ""
+        }
+
         startLocationUpdates()
 
         return START_NOT_STICKY
@@ -84,6 +100,7 @@ class LocationService : Service() {
                     addLocationList(mLocation)
                     lastUpdateTime = DateFormat.getTimeInstance().format(Date())
                 }
+
                 sendResultLocation()
             }
 
@@ -102,31 +119,51 @@ class LocationService : Service() {
     }
 
     private fun sendResultLocation() {
-        if (mLocation != null) {
-            DLog.v("service [sendResultLocation]")
-            textLog = """
-                ---------- UpdateLocation ----------
-                Latitude=${mLocation.latitude}
-                Longitude=${mLocation.longitude}
-                Accuracy= ${mLocation.accuracy}
-                Altitude= ${mLocation.altitude}
-                Speed= ${mLocation.speed}
-                Bearing= ${mLocation.bearing}
-                Time= $lastUpdateTime """.trimMargin()
+        DLog.v("service [sendResultLocation]")
 
-            val intent = Intent(Constants.LOCATION_SERVICE_RESULT).apply {
-                putExtra(Constants.LOCATION_SERVICE_MESSAGE, textLog)
-                putExtra(Constants.RESPONSE_LOCATION_VALUES, getLocationList())
+        insertOrUpdateLocationModel()
+
+        broadcaster.sendBroadcast(Intent(Constants.LOCATION_SERVICE_RESULT))
+
+        initForegroundService()
+    }
+
+    private fun insertOrUpdateLocationModel() {
+        val latLonList = RealmList<LatLonModel>()
+        getLocationList().forEach { item ->
+            val latlonModel = LatLonModel().apply {
+                latitude = item.latitude
+                longtitude = item.longitude
             }
-
-            broadcaster.sendBroadcast(intent)
-
-            initForegroundService()
+            latLonList.add(latlonModel)
         }
+
+        val locationModel = LocationModel().apply {
+            id = locationId
+            locations = latLonList
+            fixedLat = locationLat
+            fixedLon = locationLon
+
+            if(locationCreatedAt.isNotEmpty()){
+                createdAt = DateTime(locationCreatedAt).toDate()
+            }
+        }
+
+        DLog.w("""location values -->
+                    id : ${locationModel.id}
+                    createdAt : ${locationModel.createdAt}
+                    updatedAt : ${locationModel.updatedAt}
+                    fixedLat : ${locationModel.fixedLat}
+                    fixedLon : ${locationModel.fixedLon}
+                    locations : ${locationModel.locations?.toString()}
+                    locations.size : ${locationModel.locations?.size}
+                    """)
+
+        RealmProvider.instance.writeData(locationModel)
     }
 
     private fun initForegroundService() {
-        val mId = this.intent.getIntExtra(Constants.EXTRA_NOTIFIER, 0)
+        val mId = notificationId
         val mBuilder = NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANEL)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("해루질앱")

@@ -7,8 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
-import android.location.Geocoder
-import android.location.Location
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.LocalBroadcastManager
@@ -20,21 +18,22 @@ import com.dave.fish.MyApplication
 import com.dave.fish.R
 import com.dave.fish.common.Constants
 import com.dave.fish.db.RealmProvider
-import com.dave.fish.db.model.LatLonModel
 import com.dave.fish.db.model.LocationModel
 import com.dave.fish.db.model.SpinnerSecondModel
 import com.dave.fish.ui.map.detail.DetailMapActivity
 import com.dave.fish.ui.map.record.RecordActivity
-import com.dave.fish.util.DLog
 import com.dave.fish.util.SystemUtil
-import com.google.android.gms.maps.*
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
-import io.realm.RealmList
 import kotlinx.android.synthetic.main.fragment_menu_two.*
+import org.jetbrains.anko.support.v4.toast
 import org.joda.time.DateTime
 import java.util.*
 
@@ -47,7 +46,6 @@ class MapFragment : Fragment(),
     private lateinit var receiver: BroadcastReceiver
 
     private lateinit var mMap: GoogleMap
-    private var realmLocationIndex = 0L
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
             inflater.inflate(R.layout.fragment_menu_two, container, false)
@@ -97,7 +95,14 @@ class MapFragment : Fragment(),
                 activity?.stopService(intentService)
                 btn_start_record.text = resources.getString(R.string.record_start)
             } else {
-                realmLocationIndex = DateTime.now().millis / 1000
+                val selectedSecondSpinner = RealmProvider.instance.getSecondSpinnerItem()
+                with(intentService){
+                    val currentDate = DateTime.now()
+                    putExtra(Constants.EXTRA_LOCATION_MODEL_IDX, currentDate.millis / 1000)
+                    putExtra(Constants.EXTRA_LOCATION_LAT, selectedSecondSpinner?.obsLat)
+                    putExtra(Constants.EXTRA_LOCATION_LON, selectedSecondSpinner?.obsLon)
+                    putExtra(Constants.EXTRA_LOCATION_CREATED_AT, currentDate.toString())
+                }
                 activity?.startService(intentService)
                 btn_start_record.text = resources.getString(R.string.record_stop)
             }
@@ -114,18 +119,8 @@ class MapFragment : Fragment(),
     }
 
     private fun initAddress() {
-        val geoCoder = Geocoder(MyApplication.context)
         RealmProvider.instance.getSecondSpinnerItem()?.let {
-            val locationList = geoCoder.getFromLocation(it.obsLat, it.obsLon, 10)
-            locationList?.let {
-                val address = try {
-                    locationList[0].getAddressLine(0).filterNot { c -> resources.getString(R.string.korea).contains(c) }
-                } catch (e: IndexOutOfBoundsException) {
-                    resources.getString(R.string.warning_empty_address)
-                }
-
-                tv_record_address.text = address
-            }
+            tv_record_address.text = GeoUtil.getAddress(it.obsLat, it.obsLon)
         }
     }
 
@@ -133,57 +128,27 @@ class MapFragment : Fragment(),
         // response location values from service
         receiver = object : BroadcastReceiver(){
             override fun onReceive(context: Context?, intent: Intent) {
-                val locationValues = intent.getParcelableArrayListExtra<Location>(Constants.RESPONSE_LOCATION_VALUES).map {
-                    LatLng(it.latitude, it.longitude)
-                }
+                with(mMap){
+                    val savedLocationModel = RealmProvider.instance.findData(LocationModel::class.java) as List<LocationModel>
+                    if(savedLocationModel.isNotEmpty()){
+                        val savedLatLng = savedLocationModel.last().locations?.toList()?.map { LatLng(it.latitude, it.longtitude) }
+                        if(savedLatLng != null && savedLatLng.isNotEmpty()){
+                            addPolyline(PolylineOptions()
+                                    .addAll(savedLatLng)
+                                    .width(10f)
+                                    .color(Color.RED)
+                                    .geodesic(true))
 
-                setRealmLocation(locationValues)
-
-                DLog.w("[locationValues]\nsize : ${locationValues.size}\npoints :$locationValues")
-                val polyLine = mMap.addPolyline(PolylineOptions()
-                        .addAll(locationValues)
-                        .width(10f)
-                        .color(Color.RED)
-                        .geodesic(true))
-
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(locationValues.last()))
-                mMap.setMinZoomPreference(16.0f)
-                mMap.setMaxZoomPreference(21.0f)
-                polyLine.tag = "내경로"
-            }
-
-            private fun setRealmLocation(locationValues: List<LatLng>) {
-                val selectedSecondSpinner = RealmProvider.instance.getSecondSpinnerItem()
-
-                val latLonList = RealmList<LatLonModel>()
-                locationValues.forEach { item ->
-                    val latlonModel = LatLonModel().apply {
-                        latitude = item.latitude
-                        longtitude = item.longitude
-                    }
-                    latLonList.add(latlonModel)
-                }
-
-                val locationModel = LocationModel().apply {
-                    id = realmLocationIndex
-                    locations = latLonList
-                    selectedSecondSpinner?.let {
-                        fixedLat = it.obsLat
-                        fixedLon = it.obsLon
+                            if(savedLatLng.isNotEmpty()){
+                                animateCamera(CameraUpdateFactory.newLatLng(savedLatLng.last()))
+                            }
+                            setMinZoomPreference(16.0f)
+                            setMaxZoomPreference(21.0f)
+                        }else{
+                            toast("GPS 수신상태가 좋지 않습니다. GPS를 재탐색합니다.")
+                        }
                     }
                 }
-
-                DLog.w("""location values -->
-                    id : ${locationModel.id}
-                    createdAt : ${locationModel.createdAt}
-                    updatedAt : ${locationModel.updatedAt}
-                    fixedLat : ${locationModel.fixedLat}
-                    fixedLon : ${locationModel.fixedLon}
-                    locations : ${locationModel.locations.toString()}
-                    locations.size : ${locationModel.locations.size}
-                    """)
-
-                RealmProvider.instance.writeData(locationModel)
             }
         }
     }
