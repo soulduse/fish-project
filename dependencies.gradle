@@ -26,6 +26,7 @@ ext {
     retrofitConverterVersion = '1.0.0'
     realmVersion = '3.5.0'
     ankoVersion = '0.10.4'
+    realmRecyclerViewVersion = '2.0.0'
 
     // Firebase
     fabricVersion = '1.25.1'

@@ -70,17 +70,15 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion"
 
-    // Anko Commons
+    // Anko
     implementation "org.jetbrains.anko:anko-commons:$ankoVersion"
-
-    // Anko Layouts
     implementation "org.jetbrains.anko:anko-sdk25:$ankoVersion" // sdk15, sdk19, sdk21, sdk23 are also available
     implementation "org.jetbrains.anko:anko-appcompat-v7:$ankoVersion"
-
-    // Coroutine listeners for Anko Layouts
     implementation "org.jetbrains.anko:anko-sdk25-coroutines:$ankoVersion"
     implementation "org.jetbrains.anko:anko-appcompat-v7-coroutines:$ankoVersion"
 
+    // Realm RecyclerView
+    implementation "io.realm:android-adapters:$realmRecyclerViewVersion"
 
     // Firebase Lib
     implementation("com.crashlytics.sdk.android:crashlytics:$crashlyticsVersion") {
