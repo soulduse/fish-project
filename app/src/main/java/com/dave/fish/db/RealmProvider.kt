@@ -146,6 +146,9 @@ class RealmProvider {
         this.realmListener = realmListener
     }
 
+    fun <T: Class<out RealmModel>> findAllData(t: T): RealmResults<out RealmModel> =
+            getRealm().where(t).findAll()
+
     fun <T: Class<out RealmModel>> findData(t: T): List<RealmModel> =
             getRealm().where(t).findAll().toList()
 
