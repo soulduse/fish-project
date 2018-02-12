@@ -99,6 +99,7 @@ class LocationService : Service() {
                 if (!isBadLocation()){
                     addLocationList(mLocation)
                     lastUpdateTime = DateFormat.getTimeInstance().format(Date())
+                    insertOrUpdateLocationModel()
                 }
 
                 sendResultLocation()
@@ -121,7 +122,7 @@ class LocationService : Service() {
     private fun sendResultLocation() {
         DLog.v("service [sendResultLocation]")
 
-        insertOrUpdateLocationModel()
+
 
         broadcaster.sendBroadcast(Intent(Constants.LOCATION_SERVICE_RESULT))
 
