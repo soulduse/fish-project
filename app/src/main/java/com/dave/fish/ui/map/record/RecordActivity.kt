@@ -3,9 +3,11 @@ package com.dave.fish.ui.map.record
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.view.View
 import com.dave.fish.R
 import com.dave.fish.db.RealmProvider
 import com.dave.fish.db.model.LocationModel
+import io.realm.RealmResults
 import kotlinx.android.synthetic.main.activity_record_detail.*
 
 /**
@@ -17,13 +19,50 @@ class RecordActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_record_detail)
 
-        val savedLocation = RealmProvider.instance.findData(LocationModel::class.java) as List<LocationModel>
+        initToolbar()
 
+        initRecyclerView()
+    }
+
+    private fun initRecyclerView() {
         record_recycler_view.apply {
-            setHasFixedSize(true)
+            setHasFixedSize(false)
             layoutManager = LinearLayoutManager(this@RecordActivity)
             addItemDecoration(RecyclerViewDecoration(25))
-            adapter = RecordAdapter().apply { setItems(savedLocation) }
         }
+    }
+
+    private fun initToolbar() {
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val savedLocation = RealmProvider.instance.findAllData(LocationModel::class.java) as RealmResults<LocationModel>
+
+        if (savedLocation.isEmpty()) {
+            showEmptyRecord()
+        } else {
+            hideEmptyRecord()
+        }
+
+        record_recycler_view.adapter = RecordAdapter(savedLocation)
+    }
+
+    private fun showEmptyRecord() {
+        containerEmptyRecordMessage.visibility = View.VISIBLE
+    }
+
+    private fun hideEmptyRecord() {
+        containerEmptyRecordMessage.visibility = View.GONE
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 }

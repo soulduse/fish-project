@@ -72,4 +72,6 @@
     <!-- Toolbar -->
     <string name="toolbar_detail_map">지도상세</string>
     <string name="toolbar_delete_record">기록삭제</string>
+
+    <string name="no_record_result">기록된 정보가 없습니다.</string>
 </resources>
