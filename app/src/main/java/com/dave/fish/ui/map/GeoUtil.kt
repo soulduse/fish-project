@@ -38,7 +38,6 @@ object GeoUtil {
             val addressFragments = (0 .. addressItem.maxAddressLineIndex).map { i ->
                 addressItem.getAddressLine(i)
                         .filterNot {
-                            DLog.w("filterNot --> $it")
                             context.resources.getString(R.string.korea)?.contains(it)!!
                         }
             }
