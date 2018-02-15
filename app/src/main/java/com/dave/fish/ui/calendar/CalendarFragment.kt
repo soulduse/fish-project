@@ -67,21 +67,21 @@ class CalendarFragment : Fragment() {
                     savedInstanceState.getInt(YEAR_PARAMETER),
                     savedInstanceState.getInt(MONTH_PARAMETER),
                     savedInstanceState.getInt(DAY_PARAMETER),
-                    0,0,0,0
+                    0, 0, 0, 0
             )
             firstDayOfWeek = savedInstanceState.getInt(FIRST_DAY_OF_WEEK_PARAMETER)
         }
     }
 
-    private fun initView(){
+    private fun initView() {
         onMoveCalendar()
         initMonthView()
     }
 
     private fun refreshCalendar() {
-        if(isCurrentDate(mDate)){
+        if (isCurrentDate(mDate)) {
             monthView.setCurrentDay(getCalendarForState())
-        }else{
+        } else {
             monthView.setCurrentDay(0)
         }
 
@@ -111,7 +111,7 @@ class CalendarFragment : Fragment() {
         }
     }
 
-    private fun initMonthView(){
+    private fun initMonthView() {
         monthView.firstDayOfTheWeek = CalendarView.SUNDAY_SHIFT
         monthView.setCurrentDay(getCalendarForState())
 
@@ -146,21 +146,21 @@ class CalendarFragment : Fragment() {
         }
     }
 
-    private fun initCalendarData(postId: String, dateTime: DateTime, tideMonthList : RealmResults<TideWeeklyModel>) {
-        if(!lockSelect && tideMonthList.isNotEmpty()){
+    private fun initCalendarData(postId: String, dateTime: DateTime, tideMonthList: RealmResults<TideWeeklyModel>) {
+        if (!lockSelect && tideMonthList.isNotEmpty()) {
             addDataToCalendar(tideMonthList, postId)
             lockSelect = true
-        }else if(tideMonthList.size < MINIMUM_DAY_SIZE){
+        } else if (tideMonthList.size < MINIMUM_DAY_SIZE) {
             requestMonthData(postId, dateTime)
         }
     }
 
-    private fun requestMonthData(postId: String, dateTime: DateTime){
+    private fun requestMonthData(postId: String, dateTime: DateTime) {
         Network.request(ApiProvider.provideTideApi().getWeeklyData(
                 postId,
                 dateTime.toString(DATE_PATTERN_YEAR_MONTH_DAY)
         ), NetworkCallback<WeeklyModel>().apply {
-            success = { tideModel->
+            success = { tideModel ->
                 val weeklyDataList = tideModel.weeklyDataList
 
                 weeklyDataList.forEach {
@@ -176,14 +176,14 @@ class CalendarFragment : Fragment() {
                 addDataToCalendar(weeklyDataList, postId)
             }
 
-            error = { e->
+            error = { e ->
                 Toast.makeText(mContext, e.localizedMessage, Toast.LENGTH_LONG).show()
             }
         })
     }
 
-    private fun initDataOnThisMonth(postId: String, dateTime: DateTime){
-        if(DateUtil.isThisMonth(dateTime)){
+    private fun initDataOnThisMonth(postId: String, dateTime: DateTime) {
+        if (DateUtil.isThisMonth(dateTime)) {
             requestMonthData(postId, dateTime)
         }
     }
@@ -246,12 +246,12 @@ class CalendarFragment : Fragment() {
     private fun drawTideValues(item: Any, calendarItemView: View) {
         val lowTideList = getLowTide(item)
         drawTideLevel(calendarItemView.tv_tide_level, lowTideList[0])
-        if(lowTideList.size > 1){
+        if (lowTideList.size > 1) {
             drawTideLevel(calendarItemView.tv_tide_level2, lowTideList[1])
         }
     }
 
-    private fun drawTideLevel(tv: TextView, lowTide: String){
+    private fun drawTideLevel(tv: TextView, lowTide: String) {
         tv.text = TideUtil.getHeight(lowTide)
 
         if (TideUtil.getHeight(lowTide).toInt() <= 100) {
@@ -295,7 +295,7 @@ class CalendarFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        with(outState){
+        with(outState) {
             putInt(DAY_PARAMETER, mDate.dayOfMonth)
             putInt(MONTH_PARAMETER, mDate.monthOfYear)
             putInt(YEAR_PARAMETER, mDate.year)
@@ -344,7 +344,7 @@ class CalendarFragment : Fragment() {
         calendar_date.text = "${mDate.year}.${mDate.monthOfYear}"
     }
 
-    fun setVisibleNavigationCalendar(visible : Int){
+    fun setVisibleNavigationCalendar(visible: Int) {
         navigation_calendar_container?.visibility = visible
     }
 
@@ -360,7 +360,7 @@ class CalendarFragment : Fragment() {
             SUN, RAIN, CLOUD, MORECLOUD, CLOUDRAIN
         }
 
-        fun newInstance() : CalendarFragment {
+        fun newInstance(): CalendarFragment {
             val fragmemt = CalendarFragment()
             val bundle = Bundle()
             fragmemt.arguments = bundle
