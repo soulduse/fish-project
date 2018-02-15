@@ -40,6 +40,8 @@
         <activity android:name=".ui.calendar.TideDetailActivity" />
         <activity android:name=".ui.map.detail.DetailMapActivity" />
         <activity android:name=".ui.map.record.RecordActivity" />
+        <activity android:name=".util.permission.PermissionResultActivity" />
+
         <service android:name=".ui.map.LocationService" />
         <receiver android:name=".ui.alarm.AlarmReceiver">
             <intent-filter>

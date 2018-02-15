@@ -8,6 +8,7 @@ import com.dave.fish.R
 import com.dave.fish.db.RealmProvider
 import com.dave.fish.db.model.LocationModel
 import io.realm.RealmResults
+import io.realm.Sort
 import kotlinx.android.synthetic.main.activity_record_detail.*
 
 /**
@@ -50,7 +51,7 @@ class RecordActivity : AppCompatActivity() {
             hideEmptyRecord()
         }
 
-        record_recycler_view.adapter = RecordAdapter(savedLocation)
+        record_recycler_view.adapter = RecordAdapter(savedLocation.sort("id", Sort.DESCENDING))
     }
 
     private fun showEmptyRecord() {
