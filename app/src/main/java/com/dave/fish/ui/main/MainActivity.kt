@@ -30,7 +30,10 @@ import com.dave.fish.ui.main.menu.SimpleItem
 import com.dave.fish.ui.map.MapFragment
 import com.dave.fish.ui.web.WebFragment
 import com.dave.fish.util.DLog
-import com.google.android.gms.ads.*
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
 import com.yarolegovich.slidingrootnav.SlidingRootNav
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder
 import kotlinx.android.synthetic.main.activity_main.*
@@ -59,6 +62,8 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
 
     // admob
     private lateinit var mInterstitialAd: InterstitialAd
+
+    private var isFirstOpen = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -295,7 +300,11 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
         mainSpinner.apply {
             init(Constants.KEY_TIDE_MAIN_SPINNER)
             initListener {
-                main_viewpager.adapter?.notifyDataSetChanged()
+                if(!isFirstOpen){
+                    main_viewpager.adapter?.notifyDataSetChanged()
+                }
+
+                isFirstOpen = false
             }
         }
     }
@@ -345,7 +354,6 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
                 AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                         AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
     }
-
 
     override fun onBackPressed() {
         when {
