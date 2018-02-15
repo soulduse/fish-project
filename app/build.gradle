@@ -60,9 +60,6 @@ dependencies {
     implementation "com.google.android.gms:play-services-maps:$googleLibVersion"
     implementation "com.google.android.gms:play-services-location:$googleLibVersion"
 
-    // Ted Permission
-    implementation "gun0912.ted:tedpermission:$tedPermissionVersion"
-
     // Main UI Lib
     implementation "com.yarolegovich:sliding-root-nav:$slideRootVersion"
 
