@@ -22,6 +22,8 @@ import com.dave.fish.util.PreferenceKeys
 import com.dave.fish.util.getDefaultSharedPreferences
 import com.dave.fish.util.put
 import kotlinx.android.synthetic.main.fragment_alaram.*
+import org.jetbrains.anko.support.v4.longToast
+import org.jetbrains.anko.support.v4.toast
 import org.joda.time.DateTime
 
 
@@ -134,11 +136,18 @@ class AlarmFragment : Fragment() {
     }
 
     private fun stopAlarm() {
+        toast(resources.getString(R.string.stopped_alarm))
         pendingIntent?.cancel()
         alarmMgr.cancel(pendingIntent)
     }
 
     private fun startAlarm() {
+        longToast(resources.getString(
+                R.string.started_alarm,
+                num_picker_hour.value,
+                num_picker_min.value * STEP_NUMBER
+        ))
+
         initAlarmIntentData()
 
         pendingIntent = PendingIntent.getBroadcast(mContext, 0, alarmIntent, PendingIntent.FLAG_CANCEL_CURRENT)
