@@ -152,7 +152,7 @@ class RealmProvider {
     fun <T: Class<out RealmModel>> findData(t: T): List<RealmModel> =
             getRealm().where(t).findAll().toList()
 
-    fun <T: Class<out RealmModel>> findData(t: T, field: String, value: Long): RealmModel =
+    fun <T: Class<out RealmModel>> findData(t: T, field: String, value: Long): RealmModel? =
             getRealm().where(t).equalTo(field, value).findFirst()
 
     fun <T: Class<out RealmModel>> deleteData(t: T, field: String, value: Long){

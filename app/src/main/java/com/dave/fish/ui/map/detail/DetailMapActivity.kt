@@ -79,13 +79,13 @@ class DetailMapActivity : AppCompatActivity() {
     }
 
     private fun getLocations(): List<LatLng>? {
-        val locationModel: LocationModel = if (isIdxEmpty()) {
+        val locationModel: LocationModel? = if (isIdxEmpty()) {
             (RealmProvider.instance.findData(LocationModel::class.java) as List<LocationModel>).last()
         } else {
             RealmProvider.instance.findData(LocationModel::class.java, "id", idx) as LocationModel
         }
 
-        return locationModel.locations?.map { LatLng(it.latitude, it.longtitude) }
+        return locationModel?.locations?.map { LatLng(it.latitude, it.longtitude) }
     }
 
     private fun isIdxEmpty(): Boolean = idx == 0L

@@ -48,6 +48,8 @@ class MapFragment : Fragment(),
 
     private lateinit var mContext: Context
 
+    private var locationId: Long ?= null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
             inflater.inflate(R.layout.fragment_menu_two, container, false)
 
@@ -102,7 +104,8 @@ class MapFragment : Fragment(),
                 val selectedSecondSpinner = RealmProvider.instance.getSecondSpinnerItem()
                 with(intentService){
                     val currentDate = DateTime.now()
-                    putExtra(Constants.EXTRA_LOCATION_MODEL_IDX, currentDate.millis / 1000)
+                    locationId = currentDate.millis / 1000
+                    putExtra(Constants.EXTRA_LOCATION_MODEL_IDX, locationId!!)
                     putExtra(Constants.EXTRA_LOCATION_LAT, selectedSecondSpinner?.obsLat)
                     putExtra(Constants.EXTRA_LOCATION_LON, selectedSecondSpinner?.obsLon)
                     putExtra(Constants.EXTRA_LOCATION_CREATED_AT, currentDate.toString())
@@ -133,28 +136,57 @@ class MapFragment : Fragment(),
         receiver = object : BroadcastReceiver(){
             override fun onReceive(context: Context?, intent: Intent) {
                 with(mMap){
-                    val savedLocationModel = RealmProvider.instance.findData(LocationModel::class.java) as List<LocationModel>
-                    if(savedLocationModel.isNotEmpty()){
-                        val savedLatLng = savedLocationModel.last().locations?.toList()?.map { LatLng(it.latitude, it.longtitude) }
-                        if(savedLatLng != null && savedLatLng.isNotEmpty()){
-                            addPolyline(PolylineOptions()
-                                    .addAll(savedLatLng)
-                                    .width(10f)
-                                    .color(Color.RED)
-                                    .geodesic(true))
 
-                            if(savedLatLng.isNotEmpty()){
-                                animateCamera(CameraUpdateFactory.newLatLng(savedLatLng.last()))
-                            }
-                            setMinZoomPreference(16.0f)
-                            setMaxZoomPreference(21.0f)
-                        }else{
-                            toast("GPS 수신상태가 좋지 않습니다. GPS를 재탐색합니다.")
-                        }
+                    if(isIdNullOrEmpty()){
+                        notifyLocationBad()
+                        return
                     }
+
+                    val savedLocationModel: LocationModel ?= try{
+                        RealmProvider.instance.findData(LocationModel::class.java, "id", locationId!!) as LocationModel
+                    }catch (e: Exception){
+                        null
+                    }
+
+                    if(isModelNull(savedLocationModel)){
+                        notifyLocationBad()
+                        return
+                    }
+
+                    val savedLatLng = savedLocationModel!!.locations?.toList()?.map { LatLng(it.latitude, it.longtitude) }
+
+                    if(isLocationNullOrEmpty(savedLatLng)){
+                        notifyLocationBad()
+                        return
+                    }
+
+                    initLocation(savedLatLng!!)
                 }
             }
+
+            private fun GoogleMap.initLocation(savedLatLng: List<LatLng>) {
+                addPolyline(PolylineOptions()
+                        .addAll(savedLatLng)
+                        .width(10f)
+                        .color(Color.RED)
+                        .geodesic(true))
+
+                animateCamera(CameraUpdateFactory.newLatLng(savedLatLng.last()))
+                setMinZoomPreference(16.0f)
+                setMaxZoomPreference(21.0f)
+            }
         }
+    }
+
+    private fun isIdNullOrEmpty(): Boolean = null == locationId || locationId == 0L
+
+    private fun isModelNull(savedLocationModel: LocationModel?): Boolean = savedLocationModel == null
+
+    private fun isLocationNullOrEmpty(locations: List<LatLng>?): Boolean =
+            locations == null || locations.isEmpty()
+
+    private fun notifyLocationBad(){
+        toast("GPS 수신상태가 좋지 않습니다. GPS를 재탐색합니다.")
     }
 
     override fun onMapReady(map: GoogleMap) {
