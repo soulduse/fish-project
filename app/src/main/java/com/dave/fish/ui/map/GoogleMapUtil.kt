@@ -2,19 +2,17 @@ package com.dave.fish.ui.map
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
 import android.location.Location
-import android.widget.Toast
-import com.dave.fish.MyApplication
 import com.dave.fish.common.DistanceUtil
+import com.dave.fish.util.DLog
+import com.dave.fish.util.permission.PermissionCheck
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import com.gun0912.tedpermission.PermissionListener
-import com.gun0912.tedpermission.TedPermission
-import java.util.*
 
 
 /**
@@ -25,12 +23,14 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
         OnMapReadyCallback{
 
     private lateinit var mMap : GoogleMap
+    private lateinit var mContext: Context
     private var lat = 0.0
     private var lon = 0.0
     private var locationValues: MutableList<LatLng> = mutableListOf()
     private var isMyLocation = false
 
     fun initMap(mapView : MapView, lat: Double, lon:Double): GoogleMapUtil {
+        mContext = mapView.context!!
         mapView.getMapAsync(this)
         this.lat = lat
         this.lon = lon
@@ -39,6 +39,7 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
     }
 
     fun initMap(mapView : SupportMapFragment, lat: Double, lon:Double): GoogleMapUtil {
+        mContext = mapView.context!!
         mapView.getMapAsync(this)
         this.lat = lat
         this.lon = lon
@@ -46,11 +47,16 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
         return this@GoogleMapUtil
     }
 
+    @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
-        TedPermission.with(MyApplication.context)
-                .setPermissionListener(permissionListener)
-                .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
-                .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+        DLog.w("enableMyLocation in!")
+
+        PermissionCheck
+                .withContext(mContext)
+                .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+                .success {
+                    mMap.isMyLocationEnabled = true
+                }
                 .check()
     }
 
@@ -60,17 +66,6 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
      * https://stackoverflow.com/questions/16764002/how-to-center-the-camera-so-that-marker-is-at-the-bottom-of-screen-google-map
      * https://developers.google.com/maps/documentation/android-api/views?hl=fr-FR#moving_the_camera
      * */
-
-    private var permissionListener: PermissionListener = object : PermissionListener {
-        @SuppressLint("MissingPermission")
-        override fun onPermissionGranted() {
-            mMap.isMyLocationEnabled = true
-        }
-
-        override fun onPermissionDenied(deniedPermissions: ArrayList<String>?) {
-            Toast.makeText(MyApplication.context, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show()
-        }
-    }
 
     override fun onMyLocationButtonClick(): Boolean {
         mMap.moveCamera(CameraUpdateFactory.zoomTo(15.0f))

@@ -13,7 +13,6 @@ import android.support.v4.content.LocalBroadcastManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import com.dave.fish.MyApplication
 import com.dave.fish.R
 import com.dave.fish.common.Constants
@@ -22,7 +21,9 @@ import com.dave.fish.db.model.LocationModel
 import com.dave.fish.db.model.SpinnerSecondModel
 import com.dave.fish.ui.map.detail.DetailMapActivity
 import com.dave.fish.ui.map.record.RecordActivity
+import com.dave.fish.util.DLog
 import com.dave.fish.util.SystemUtil
+import com.dave.fish.util.permission.PermissionCheck
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapsInitializer
@@ -30,12 +31,10 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import com.gun0912.tedpermission.PermissionListener
-import com.gun0912.tedpermission.TedPermission
 import kotlinx.android.synthetic.main.fragment_menu_two.*
+import org.jetbrains.anko.support.v4.longToast
 import org.jetbrains.anko.support.v4.toast
 import org.joda.time.DateTime
-import java.util.*
 
 /**
  * Created by soul on 2017. 8. 27..
@@ -47,11 +46,16 @@ class MapFragment : Fragment(),
 
     private lateinit var mMap: GoogleMap
 
+    private lateinit var mContext: Context
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
             inflater.inflate(R.layout.fragment_menu_two, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        mContext = view.context
+
         MapsInitializer.initialize(this.activity)
 
         initMapView(savedInstanceState)
@@ -185,23 +189,19 @@ class MapFragment : Fragment(),
         }
     }
 
-    private var permissionListener: PermissionListener = object : PermissionListener {
-        @SuppressLint("MissingPermission")
-        override fun onPermissionGranted() {
-            mMap.isMyLocationEnabled = true
-        }
-
-        override fun onPermissionDenied(deniedPermissions: ArrayList<String>?) {
-            Toast.makeText(MyApplication.context, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show()
-        }
-    }
-
+    @SuppressLint("MissingPermission")
     private fun enableMyLocation() {
-        TedPermission.with(MyApplication.context)
-                .setPermissionListener(permissionListener)
-                .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
-                .setPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
-                .check()
+        DLog.w("enableMyLocation in!")
+        PermissionCheck
+                .withContext(mContext)
+                .withPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+                .success {
+                    mMap.isMyLocationEnabled = true
+                }
+                .fail {
+                    longToast("권한 획득에 실패하였습니다. 권한을 허용해주세요.")
+                }
+               .check()
     }
 
     override fun onStart() {
