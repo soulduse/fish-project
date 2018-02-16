@@ -59,6 +59,7 @@ dependencies {
     // Google Lib
     implementation "com.google.android.gms:play-services-maps:$googleLibVersion"
     implementation "com.google.android.gms:play-services-location:$googleLibVersion"
+    implementation 'com.google.android:flexbox:0.3.2'
 
     // Main UI Lib
     implementation "com.yarolegovich:sliding-root-nav:$slideRootVersion"
@@ -85,6 +86,7 @@ dependencies {
     implementation "com.google.firebase:firebase-crash:$firebaseVersion"
     implementation "com.google.firebase:firebase-ads:$firebaseVersion"
     implementation "com.google.firebase:firebase-perf:$firebaseVersion"
+    implementation "com.google.firebase:firebase-firestore:$firebaseVersion"
 
     // Test
     testImplementation "junit:junit:$junitVersion"
