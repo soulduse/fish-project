@@ -39,7 +39,6 @@ class CustomAreasSpinner : ConstraintLayout {
         initRealm()
     }
 
-
     fun init(keyTide: Int) : CustomAreasSpinner {
         this.keyTide = keyTide
         initView()

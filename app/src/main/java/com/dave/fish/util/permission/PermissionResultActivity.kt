@@ -27,7 +27,7 @@ class PermissionResultActivity : Activity() {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
         permissions = intent.getStringArrayExtra(Constants.EXTRA_PERMISSIONS)
-        alertMessage = intent.getStringExtra(Constants.EXTRA_PERMISSIONS)
+        alertMessage = intent.getStringExtra(Constants.EXTRA_PERMISSIONS)?: null
     }
 
     override fun onStart() {

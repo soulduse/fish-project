@@ -257,10 +257,10 @@ class AlarmFragment : Fragment() {
     }
 
     companion object {
-        private val HOUR_OF_DAY = 24
-        private val MINUTES_OF_HOUR = 60
-        private val STEP_NUMBER = 5
-        private val BASIC_HOUR = 2
+        private const val HOUR_OF_DAY = 24
+        private const val MINUTES_OF_HOUR = 60
+        private const val STEP_NUMBER = 5
+        private const val BASIC_HOUR = 2
         private const val REQUEST_CODE_RINGTONE = 1000
         private val SOUND_DURATIONS = intArrayOf(15, 30, 60, 120)
 
