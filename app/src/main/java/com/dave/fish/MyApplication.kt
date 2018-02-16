@@ -2,6 +2,7 @@ package com.dave.fish
 
 import android.app.Application
 import android.content.Context
+import com.dave.fish.ui.GlideApp
 import io.realm.Realm
 import io.realm.RealmConfiguration
 
@@ -22,6 +23,16 @@ class MyApplication : Application() {
                 .build()
         Realm.setDefaultConfiguration(config)
 
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        GlideApp.get(this).clearMemory()
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        GlideApp.get(this).trimMemory(level)
     }
 
     companion object {
