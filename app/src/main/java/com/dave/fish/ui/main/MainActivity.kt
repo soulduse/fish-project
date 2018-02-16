@@ -28,6 +28,7 @@ import com.dave.fish.ui.main.menu.DrawerAdapter
 import com.dave.fish.ui.main.menu.MenuDrawer
 import com.dave.fish.ui.main.menu.SimpleItem
 import com.dave.fish.ui.map.MapFragment
+import com.dave.fish.ui.tip.TipMainFragment
 import com.dave.fish.ui.web.WebFragment
 import com.dave.fish.util.DLog
 import com.google.android.gms.ads.AdListener
@@ -173,7 +174,8 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
                 createItemFor(MenuDrawer.KMA),
                 createItemFor(MenuDrawer.MARIN_KMA),
                 createItemFor(MenuDrawer.CATCH),
-                createItemFor(MenuDrawer.ALARM)
+                createItemFor(MenuDrawer.ALARM),
+                createItemFor(MenuDrawer.TIP)
         )
 
         menuAdapter = DrawerAdapter(menuList).apply {
@@ -226,7 +228,11 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
             addFragment(fragmentMarinKma, getString(R.string.menu_weather_sea))
             addFragment(fragmentWindyty, getString(R.string.menu_weather_flow))
             addFragment(fragmentAlarm, getString(R.string.menu_alarm))
+            addFragment(TipMainFragment.newInstance(), getString(R.string.menu_tip))
         }
+
+        val viewPagerCount = (main_viewpager.adapter as ViewPagerAdapter).count
+        main_viewpager.offscreenPageLimit = viewPagerCount
     }
 
     override fun onItemSelected(position: Int) {

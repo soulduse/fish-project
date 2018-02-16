@@ -57,14 +57,26 @@
     <string name="alarm_base_sound">기본음</string>
 
     <!-- MENU -->
-    <string name="menu_tide_calendar">물때표</string>
-    <string name="menu_map">지도</string>
+    <string name="menu_tide_calendar">물때&amp;날씨</string>
+    <string name="menu_map">지도&amp;기록</string>
     <string name="menu_weather_basic">전국날씨</string>
     <string name="menu_weather_sea">해양날씨</string>
     <string name="menu_weather_flow">날씨흐름</string>
     <string name="menu_alarm">알림설정</string>
+    <string name="menu_tip">팁</string>
     <string name="menu_mail">메일문의</string>
     <string name="menu_share">공유하기</string>
+
+    <!-- TITLE -->
+    <string name="title_tip_info">해루질이란?</string>
+    <string name="title_tip_tide">물때표보기</string>
+    <string name="title_tip_catch_table">월별조과표</string>
+
+    <!-- TIPS INFO -->
+    <string name="tip_info_info">info</string>
+    <string name="tip_info_detail">detail</string>
+    <string name="tip_info_method">method</string>
+    <string name="tip_info_warm">warn</string>
 
     <!--    Permissions    -->
     <string name="permission_default_message">지도를 사용하기 위해 위치정보 권한이 필요합니다.\n설정 > 권한 > 위치권한 켜기를 해주세요.</string>
