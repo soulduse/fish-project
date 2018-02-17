@@ -59,13 +59,21 @@
     <!-- MENU -->
     <string name="menu_tide_calendar">물때&amp;날씨</string>
     <string name="menu_map">지도&amp;기록</string>
-    <string name="menu_weather_basic">전국날씨</string>
-    <string name="menu_weather_sea">해양날씨</string>
-    <string name="menu_weather_flow">날씨흐름</string>
+    <string name="menu_kweather">국내예보</string>
+    <string name="menu_fweather">해외예보</string>
     <string name="menu_alarm">알림설정</string>
     <string name="menu_tip">팁</string>
     <string name="menu_mail">메일문의</string>
     <string name="menu_share">공유하기</string>
+
+    <!-- WEATHER TITLE -->
+    <string name="menu_weather_basic">전국날씨</string>
+    <string name="menu_weather_sea">해양날씨</string>
+    <string name="weather_height_japan">파고예보</string>
+    <string name="weather_measure_japan">강수량예보</string>
+    <string name="weather_cloud_japan">비구름예보</string>
+    <string name="weather_flow_usa">날씨흐름</string>
+    <string name="weather_seaweed_usa">시간별해상</string>
 
     <!-- TITLE -->
     <string name="title_tip_info">해루질이란?</string>
