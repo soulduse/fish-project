@@ -86,6 +86,8 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
     }
 
     private fun initAd() {
+        MobileAds.initialize(this, getString(R.string.admob_app_id))
+
         val adRequest = AdRequest.Builder().build()
 
         initBannerAd(adRequest)
@@ -98,7 +100,6 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
     }
 
     private fun initInterstitialAd(adRequest: AdRequest) {
-        MobileAds.initialize(this, getString(R.string.admob_app_id))
         mInterstitialAd = InterstitialAd(this).apply {
             adUnitId = getString(R.string.admob_interstitial_id)
             loadAd(adRequest)
@@ -370,7 +371,7 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
 
     companion object {
         private var firstExecute = true
-        private val PAGE_CALENDAR = 0
-        private val PAGE_MAP_RECORD = 1
+        private const val PAGE_CALENDAR = 0
+        private const val PAGE_MAP_RECORD = 1
     }
 }

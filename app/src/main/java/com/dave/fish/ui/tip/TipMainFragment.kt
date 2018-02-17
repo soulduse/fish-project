@@ -20,7 +20,7 @@ class TipMainFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val rootView = inflater.inflate(R.layout.fragment_tip, container, false)
         rootView.tip_viewpager.adapter = ViewPagerAdapter(fragmentManager!!).apply {
-            addFragment(TipCatchTableFragment.newInstance(), getString(R.string.title_tip_catch_table))
+            addFragment(TipCaughtHistoryFragment.newInstance(), getString(R.string.title_tip_catch_table))
             addFragment(TipTideFragment.newInstance(), getString(R.string.title_tip_tide))
             addFragment(TipInfoFragment.newInstance(), getString(R.string.title_tip_info))
         }

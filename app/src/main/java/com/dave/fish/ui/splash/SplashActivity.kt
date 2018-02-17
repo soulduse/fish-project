@@ -13,6 +13,9 @@ import com.dave.fish.common.Constants
 import com.dave.fish.db.model.SelectItemModel
 import com.dave.fish.ui.main.MainActivity
 import com.dave.fish.util.DLog
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.delay
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by soul on 2017. 11. 10..
@@ -94,13 +97,16 @@ class SplashActivity : AppCompatActivity(){
         }
     }
     private fun moveMain(){
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
+        async {
+            delay(200, TimeUnit.MILLISECONDS)
+            val intent = Intent(this@SplashActivity, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
 
     companion object {
-        private val FIRST_SPINNER_AREA = "충청남도"
-        private val SECOND_SPINNER_AREA = "안흥"
+        private const val FIRST_SPINNER_AREA = "충청남도"
+        private const val SECOND_SPINNER_AREA = "안흥"
     }
 }

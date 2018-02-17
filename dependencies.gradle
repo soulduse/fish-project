@@ -21,7 +21,7 @@ ext {
     tedPermissionVersion = '2.0.3'
     slideRootVersion = '1.1.0'
     junitVersion = '4.12'
-    kotlinVersion = '1.2.10'
+    kotlinVersion = '1.2.21'
     coroutineVersion = '0.21'
     retrofitConverterVersion = '1.0.0'
     realmVersion = '3.5.0'

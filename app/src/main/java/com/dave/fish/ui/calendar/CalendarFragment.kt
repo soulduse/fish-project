@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import com.bumptech.glide.Glide
 import com.dave.fish.R
 import com.dave.fish.api.ApiProvider
 import com.dave.fish.api.Network
@@ -19,9 +18,9 @@ import com.dave.fish.api.NetworkCallback
 import com.dave.fish.api.model.WeeklyModel
 import com.dave.fish.db.RealmProvider
 import com.dave.fish.db.model.TideWeeklyModel
+import com.dave.fish.ui.GlideApp
 import com.dave.fish.util.DLog
 import com.dave.fish.util.DateUtil
-import com.dave.fish.util.DateUtil.DATE_PATTERN_YEAR_MONTH_DAY
 import com.dave.fish.util.Global
 import com.dave.fish.util.TideUtil
 import com.google.gson.Gson
@@ -158,7 +157,7 @@ class CalendarFragment : Fragment() {
     private fun requestMonthData(postId: String, dateTime: DateTime) {
         Network.request(ApiProvider.provideTideApi().getWeeklyData(
                 postId,
-                dateTime.toString(DATE_PATTERN_YEAR_MONTH_DAY)
+                dateTime.toString(DateUtil.DATE_PATTERN_YEAR_MONTH_DAY)
         ), NetworkCallback<WeeklyModel>().apply {
             success = { tideModel ->
                 val weeklyDataList = tideModel.weeklyDataList
@@ -212,7 +211,7 @@ class CalendarFragment : Fragment() {
                     item.am.let {
                         val weatherIcon = getWeatherIcon(item.am)
                         if (weatherIcon != 0) {
-                            Glide.with(mContext)
+                            GlideApp.with(mContext)
                                     .load(getWeatherIcon(item.am))
                                     .into(calendarItemView.iv_tide_state)
                             calendarItemView.iv_tide_state.visibility = View.VISIBLE
@@ -225,7 +224,7 @@ class CalendarFragment : Fragment() {
                     item.am.let {
                         val weatherIcon = getWeatherIcon(item.am)
                         if (weatherIcon != 0) {
-                            Glide.with(mContext)
+                            GlideApp.with(mContext)
                                     .load(getWeatherIcon(item.am))
                                     .into(calendarItemView.iv_tide_state)
                             calendarItemView.iv_tide_state.visibility = View.VISIBLE

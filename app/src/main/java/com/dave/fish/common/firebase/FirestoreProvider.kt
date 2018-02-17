@@ -1,6 +1,5 @@
 package com.dave.fish.common.firebase
 
-import com.dave.fish.util.DLog
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
@@ -28,12 +27,8 @@ class FirestoreProvider {
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
                         success(it.result)
-                        it.result.forEach {
-                            DLog.w("id : ${it.id} => ${it.data}")
-                        }
                     } else {
                         fail(it.exception)
-                        DLog.e("error => ${it.exception}")
                     }
                 }
     }
@@ -52,7 +47,6 @@ class FirestoreProvider {
                 .first { it.id == id }
 
     }
-
 
     object Holder {
         val INSTANCE = FirestoreProvider()

@@ -69,7 +69,7 @@
 
     <!-- TITLE -->
     <string name="title_tip_info">해루질이란?</string>
-    <string name="title_tip_tide">물때표보기</string>
+    <string name="title_tip_tide">물때표보는법</string>
     <string name="title_tip_catch_table">월별조과표</string>
 
     <!-- TIPS INFO -->
@@ -77,6 +77,8 @@
     <string name="tip_info_detail">detail</string>
     <string name="tip_info_method">method</string>
     <string name="tip_info_warm">warn</string>
+
+    <string name="tip_catch_history_month">month</string>
 
     <!--    Permissions    -->
     <string name="permission_default_message">지도를 사용하기 위해 위치정보 권한이 필요합니다.\n설정 > 권한 > 위치권한 켜기를 해주세요.</string>

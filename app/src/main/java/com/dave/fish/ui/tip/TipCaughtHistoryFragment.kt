@@ -10,26 +10,25 @@ import com.dave.fish.R
 import com.dave.fish.common.extensions.TipDrawExt
 import com.dave.fish.common.firebase.FirestoreProvider
 import com.google.firebase.firestore.DocumentSnapshot
-import kotlinx.android.synthetic.main.fragment_tip_info.*
+import kotlinx.android.synthetic.main.fragment_tip_catch_table.*
 
 
 /**
  * Created by soul on 2018. 2. 16..
- * 해루질 기본 정보를 제공
- * TODO 유튜브, 해루질 장비, 방법
+ * 월별 조과표를 보여준다.
  */
-class TipInfoFragment : Fragment() {
+class TipCaughtHistoryFragment : Fragment() {
 
     private lateinit var mContext: Context
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-            inflater.inflate(R.layout.fragment_tip_info, container, false)
+            inflater.inflate(R.layout.fragment_tip_catch_table, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mContext = view.context
 
-        FirestoreProvider.instance.read("tip_info", {
+        FirestoreProvider.instance.read("tip_catch", {
             it?.forEach {
                 drawInfoView(it)
             }
@@ -38,20 +37,17 @@ class TipInfoFragment : Fragment() {
 
     private fun drawInfoView(item: DocumentSnapshot){
         when(item.id){
-            resources.getString(R.string.tip_info_info),
-            resources.getString(R.string.tip_info_warm),
-            resources.getString(R.string.tip_info_method) -> addViewToRoot(TipDrawExt.drawBasicView(mContext, item.data))
-            resources.getString(R.string.tip_info_detail) -> addViewToRoot(TipDrawExt.drawDetailView(mContext, item.data))
+            resources.getString(R.string.tip_catch_history_month) -> addViewToRoot(TipDrawExt.drawCaughtHistoryView(mContext, item.data))
         }
     }
 
     private fun addViewToRoot(view: View){
-        tip_info_container.addView(view)
+        tip_caught_history_container.addView(view)
     }
 
     companion object {
-        fun newInstance(): TipInfoFragment {
-            val fragment = TipInfoFragment()
+        fun newInstance(): TipCaughtHistoryFragment {
+            val fragment = TipCaughtHistoryFragment()
             val args = Bundle()
             fragment.arguments = args
             return fragment
