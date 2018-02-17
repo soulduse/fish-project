@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.dave.fish.R
 import com.dave.fish.common.Constants
+import com.dave.fish.common.FragmentProvider
 import com.dave.fish.ui.main.ViewPagerAdapter
 import com.dave.fish.ui.web.WebFragment
 import kotlinx.android.synthetic.main.fragment_tip.view.*
@@ -21,38 +22,29 @@ class KweatherFragment : Fragment() {
     private lateinit var fragmentKma: WebFragment
     private lateinit var fragmentMarinKma: WebFragment
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val rootView = inflater.inflate(R.layout.fragment_tip, container, false)
-        mContext = rootView.context
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+            inflater.inflate(R.layout.fragment_tip, container, false)
 
-        fragmentKma = instanceFragment(
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        mContext = view.context
+
+        fragmentKma = FragmentProvider.instanceFragment(
                 WebFragment.newInstance(),
                 Constants.KMA_M_URL
         )
 
-        fragmentMarinKma = instanceFragment(
+        fragmentMarinKma = FragmentProvider.instanceFragment(
                 WebFragment.newInstance(),
                 Constants.MARIN_KMA_M_URL
         )
 
-        rootView.tip_viewpager.adapter = ViewPagerAdapter(fragmentManager!!).apply {
+        view.tip_viewpager.adapter = ViewPagerAdapter(childFragmentManager).apply {
             addFragment(fragmentKma, getString(R.string.menu_weather_basic))
             addFragment(fragmentMarinKma, getString(R.string.menu_weather_sea))
         }
 
-        rootView.tip_viewpager.offscreenPageLimit = (rootView.tip_viewpager.adapter as ViewPagerAdapter).count
-        rootView.tabs_tip.setupWithViewPager(rootView.tip_viewpager)
-        return rootView
-    }
-
-    private fun <T : Fragment> instanceFragment(mFragment: T, url: String? = ""): T {
-        url?.let {
-            mFragment.arguments = Bundle().apply {
-                putString(Constants.BUNDLE_FRAGMENT_URL, url)
-            }
-        }
-
-        return mFragment
+        view.tip_viewpager.offscreenPageLimit = (view.tip_viewpager.adapter as ViewPagerAdapter).count
+        view.tabs_tip.setupWithViewPager(view.tip_viewpager)
     }
 
     companion object {

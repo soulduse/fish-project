@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.dave.fish.R
-import com.dave.fish.common.extensions.TipDrawExt
+import com.dave.fish.common.extensions.ViewDrawExt
 import com.dave.fish.common.firebase.FirestoreProvider
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.android.synthetic.main.fragment_tip_catch_table.*
@@ -37,7 +37,7 @@ class TipCaughtHistoryFragment : Fragment() {
 
     private fun drawInfoView(item: DocumentSnapshot){
         when(item.id){
-            resources.getString(R.string.tip_catch_history_month) -> addViewToRoot(TipDrawExt.drawCaughtHistoryView(mContext, item.data))
+            resources.getString(R.string.tip_catch_history_month) -> addViewToRoot(ViewDrawExt.drawCaughtHistoryView(mContext, item.data))
         }
     }
 

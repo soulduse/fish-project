@@ -19,11 +19,13 @@ import com.dave.fish.api.NetworkCallback
 import com.dave.fish.api.model.SidePanelData
 import com.dave.fish.api.model.SidePanelModel
 import com.dave.fish.common.Constants
+import com.dave.fish.common.FragmentProvider
 import com.dave.fish.common.PickTideDialog
 import com.dave.fish.db.RealmProvider
 import com.dave.fish.ui.CustomAreasSpinner
 import com.dave.fish.ui.alarm.AlarmFragment
 import com.dave.fish.ui.calendar.CalendarFragment
+import com.dave.fish.ui.fweather.FweatherFragment
 import com.dave.fish.ui.kweather.KweatherFragment
 import com.dave.fish.ui.main.menu.DrawerAdapter
 import com.dave.fish.ui.main.menu.MenuDrawer
@@ -53,8 +55,6 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
     // fragments
     private lateinit var fragmentCalendar: CalendarFragment
     private lateinit var fragmentMap: MapFragment
-    private lateinit var fragmentKma: WebFragment
-    private lateinit var fragmentMarinKma: WebFragment
     private lateinit var fragmentWindyty: WebFragment
     private lateinit var fragmentAlarm: AlarmFragment
 
@@ -115,42 +115,22 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
     }
 
     private fun initFragments() {
-        fragmentCalendar = instanceFragment(
+        fragmentCalendar = FragmentProvider.instanceFragment(
                 CalendarFragment.newInstance()
         )
 
-        fragmentMap = instanceFragment(
+        fragmentMap = FragmentProvider.instanceFragment(
                 MapFragment.newInstance()
         )
 
-        fragmentKma = instanceFragment(
-                WebFragment.newInstance(),
-                Constants.KMA_M_URL
-        )
-
-        fragmentMarinKma = instanceFragment(
-                WebFragment.newInstance(),
-                Constants.MARIN_KMA_M_URL
-        )
-
-        fragmentWindyty = instanceFragment(
+        fragmentWindyty = FragmentProvider.instanceFragment(
                 WebFragment.newInstance(),
                 Constants.FLOW_M_URL
         )
 
-        fragmentAlarm = instanceFragment(
+        fragmentAlarm = FragmentProvider.instanceFragment(
                 AlarmFragment.newInstance()
         )
-    }
-
-    private fun <T : Fragment> instanceFragment(mFragment: T, url: String? = ""): T {
-        url?.let {
-            mFragment.arguments = Bundle().apply {
-                putString(Constants.BUNDLE_FRAGMENT_URL, url)
-            }
-        }
-
-        return mFragment
     }
 
     private fun initToolbar() {
@@ -225,8 +205,8 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
         main_viewpager.adapter = ViewPagerAdapter(supportFragmentManager).apply {
             addFragment(fragmentCalendar, getString(R.string.menu_tide_calendar))
             addFragment(fragmentMap, getString(R.string.menu_map))
-            addFragment(KweatherFragment.newInstance(), "한국기상")
-            addFragment(fragmentWindyty, getString(R.string.menu_weather_flow))
+            addFragment(KweatherFragment.newInstance(), getString(R.string.menu_kweather))
+            addFragment(FweatherFragment.newInstance(), getString(R.string.menu_fweather))
             addFragment(fragmentAlarm, getString(R.string.menu_alarm))
             addFragment(TipMainFragment.newInstance(), getString(R.string.menu_tip))
         }
@@ -361,18 +341,18 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
                 AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
     }
 
-    override fun onPause() {
-        if(adView != null){
-            adView.pause()
-        }
-        super.onPause()
-    }
-
     override fun onResume() {
         super.onResume()
         if (adView != null) {
             adView.resume()
         }
+    }
+
+    override fun onPause() {
+        if(adView != null){
+            adView.pause()
+        }
+        super.onPause()
     }
 
     override fun onDestroy() {

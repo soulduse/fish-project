@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.dave.fish.R
-import com.dave.fish.common.extensions.TipDrawExt
+import com.dave.fish.common.extensions.ViewDrawExt
 import com.dave.fish.common.firebase.FirestoreProvider
 import com.google.firebase.firestore.DocumentSnapshot
 import kotlinx.android.synthetic.main.fragment_tip_info.*
@@ -40,8 +40,8 @@ class TipInfoFragment : Fragment() {
         when(item.id){
             resources.getString(R.string.tip_info_info),
             resources.getString(R.string.tip_info_warm),
-            resources.getString(R.string.tip_info_method) -> addViewToRoot(TipDrawExt.drawBasicView(mContext, item.data))
-            resources.getString(R.string.tip_info_detail) -> addViewToRoot(TipDrawExt.drawDetailView(mContext, item.data))
+            resources.getString(R.string.tip_info_method) -> addViewToRoot(ViewDrawExt.drawBasicView(mContext, item.data))
+            resources.getString(R.string.tip_info_detail) -> addViewToRoot(ViewDrawExt.drawDetailView(mContext, item.data))
         }
     }
 

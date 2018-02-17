@@ -12,6 +12,7 @@ object Constants {
     const val KMA_M_URL = "http://m.kma.go.kr/m/index.jsp"
     const val MARIN_KMA_M_URL = "http://marine.kma.go.kr/m/main.html"
     const val FLOW_M_URL = "https://www.windy.com/?36.408,127.895,6"
+    const val SEAWEED_URL = "https://magicseaweed.com/Southern-Japan-Surf-Chart/48/?type=swell&imageScale=swell"
 
     // Notification
     const val NOTIFICATION_CHANEL = "notification_chanel"
@@ -39,4 +40,5 @@ object Constants {
 
     // bundle
     const val BUNDLE_FRAGMENT_URL = "fragment_url"
+    const val BUNDLE_FRAGMENT_URLS = "fragment_urls"
 }

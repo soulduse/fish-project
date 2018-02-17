@@ -17,21 +17,20 @@ import kotlinx.android.synthetic.main.fragment_tip.view.*
 class TipMainFragment : Fragment() {
     private lateinit var mContext: Context
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val rootView = inflater.inflate(R.layout.fragment_tip, container, false)
-        rootView.tip_viewpager.adapter = ViewPagerAdapter(fragmentManager!!).apply {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+            inflater.inflate(R.layout.fragment_tip, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        view.tip_viewpager.adapter = ViewPagerAdapter(childFragmentManager).apply {
             addFragment(TipCaughtHistoryFragment.newInstance(), getString(R.string.title_tip_catch_table))
             addFragment(TipTideFragment.newInstance(), getString(R.string.title_tip_tide))
             addFragment(TipInfoFragment.newInstance(), getString(R.string.title_tip_info))
         }
 
-        rootView.tip_viewpager.offscreenPageLimit = (rootView.tip_viewpager.adapter as ViewPagerAdapter).count
-        rootView.tabs_tip.setupWithViewPager(rootView.tip_viewpager)
-        return rootView
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        view.tip_viewpager.offscreenPageLimit = (view.tip_viewpager.adapter as ViewPagerAdapter).count
+        view.tabs_tip.setupWithViewPager(view.tip_viewpager)
 
     }
 

@@ -11,15 +11,38 @@ import kotlin.test.assertEquals
 class JodaTimeTest {
 
     @Test
-    fun 서울과_주어진_문자열에서_데이트타임_구하기(){
-        val dateStr = "2017-10-10"
-        val seoul = DateTimeZone.forID("Asia/Seoul")
-        println("first date time "+DateTime(dateStr, seoul))
-        println("second date time "+DateTime(dateStr))
+    fun 날짜배열만들기() {
+        val currentDay = convertStringNumber(DateTime().dayOfMonth-10)
+
+
+        val urls = mutableListOf<String>()
+        for(i in 0 .. 24 step 2){
+            urls.add("http://www.imocwx.com/cwm/$currentDay/00/cwmsjp_${convertStringNumber(i)}.gif")
+        }
+
+        urls.forEach {
+            println(it)
+        }
+    }
+
+    fun convertStringNumber(num: Int): String{
+        return if (num < 10) {
+            "0$num"
+        } else {
+            num.toString()
+        }
     }
 
     @Test
-    fun 날짜비교_메소드(){
+    fun 서울과_주어진_문자열에서_데이트타임_구하기() {
+        val dateStr = "2017-10-10"
+        val seoul = DateTimeZone.forID("Asia/Seoul")
+        println("first date time " + DateTime(dateStr, seoul))
+        println("second date time " + DateTime(dateStr))
+    }
+
+    @Test
+    fun 날짜비교_메소드() {
         val seoul = DateTimeZone.forID("Asia/Seoul")
         val theTime = DateTime(seoul)
         val pattern = "yyyy-MM-dd"
