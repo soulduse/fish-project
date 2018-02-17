@@ -1,5 +1,6 @@
 package com.dave.fish.common.extensions
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Typeface
@@ -17,7 +18,18 @@ import org.jetbrains.anko.*
  * Created by soul on 2018. 2. 16..
  */
 
-object TipDrawExt {
+object ViewDrawExt {
+
+    fun drawImage(context: Context, imageUrls: Array<String>): View{
+        return context.UI {
+            verticalLayout {
+
+                imageUrls.forEach {
+                    imageView().wideShow(context, it)
+                }
+            }
+        }.view
+    }
 
     fun drawBasicView(context: Context, map: Map<String, Any>): View {
         return context.UI {
@@ -53,7 +65,7 @@ object TipDrawExt {
 
                 tableLayout {
                     tableRow {
-                        backgroundColor = resources.getColor(R.color.chart_marker_background)
+                        backgroundColor = context.resources.getColor(R.color.chart_marker_background)
                         textView {
                             text = "월"
                             typeface = Typeface.DEFAULT_BOLD
@@ -69,7 +81,7 @@ object TipDrawExt {
                     val caughtHistories = map["history"] as List<String>
                     caughtHistories.forEachIndexed { index, s ->
                         tableRow {
-                            background = resources.getDrawable(R.drawable.spinner_divider)
+                            background = context.resources.getDrawable(R.drawable.spinner_divider)
                             textView {
                                 text = "${index + 1}월"
                                 textSize = 15F
@@ -130,6 +142,7 @@ object TipDrawExt {
         }.view
     }
 
+    @SuppressLint("CheckResult")
     private fun ImageView.show(context: Context?, imageUrl: String = "") {
         if (imageUrl.isBlank()) return
 
@@ -144,7 +157,20 @@ object TipDrawExt {
 
         GlideApp.with(context)
                 .load(imageUrl)
-                .apply { RequestOptions().override(10, 10).centerCrop() }
+                .apply { RequestOptions().centerCrop() }
+                .into(this)
+    }
+
+    private fun ImageView.wideShow(context: Context?, imageUrl: String = "") {
+        if (imageUrl.isBlank()) return
+
+        if (context == null) return
+
+        if (context is Activity && ((context as Activity).isFinishing || (context as Activity).isDestroyed)) return
+
+        GlideApp.with(context)
+                .load(imageUrl)
+                .apply { RequestOptions().centerCrop() }
                 .into(this)
     }
 
