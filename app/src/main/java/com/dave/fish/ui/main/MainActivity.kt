@@ -24,6 +24,7 @@ import com.dave.fish.db.RealmProvider
 import com.dave.fish.ui.CustomAreasSpinner
 import com.dave.fish.ui.alarm.AlarmFragment
 import com.dave.fish.ui.calendar.CalendarFragment
+import com.dave.fish.ui.kweather.KweatherFragment
 import com.dave.fish.ui.main.menu.DrawerAdapter
 import com.dave.fish.ui.main.menu.MenuDrawer
 import com.dave.fish.ui.main.menu.SimpleItem
@@ -172,9 +173,8 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
         val menuList = arrayListOf(
                 createItemFor(MenuDrawer.INFO).setChecked(true),
                 createItemFor(MenuDrawer.MAP),
-                createItemFor(MenuDrawer.KMA),
-                createItemFor(MenuDrawer.MARIN_KMA),
-                createItemFor(MenuDrawer.CATCH),
+                createItemFor(MenuDrawer.KWEATHER),
+                createItemFor(MenuDrawer.FWEATHER),
                 createItemFor(MenuDrawer.ALARM),
                 createItemFor(MenuDrawer.TIP)
         )
@@ -225,8 +225,7 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
         main_viewpager.adapter = ViewPagerAdapter(supportFragmentManager).apply {
             addFragment(fragmentCalendar, getString(R.string.menu_tide_calendar))
             addFragment(fragmentMap, getString(R.string.menu_map))
-            addFragment(fragmentKma, getString(R.string.menu_weather_basic))
-            addFragment(fragmentMarinKma, getString(R.string.menu_weather_sea))
+            addFragment(KweatherFragment.newInstance(), "한국기상")
             addFragment(fragmentWindyty, getString(R.string.menu_weather_flow))
             addFragment(fragmentAlarm, getString(R.string.menu_alarm))
             addFragment(TipMainFragment.newInstance(), getString(R.string.menu_tip))
@@ -307,7 +306,7 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
         mainSpinner.apply {
             init(Constants.KEY_TIDE_MAIN_SPINNER)
             initListener {
-                if(!isFirstOpen){
+                if (!isFirstOpen) {
                     main_viewpager.adapter?.notifyDataSetChanged()
                 }
 
@@ -356,10 +355,31 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
     private fun enableScroll() {
         toolbarParams.scrollFlags =
                 AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
-                        AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+                AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
         toolbarLayoutParams.scrollFlags =
                 AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
-                        AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+                AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
+    }
+
+    override fun onPause() {
+        if(adView != null){
+            adView.pause()
+        }
+        super.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (adView != null) {
+            adView.resume()
+        }
+    }
+
+    override fun onDestroy() {
+        if (adView != null) {
+            adView.destroy()
+        }
+        super.onDestroy()
     }
 
     override fun onBackPressed() {
