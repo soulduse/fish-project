@@ -65,25 +65,38 @@ class FweatherFragment : Fragment() {
     }
 
     private fun getHeightUrls(): Array<String> {
-        val currentDay = convertString(DateTime().dayOfMonth)
-        val urls = (0..24 step 2).map { "http://www.imocwx.com/cwm/$currentDay/00/cwmsjp_${convertString(it)}.gif" }
+        val currentDay = convertString(DateTime().dayOfMonth-1)
+        val urls = (0..24 step 2).map { "http://www.imocwx.com/cwm/$currentDay/00/cwmsjp_${convertString(it)}.gif${getSideCode(DateType.DAY)}" }
         return urls.toTypedArray()
     }
 
     private fun getMeasureUrls(): Array<String> {
-        val urls = (0..26).map { "http://www.imocwx.com/guid/gd1${convertString(it)}sjp.gif" }
+        val urls = (0..26).map { "http://www.imocwx.com/guid/gd1${convertString(it)}sjp.gif${getSideCode(DateType.DAY)}" }
         return urls.toTypedArray()
     }
 
     private fun getRainUrls(): Array<String> {
-        val urls = (0..26).map { "http://www.imocwx.com/guid/gd0${convertString(it)}sjp.gif" }
+        val urls = (0..26).map { "http://www.imocwx.com/guid/gd0${convertString(it)}sjp.gif${getSideCode(DateType.DAY)}" }
         return urls.toTypedArray()
     }
 
     private fun convertString(num: Int): String =
             if (num < 10) { "0$num" } else { num.toString() }
 
+    private fun getSideCode(type: DateType): String{
+        val currentDate = DateTime()
+        val currentPatternDate = when(type){
+            DateType.DAY -> currentDate.toString("yyyyMMdd")
+            DateType.HOUR -> currentDate.toString("yyyyMMddHH")
+            DateType.MINUTE -> currentDate.toString("yyyyMMddHHmm")
+        }
 
+        return "?sidecode=$currentPatternDate"
+    }
+
+    enum class DateType{
+        DAY, HOUR, MINUTE
+    }
 
     companion object {
         fun newInstance(): FweatherFragment {

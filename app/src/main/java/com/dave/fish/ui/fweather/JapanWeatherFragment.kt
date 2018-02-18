@@ -39,7 +39,6 @@ class JapanWeatherFragment : Fragment() {
         val images = arguments?.getStringArray(Constants.BUNDLE_FRAGMENT_URLS)
         val items: List<WeatherRepo> = images?.map { WeatherRepo(imageUrl = it, title = "") }!!.toList()
 
-        DLog.w("items value --> ${items.joinToString { "title : ${it.title}, url : ${it.imageUrl}" }}")
         with(adapter){
             setItems(items)
         }

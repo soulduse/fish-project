@@ -15,6 +15,9 @@ import com.dave.fish.util.*
 import com.dave.fish.util.DateUtil.DATE_PATTERN_YEAR_MONTH_DAY
 import kotlinx.android.synthetic.main.activity_tide_detail.*
 import org.joda.time.DateTime
+import android.content.Intent
+
+
 
 /**
  * Created by soul on 2017. 10. 3..
@@ -37,6 +40,21 @@ class TideDetailActivity : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tide_detail)
+
+        tv_share_detail.setOnClickListener {
+            val intent = Intent(android.content.Intent.ACTION_SEND)
+            intent.type = "text/plain"
+
+            val subject = "해루질러 물때정보"
+            val description = "테스트"
+            intent.putExtra(Intent.EXTRA_SUBJECT, subject)
+            intent.putExtra(Intent.EXTRA_TEXT, description + "\n 자세히 보기 \n")
+
+            // Title of intent
+            val chooser = Intent.createChooser(intent, "친구에게 공유하기")
+            startActivity(chooser)
+        }
+
         initRealmData()
         initLayout()
     }

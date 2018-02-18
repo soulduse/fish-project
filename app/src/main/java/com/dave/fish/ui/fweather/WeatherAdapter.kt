@@ -1,14 +1,11 @@
 package com.dave.fish.ui.fweather
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.dave.fish.R
 import com.dave.fish.ui.GlideApp
-import com.dave.fish.util.DLog
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_weather.*
 
@@ -19,13 +16,10 @@ class WeatherAdapter : RecyclerView.Adapter<WeatherAdapter.RepositoryHolder>() {
 
     private var items: MutableList<WeatherRepo> = mutableListOf()
 
-    private val placeholder = ColorDrawable(Color.GRAY)
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)
             = RepositoryHolder(parent)
 
     override fun onBindViewHolder(holder: RepositoryHolder, position: Int) {
-        DLog.w("items data --> ${items[position].imageUrl}, size: ${items.size}")
 
         items[position].let {repo ->
 

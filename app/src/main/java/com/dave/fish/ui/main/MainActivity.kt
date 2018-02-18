@@ -1,10 +1,10 @@
 package com.dave.fish.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
 import android.support.design.widget.AppBarLayout
-import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
@@ -31,6 +31,7 @@ import com.dave.fish.ui.main.menu.DrawerAdapter
 import com.dave.fish.ui.main.menu.MenuDrawer
 import com.dave.fish.ui.main.menu.SimpleItem
 import com.dave.fish.ui.map.MapFragment
+import com.dave.fish.ui.setting.SettingsActivity
 import com.dave.fish.ui.tip.TipMainFragment
 import com.dave.fish.ui.web.WebFragment
 import com.dave.fish.util.DLog
@@ -87,7 +88,7 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
     }
 
     private fun initAd() {
-        MobileAds.initialize(this, getString(R.string.admob_app_id))
+
 
         val adRequest = AdRequest.Builder().build()
 
@@ -101,6 +102,7 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
     }
 
     private fun initInterstitialAd(adRequest: AdRequest) {
+        MobileAds.initialize(this, getString(R.string.admob_app_id))
         mInterstitialAd = InterstitialAd(this).apply {
             adUnitId = getString(R.string.admob_interstitial_id)
             loadAd(adRequest)
@@ -211,8 +213,6 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
             addFragment(TipMainFragment.newInstance(), getString(R.string.menu_tip))
         }
 
-        val viewPagerCount = (main_viewpager.adapter as ViewPagerAdapter).count
-        main_viewpager.offscreenPageLimit = viewPagerCount
     }
 
     override fun onItemSelected(position: Int) {
@@ -253,6 +253,7 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
         }
 
         side_tide_container.setOnClickListener(setOnClickPickTide)
+        app_settings.setOnClickListener(setOnClickSettingsApp)
     }
 
     private fun setSideTide(it: SidePanelData) {
@@ -293,6 +294,10 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
                 isFirstOpen = false
             }
         }
+    }
+
+    private val setOnClickSettingsApp = View.OnClickListener {
+        startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
     }
 
     private val setOnClickPickTide = View.OnClickListener {
@@ -341,24 +346,8 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
                 AppBarLayout.LayoutParams.SCROLL_FLAG_EXIT_UNTIL_COLLAPSED
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (adView != null) {
-            adView.resume()
-        }
-    }
-
-    override fun onPause() {
-        if(adView != null){
-            adView.pause()
-        }
-        super.onPause()
-    }
-
     override fun onDestroy() {
-        if (adView != null) {
-            adView.destroy()
-        }
+        RealmProvider.instance.closeRealm()
         super.onDestroy()
     }
 

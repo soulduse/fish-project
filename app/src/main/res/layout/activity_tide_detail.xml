@@ -27,9 +27,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="상세보기"
+                android:text="@string/toolbar_title_detail"
                 android:textColor="@color/colorSecondaryText"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
         </android.support.v7.widget.Toolbar>
@@ -262,6 +262,7 @@
             </TableRow>
 
             <TableRow>
+
                 <TextView
                     android:id="@+id/tv_detail_wave"
                     android:layout_width="wrap_content"
@@ -284,6 +285,7 @@
             <TableRow
                 android:background="@color/chart_marker_background"
                 android:minHeight="@dimen/detail_title_cell_height">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -306,6 +308,7 @@
             </TableRow>
 
             <TableRow>
+
                 <TextView
                     android:id="@+id/tv_detail_wind_speed"
                     android:layout_width="wrap_content"
@@ -326,6 +329,22 @@
             </TableRow>
         </TableLayout>
 
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/tv_share_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/selector_record_location"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="공유하기"
+            android:textColor="@color/tide_white"
+            android:textSize="@dimen/fragment_one_text_size"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.9" />
     </android.support.constraint.ConstraintLayout>
-
 </android.support.design.widget.CoordinatorLayout>
