@@ -42,4 +42,6 @@
     <dimen name="tv_map_detail_margin">10dp</dimen>
     <dimen name="tv_map_detail_size">20dp</dimen>
     <dimen name="tv_map_record_size">20sp</dimen>
+
+    <dimen name="side_icon_size">120dp</dimen>
 </resources>

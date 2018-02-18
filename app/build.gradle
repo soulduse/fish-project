@@ -59,7 +59,7 @@ dependencies {
     // Google Lib
     implementation "com.google.android.gms:play-services-maps:$googleLibVersion"
     implementation "com.google.android.gms:play-services-location:$googleLibVersion"
-    implementation 'com.google.android:flexbox:0.3.2'
+    implementation 'com.android.billingclient:billing:1.0'
 
     // Main UI Lib
     implementation "com.yarolegovich:sliding-root-nav:$slideRootVersion"

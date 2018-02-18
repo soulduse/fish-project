@@ -9,9 +9,6 @@ import android.widget.ImageView
 import com.bumptech.glide.request.RequestOptions
 import com.dave.fish.R
 import com.dave.fish.ui.GlideApp
-import com.google.android.flexbox.AlignItems
-import com.google.android.flexbox.FlexWrap
-import com.google.android.flexbox.JustifyContent
 import org.jetbrains.anko.*
 
 /**
@@ -20,12 +17,46 @@ import org.jetbrains.anko.*
 
 object ViewDrawExt {
 
-    fun drawImage(context: Context, imageUrls: Array<String>): View{
+    fun drawImage(context: Context, imageUrls: Array<String>): View {
         return context.UI {
             verticalLayout {
-
                 imageUrls.forEach {
                     imageView().wideShow(context, it)
+                }
+            }
+        }.view
+    }
+
+    fun drawImage(context: Context, imageUrl: String): View {
+        return context.UI {
+            verticalLayout {
+                imageView().wideShow(context, imageUrl)
+            }
+        }.view
+    }
+
+    fun drawTitle(context: Context, contents: String): View {
+        return context.UI {
+            verticalLayout {
+                textView {
+                    typeface = Typeface.DEFAULT_BOLD
+                    textSize = 26F
+                    text = replacePrettyStr(contents)
+                }.lparams {
+                    margin = dip(15)
+                }
+            }
+        }.view
+    }
+
+    fun drawText(context: Context, contents: String): View {
+        return context.UI {
+            verticalLayout {
+                textView {
+                    text = replacePrettyStr(contents)
+                    singleLine = false
+                }.lparams {
+                    margin = dip(15)
                 }
             }
         }.view
@@ -127,17 +158,8 @@ object ViewDrawExt {
                     margin = dip(15)
                 }
 
-                flexboxLayout {
-                    flexWrap = FlexWrap.WRAP
-                    alignItems = AlignItems.BASELINE
-                    justifyContent = JustifyContent.SPACE_AROUND
-
-                    val images = map["images"] as List<String>
-
-                    images.forEach {
-                        imageView().show(context, it)
-                    }
-                }
+                val images = map["image"] as String
+                imageView().wideShow(context, images)
             }
         }.view
     }

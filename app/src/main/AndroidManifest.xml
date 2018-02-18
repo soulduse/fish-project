@@ -39,6 +39,7 @@
         </activity>
 
         <activity android:name=".ui.main.MainActivity" />
+        <activity android:name=".ui.setting.SettingsActivity" />
         <activity android:name=".ui.calendar.TideDetailActivity" />
         <activity android:name=".ui.map.detail.DetailMapActivity" />
         <activity android:name=".ui.map.record.RecordActivity" />
