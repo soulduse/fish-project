@@ -11,6 +11,7 @@ import com.android.billingclient.api.BillingClient.BillingResponse
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
+import com.dave.fish.common.firebase.FireEventProvider
 
 
 /**
@@ -65,6 +66,7 @@ class SettingsActivity: AppCompatActivity(), PurchasesUpdatedListener {
     }
 
     private fun sendEmail(){
+        FireEventProvider.trackEvent(FireEventProvider.SETTING_SEND_MAIL)
         val intent = Intent(Intent.ACTION_SENDTO).apply {
             data = Uri.parse("mailto:")
             putExtra(Intent.EXTRA_EMAIL, arrayOf(resources.getString(R.string.email_address)))

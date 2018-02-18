@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import com.dave.fish.MyApplication
 import com.dave.fish.R
 import com.dave.fish.common.Constants
+import com.dave.fish.common.firebase.FireEventProvider
 import com.dave.fish.db.RealmProvider
 import com.dave.fish.db.model.LocationModel
 import com.dave.fish.db.model.SpinnerSecondModel
@@ -67,6 +68,7 @@ class MapFragment : Fragment(),
         initRecord()
 
         btn_show_record.setOnClickListener {
+            FireEventProvider.trackEvent(FireEventProvider.MAP_SHOW_RECORDED)
             startActivity(Intent(activity, RecordActivity::class.java))
         }
 
@@ -98,9 +100,11 @@ class MapFragment : Fragment(),
             btn_start_record.isSelected = isRecorded.not()
 
             if (isRecorded) {
+                FireEventProvider.trackEvent(FireEventProvider.MAP_STOP_RECORD)
                 activity?.stopService(intentService)
                 btn_start_record.text = resources.getString(R.string.record_start)
             } else {
+                FireEventProvider.trackEvent(FireEventProvider.MAP_START_RECORD)
                 val selectedSecondSpinner = RealmProvider.instance.getSecondSpinnerItem()
                 with(intentService){
                     val currentDate = DateTime.now()

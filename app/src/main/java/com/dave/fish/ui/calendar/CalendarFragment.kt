@@ -16,6 +16,7 @@ import com.dave.fish.api.ApiProvider
 import com.dave.fish.api.Network
 import com.dave.fish.api.NetworkCallback
 import com.dave.fish.api.model.WeeklyModel
+import com.dave.fish.common.firebase.FireEventProvider
 import com.dave.fish.db.RealmProvider
 import com.dave.fish.db.model.TideWeeklyModel
 import com.dave.fish.ui.GlideApp
@@ -122,6 +123,7 @@ class CalendarFragment : Fragment() {
                 val date = DateTime(p1.year, p1.month, p1.day, 0, 0, 0).toString("yyyy-MM-dd")
                 val intent = Intent(mContext, TideDetailActivity::class.java)
                 intent.putExtra(Global.INTENT_DATE, date)
+                FireEventProvider.trackEvent(FireEventProvider.DETAIL_SELECT_CALENDAR, date)
                 activity?.startActivity(intent)
             }
         })

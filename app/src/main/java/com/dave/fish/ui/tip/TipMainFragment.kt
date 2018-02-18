@@ -3,10 +3,12 @@ package com.dave.fish.ui.tip
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.dave.fish.R
+import com.dave.fish.common.firebase.FireEventProvider
 import com.dave.fish.ui.main.ViewPagerAdapter
 import kotlinx.android.synthetic.main.fragment_tip.view.*
 
@@ -32,6 +34,17 @@ class TipMainFragment : Fragment() {
         view.tip_viewpager.offscreenPageLimit = (view.tip_viewpager.adapter as ViewPagerAdapter).count
         view.tabs_tip.setupWithViewPager(view.tip_viewpager)
 
+        view.tip_viewpager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                FireEventProvider.trackEvent(FireEventProvider.TIP_ARRAY[position])
+            }
+        })
     }
 
     companion object {

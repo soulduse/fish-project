@@ -71,6 +71,7 @@
         android:layout_height="40dp" />
 
     <ImageView
+        android:id="@+id/app_icon"
         android:layout_width="@dimen/side_icon_size"
         android:layout_height="@dimen/side_icon_size"
         android:layout_gravity="left"

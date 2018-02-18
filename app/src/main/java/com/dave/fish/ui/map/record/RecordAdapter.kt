@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.dave.fish.R
 import com.dave.fish.common.Constants
+import com.dave.fish.common.firebase.FireEventProvider
 import com.dave.fish.db.model.LocationModel
 import com.dave.fish.ui.map.GeoUtil
 import com.dave.fish.ui.map.detail.DetailMapActivity
@@ -48,8 +49,7 @@ class RecordAdapter : RealmRecyclerViewAdapter<LocationModel, RecordAdapter.View
                                 )
 
                         goto_mapview.setOnClickListener {
-                            DLog.w("clicked id value --> $id, address = $address")
-
+                            FireEventProvider.trackEvent(FireEventProvider.MAP_SHOW_DETAIL_RECORDED)
                             val detailMapIntent = Intent(context, DetailMapActivity::class.java).apply {
                                 putExtra(Constants.EXTRA_LOCATION_MODEL_IDX, id)
                                 putExtra(Constants.EXTRA_LOCATION_LAT, location.latitude)

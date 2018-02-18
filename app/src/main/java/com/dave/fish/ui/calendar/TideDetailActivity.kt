@@ -16,7 +16,7 @@ import com.dave.fish.util.DateUtil.DATE_PATTERN_YEAR_MONTH_DAY
 import kotlinx.android.synthetic.main.activity_tide_detail.*
 import org.joda.time.DateTime
 import android.content.Intent
-
+import com.dave.fish.common.firebase.FireEventProvider
 
 
 /**
@@ -107,6 +107,7 @@ class TideDetailActivity : AppCompatActivity(){
     private fun initToolbar() {
         setSupportActionBar(toolbar)
         toolbar_title.text = tideWeeklyItem.obsPostName + " " + tideWeeklyItem.dateSun
+        FireEventProvider.trackEvent(FireEventProvider.DETAIL_SELECTED_CALENDAR, toolbar_title.text.toString())
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)

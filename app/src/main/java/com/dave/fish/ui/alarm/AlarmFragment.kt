@@ -18,6 +18,7 @@ import android.view.ViewGroup
 import android.widget.NumberPicker
 import com.dave.fish.R
 import com.dave.fish.common.Constants
+import com.dave.fish.common.firebase.FireEventProvider
 import com.dave.fish.util.PreferenceKeys
 import com.dave.fish.util.getDefaultSharedPreferences
 import com.dave.fish.util.put
@@ -96,6 +97,7 @@ class AlarmFragment : Fragment() {
         }
 
         tv_alarm_music.setOnClickListener {
+            FireEventProvider.trackEvent(FireEventProvider.ALARM_CHANGE_MUSIC)
             val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {
                 putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, mContext.getString(R.string.alarm_list_title))  // 제목을 넣는다.
                 putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false)  // 무음을 선택 리스트에서 제외
@@ -139,6 +141,7 @@ class AlarmFragment : Fragment() {
         toast(resources.getString(R.string.stopped_alarm))
         pendingIntent?.cancel()
         alarmMgr.cancel(pendingIntent)
+        FireEventProvider.trackEvent(FireEventProvider.ALARM_STOP)
     }
 
     private fun startAlarm() {
@@ -157,6 +160,8 @@ class AlarmFragment : Fragment() {
                 getAlarmTime(),
                 pendingIntent!!
         )
+
+        FireEventProvider.trackEvent(FireEventProvider.ALARM_START)
     }
 
     private fun initAlarmIntentData() {
@@ -187,6 +192,7 @@ class AlarmFragment : Fragment() {
             sharedPreference.put(PreferenceKeys.KEY_SOUND_DURATION, SOUND_DURATIONS[idxDuration])
             tv_sound_duration.text = getSecondOrMinute(SOUND_DURATIONS[idxDuration])
             idxDuration++
+            FireEventProvider.trackEvent(FireEventProvider.ALARM_CHANGE_DURATION, tv_sound_duration.text.toString())
         }
     }
 
@@ -222,6 +228,8 @@ class AlarmFragment : Fragment() {
         )
 
         result_time_detail.text = DateTime(getAlarmTime()).toString("MM/dd (E) kk:mm")
+
+        FireEventProvider.trackEvent(FireEventProvider.ALARM_DRAG_TIME, result_time.text.toString()+"/"+result_time_detail.text.toString())
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {

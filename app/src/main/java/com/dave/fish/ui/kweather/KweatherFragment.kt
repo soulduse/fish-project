@@ -3,12 +3,14 @@ package com.dave.fish.ui.kweather
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.dave.fish.R
 import com.dave.fish.common.Constants
 import com.dave.fish.common.FragmentProvider
+import com.dave.fish.common.firebase.FireEventProvider
 import com.dave.fish.ui.main.ViewPagerAdapter
 import com.dave.fish.ui.web.WebFragment
 import kotlinx.android.synthetic.main.fragment_tip.view.*
@@ -43,7 +45,18 @@ class KweatherFragment : Fragment() {
             addFragment(fragmentMarinKma, getString(R.string.menu_weather_sea))
         }
 
-        view.tip_viewpager.offscreenPageLimit = (view.tip_viewpager.adapter as ViewPagerAdapter).count
+        view.tip_viewpager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                FireEventProvider.trackEvent(FireEventProvider.K_WEATHER_ARRAY[position])
+            }
+        })
+
         view.tabs_tip.setupWithViewPager(view.tip_viewpager)
     }
 

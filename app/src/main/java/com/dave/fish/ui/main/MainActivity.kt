@@ -21,6 +21,7 @@ import com.dave.fish.api.model.SidePanelModel
 import com.dave.fish.common.Constants
 import com.dave.fish.common.FragmentProvider
 import com.dave.fish.common.PickTideDialog
+import com.dave.fish.common.firebase.FireEventProvider
 import com.dave.fish.db.RealmProvider
 import com.dave.fish.ui.CustomAreasSpinner
 import com.dave.fish.ui.alarm.AlarmFragment
@@ -88,8 +89,6 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
     }
 
     private fun initAd() {
-
-
         val adRequest = AdRequest.Builder().build()
 
         initBannerAd(adRequest)
@@ -185,6 +184,7 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
             override fun onPageSelected(position: Int) {
                 toolbar.title = main_viewpager.adapter?.getPageTitle(position)
                 menuAdapter.setSelected(position)
+                FireEventProvider.trackEvent(FireEventProvider.TAB_ARRAY[position])
                 when (position) {
                     PAGE_CALENDAR -> {
                         visibleCollapsingToolbar()
@@ -254,6 +254,7 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
 
         side_tide_container.setOnClickListener(setOnClickPickTide)
         app_settings.setOnClickListener(setOnClickSettingsApp)
+        app_icon.setOnClickListener { FireEventProvider.trackEvent(FireEventProvider.ICON) }
     }
 
     private fun setSideTide(it: SidePanelData) {
@@ -297,10 +298,12 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
     }
 
     private val setOnClickSettingsApp = View.OnClickListener {
+        FireEventProvider.trackEvent(FireEventProvider.TAB_SETTING)
         startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
     }
 
     private val setOnClickPickTide = View.OnClickListener {
+        FireEventProvider.trackEvent(FireEventProvider.SIDE_SPINNER)
         pickTideDialog.show(supportFragmentManager, "pickTide")
     }
 

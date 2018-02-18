@@ -40,5 +40,7 @@ class MyApplication : Application() {
             private set
 
         val DEBUG = BuildConfig.DEBUG
+
+        fun getGlobalContext(): MyApplication = context as MyApplication
     }
 }

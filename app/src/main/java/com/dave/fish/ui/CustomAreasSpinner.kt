@@ -16,6 +16,7 @@ import com.dave.fish.api.NetworkCallback
 import com.dave.fish.api.model.SidePanelData
 import com.dave.fish.api.model.SidePanelModel
 import com.dave.fish.common.Constants
+import com.dave.fish.common.firebase.FireEventProvider
 import com.dave.fish.db.RealmListener
 import com.dave.fish.db.RealmProvider
 import com.dave.fish.db.model.SelectItemModel
@@ -132,16 +133,21 @@ class CustomAreasSpinner : ConstraintLayout {
 
                         spinner_map.setSelection(0)
                     }
+                    FireEventProvider.trackEvent(FireEventProvider.MAIN_FIRST_SPINNER, selectedDoNm)
                 }
 
                 spinner_map->{
+                    val selectedLoc = spinner_loc.selectedItem.toString()
+                    val selectedMap = spinner_map.selectedItem.toString()
                     RealmProvider.instance
                             .setSelectSpinner(
-                                    spinner_loc.selectedItem.toString(),
-                                    spinner_map.selectedItem.toString(),
+                                    selectedLoc,
+                                    selectedMap,
                                     keyTide,
                                     listenerChangedSpinner
                             )
+
+                    FireEventProvider.trackEvent(FireEventProvider.MAIN_SECOND_SPINNER, selectedLoc+"/"+selectedMap)
                 }
             }
         }
