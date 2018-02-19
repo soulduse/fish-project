@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.location.Location
+import android.support.design.widget.FloatingActionButton
 import com.dave.fish.common.DistanceUtil
 import com.dave.fish.util.DLog
 import com.dave.fish.util.permission.PermissionCheck
@@ -28,6 +29,7 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
     private var lon = 0.0
     private var locationValues: MutableList<LatLng> = mutableListOf()
     private var isMyLocation = false
+    private var changeMapTypeBtn: FloatingActionButton? = null
 
     fun initMap(mapView : MapView, lat: Double, lon:Double): GoogleMapUtil {
         mContext = mapView.context!!
@@ -44,6 +46,11 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
         this.lat = lat
         this.lon = lon
 
+        return this@GoogleMapUtil
+    }
+
+    fun setChangeButton(changeMapTypeBtn: FloatingActionButton): GoogleMapUtil {
+        this.changeMapTypeBtn = changeMapTypeBtn
         return this@GoogleMapUtil
     }
 
@@ -81,6 +88,13 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
         mMap = map
         val mLatLng = LatLng(lat, lon)
         mMap.run {
+            changeMapTypeBtn?.setOnClickListener {
+                mapType = if(mapType ==  GoogleMap.MAP_TYPE_HYBRID){
+                    GoogleMap.MAP_TYPE_NORMAL
+                } else {
+                    GoogleMap.MAP_TYPE_HYBRID
+                }
+            }
             setOnMyLocationButtonClickListener(this@GoogleMapUtil)
             setOnMyLocationClickListener(this@GoogleMapUtil)
             setMinZoomPreference(7.0f)
@@ -106,8 +120,9 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
         enableMyLocation()
     }
 
-    fun initPolyLine(locationValues: List<LatLng>){
+    fun initPolyLine(locationValues: List<LatLng>): GoogleMapUtil{
         this.locationValues = locationValues.toMutableList()
+        return this
     }
 
     private fun drawPolyLine(){

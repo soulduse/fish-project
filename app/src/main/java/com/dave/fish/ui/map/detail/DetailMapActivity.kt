@@ -8,6 +8,7 @@ import com.dave.fish.common.Constants
 import com.dave.fish.db.RealmProvider
 import com.dave.fish.db.model.LocationModel
 import com.dave.fish.ui.map.GoogleMapUtil
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.activity_map_detail.*
@@ -48,7 +49,7 @@ class DetailMapActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        if(!isIdxEmpty()){
+        if (!isIdxEmpty()) {
             toolbar_delete.visibility = View.VISIBLE
         }
     }
@@ -57,22 +58,24 @@ class DetailMapActivity : AppCompatActivity() {
         if (isIdxEmpty()) {
             GoogleMapUtil.instance
                     .initMap(mapFragment, lat, lon)
+                    .setChangeButton(changeMapTypeBtn)
         } else {
             val latLonList = getLocations()
             latLonList?.let {
                 GoogleMapUtil.instance
                         .initMap(mapFragment, lat, lon)
+                        .setChangeButton(changeMapTypeBtn)
                         .initPolyLine(it)
             }
 
             toolbar_delete.setOnClickListener {
-                alert("정말로 기록된 위치를 삭제하시겠습니까?"){
+                alert("정말로 기록된 위치를 삭제하시겠습니까?") {
                     yesButton {
                         RealmProvider.instance.deleteData(LocationModel::class.java, "id", idx)
                         toast("삭제 되었습니다.")
                         finish()
                     }
-                    noButton {  }
+                    noButton { }
                 }.show()
             }
         }
