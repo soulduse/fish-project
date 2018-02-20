@@ -13,6 +13,7 @@ import com.dave.fish.common.FragmentProvider
 import com.dave.fish.common.firebase.FireEventProvider
 import com.dave.fish.ui.main.ViewPagerAdapter
 import com.dave.fish.ui.web.WebFragment
+import com.dave.fish.util.DLog
 import kotlinx.android.synthetic.main.fragment_tip.view.*
 import org.joda.time.DateTime
 
@@ -34,7 +35,6 @@ class FweatherFragment : Fragment() {
         mContext = view.context
 
         initFragments()
-
         view.tip_viewpager.adapter = ViewPagerAdapter(childFragmentManager).apply {
             addFragment(fragmentHeight, getString(R.string.weather_height_japan))
             addFragment(fragmentRain, getString(R.string.weather_cloud_japan))
@@ -58,6 +58,13 @@ class FweatherFragment : Fragment() {
         })
     }
 
+    /**
+     * TODO HeightURL이라도 변경해서 보여주기 또는 모두 Jsoup 파싱하기
+     * val fWeatherRepos = mContext.getDefaultSharedPreferences().getString(PreferenceKeys.KEY_F_WEATHER_JSOUP_LIST, null)
+     * val gson = Gson()
+     * val items = gson.fromJson(fWeatherRepos, Array<WeatherRepo>::class.java).toList()
+     */
+
     private fun initFragments() {
         fragmentHeight = FragmentProvider.instanceFragment(
                 JapanWeatherFragment.newInstance(),
@@ -79,9 +86,21 @@ class FweatherFragment : Fragment() {
     }
 
     private fun getHeightUrls(): Array<String> {
-        val currentDay = convertString(DateTime().dayOfMonth-1)
+        val settingDay = getSettingDay()
+        DLog.w("settingDay 2 --> $settingDay")
+        val currentDay = convertString(settingDay)
         val urls = (0..24 step 2).map { "http://www.imocwx.com/cwm/$currentDay/00/cwmsjp_${convertString(it)}.gif${getSideCode(DateType.DAY)}" }
         return urls.toTypedArray()
+    }
+
+    private fun getSettingDay(): Int {
+        val currentDate = DateTime.now()
+        var settingDay = currentDate.dayOfMonth
+        DLog.w("settingDay hourOfDay --> ${currentDate.hourOfDay}")
+        if (currentDate.hourOfDay < 12) {
+            settingDay -= 1
+        }
+        return settingDay
     }
 
     private fun getMeasureUrls(): Array<String> {

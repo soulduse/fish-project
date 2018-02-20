@@ -38,10 +38,10 @@ class TipInfoFragment : Fragment() {
 
     private fun drawInfoView(item: DocumentSnapshot){
         when(item.id){
-            resources.getString(R.string.tip_info_info),
-            resources.getString(R.string.tip_info_warm),
-            resources.getString(R.string.tip_info_method) -> addViewToRoot(ViewDrawExt.drawBasicView(mContext, item.data))
-            resources.getString(R.string.tip_info_detail) -> addViewToRoot(ViewDrawExt.drawDetailView(mContext, item.data))
+            mContext.resources.getString(R.string.tip_info_info),
+            mContext.resources.getString(R.string.tip_info_warm),
+            mContext.resources.getString(R.string.tip_info_method) -> addViewToRoot(ViewDrawExt.drawBasicView(mContext, item.data))
+            mContext.resources.getString(R.string.tip_info_detail) -> addViewToRoot(ViewDrawExt.drawDetailView(mContext, item.data))
         }
     }
 
