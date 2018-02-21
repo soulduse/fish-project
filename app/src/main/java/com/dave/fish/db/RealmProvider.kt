@@ -135,7 +135,7 @@ class RealmProvider {
                 .findAll()
     }
 
-    fun findTideWeekly(key: String) : TideWeeklyModel {
+    fun findTideWeekly(key: String) : TideWeeklyModel? {
         val realm = getRealm()
         return realm.where(TideWeeklyModel::class.java)
                 .equalTo("key", key)
