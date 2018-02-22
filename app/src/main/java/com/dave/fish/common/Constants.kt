@@ -39,6 +39,7 @@ object Constants {
     const val INTENT_FILTER_ALARM_ACTION = "FILTER_ALARM_ACTION"
 
     // bundle
+    const val BUNDLE_FRAGMENT_URL_TITLE = "FRAGMENT_URL_TITLE"
     const val BUNDLE_FRAGMENT_URL = "fragment_url"
     const val BUNDLE_FRAGMENT_URLS = "fragment_urls"
 }

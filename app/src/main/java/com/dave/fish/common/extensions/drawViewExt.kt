@@ -4,12 +4,14 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Typeface
+import android.support.v4.app.Fragment
 import android.view.View
 import android.widget.ImageView
 import com.bumptech.glide.request.RequestOptions
 import com.dave.fish.R
 import com.dave.fish.ui.GlideApp
 import org.jetbrains.anko.*
+import org.jetbrains.anko.support.v4.UI
 
 /**
  * Created by soul on 2018. 2. 16..
@@ -17,17 +19,7 @@ import org.jetbrains.anko.*
 
 object ViewDrawExt {
 
-    fun drawImage(context: Context, imageUrls: Array<String>): View {
-        return context.UI {
-            verticalLayout {
-                imageUrls.forEach {
-                    imageView().wideShow(context, it)
-                }
-            }
-        }.view
-    }
-
-    fun drawImage(context: Context, imageUrl: String): View {
+    fun drawImage(context: Fragment, imageUrl: String): View {
         return context.UI {
             verticalLayout {
                 imageView().wideShow(context, imageUrl)
@@ -140,7 +132,7 @@ object ViewDrawExt {
         }.view
     }
 
-    fun drawDetailView(context: Context, map: Map<String, Any>): View {
+    fun drawDetailView(context: Fragment, map: Map<String, Any>): View {
         return context.UI {
             verticalLayout {
                 textView {
@@ -183,12 +175,10 @@ object ViewDrawExt {
                 .into(this)
     }
 
-    private fun ImageView.wideShow(context: Context?, imageUrl: String = "") {
+    private fun ImageView.wideShow(context: Fragment?, imageUrl: String = "") {
         if (imageUrl.isBlank()) return
 
         if (context == null) return
-
-        if (context is Activity && ((context as Activity).isFinishing || (context as Activity).isDestroyed)) return
 
         GlideApp.with(context)
                 .load(imageUrl)
