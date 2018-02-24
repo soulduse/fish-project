@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import com.dave.fish.MyApplication
 import com.dave.fish.R
 import com.dave.fish.common.Constants
+import com.dave.fish.common.GpsChecker
 import com.dave.fish.common.firebase.FireEventProvider
 import com.dave.fish.db.RealmProvider
 import com.dave.fish.db.model.LocationModel
@@ -92,6 +93,12 @@ class MapFragment : Fragment(),
 
     private fun initRecordClick() {
         btn_start_record.setOnClickListener {
+
+            if(!GpsChecker.isGPSProviderEnabled(mContext)){
+                GpsChecker.alertOnGps(mContext)
+                return@setOnClickListener
+            }
+
             val isRecorded = btn_start_record.isSelected
             val intentService = Intent(activity, LocationService::class.java).apply {
                 putExtra(Constants.EXTRA_NOTIFIER, Constants.EXTRA_NOTIFICATION_ID)
@@ -218,6 +225,13 @@ class MapFragment : Fragment(),
                     detailMapIntent.putExtra(Constants.EXTRA_LOCATION_LAT, selected.obsLat)
                     detailMapIntent.putExtra(Constants.EXTRA_LOCATION_LON, selected.obsLon)
                     startActivity(detailMapIntent)
+                }
+
+                setOnMyLocationButtonClickListener {
+                    if(!GpsChecker.isGPSProviderEnabled(mContext)){
+                        GpsChecker.alertOnGps(mContext)
+                    }
+                    false
                 }
             }
 

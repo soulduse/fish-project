@@ -39,7 +39,7 @@ class RecordAdapter : RealmRecyclerViewAdapter<LocationModel, RecordAdapter.View
                 with(it){
                     if (locations != null && locations!!.isNotEmpty()) {
                         val location = locations!!.first()
-                        val address = GeoUtil.getAddress(location.latitude, location.longtitude)
+                        val address = GeoUtil.getAddress(location!!.latitude, location!!.longtitude)
 
                         tv_title.text = address.split(" ").filterNot { it.isEmpty() }.first()
                         tv_address.text = address
@@ -52,8 +52,8 @@ class RecordAdapter : RealmRecyclerViewAdapter<LocationModel, RecordAdapter.View
                             FireEventProvider.trackEvent(FireEventProvider.MAP_SHOW_DETAIL_RECORDED)
                             val detailMapIntent = Intent(context, DetailMapActivity::class.java).apply {
                                 putExtra(Constants.EXTRA_LOCATION_MODEL_IDX, id)
-                                putExtra(Constants.EXTRA_LOCATION_LAT, location.latitude)
-                                putExtra(Constants.EXTRA_LOCATION_LON, location.longtitude)
+                                putExtra(Constants.EXTRA_LOCATION_LAT, location?.latitude)
+                                putExtra(Constants.EXTRA_LOCATION_LON, location?.longtitude)
                             }
                             context.startActivity(detailMapIntent)
                         }

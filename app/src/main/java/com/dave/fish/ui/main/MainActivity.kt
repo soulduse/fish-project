@@ -36,10 +36,7 @@ import com.dave.fish.ui.setting.SettingsActivity
 import com.dave.fish.ui.tip.TipMainFragment
 import com.dave.fish.ui.web.WebFragment
 import com.dave.fish.util.DLog
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.InterstitialAd
-import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.*
 import com.yarolegovich.slidingrootnav.SlidingRootNav
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder
 import kotlinx.android.synthetic.main.activity_main.*
@@ -66,6 +63,7 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
 
     // admob
     private lateinit var mInterstitialAd: InterstitialAd
+    private lateinit var mAdView: AdView
 
     private var isFirstOpen = true
 
@@ -89,22 +87,23 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
     }
 
     private fun initAd() {
-        val adRequest = AdRequest.Builder().build()
+        MobileAds.initialize(application, getString(R.string.admob_app_id))
 
-        initBannerAd(adRequest)
+        initBannerAd()
 
-        initInterstitialAd(adRequest)
+        initInterstitialAd()
     }
 
-    private fun initBannerAd(adRequest: AdRequest?) {
+    private fun initBannerAd() {
+        mAdView = findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
         adView.loadAd(adRequest)
     }
 
-    private fun initInterstitialAd(adRequest: AdRequest) {
-        MobileAds.initialize(this, getString(R.string.admob_app_id))
+    private fun initInterstitialAd() {
         mInterstitialAd = InterstitialAd(this).apply {
             adUnitId = getString(R.string.admob_interstitial_id)
-            loadAd(adRequest)
+            loadAd(AdRequest.Builder().build())
             adListener = object : AdListener() {
                 override fun onAdLoaded() {
                     if (mInterstitialAd.isLoaded) {
@@ -203,6 +202,8 @@ class MainActivity : AppCompatActivity(), DrawerAdapter.OnItemSelectedListener {
         })
         // 스크롤 되게 하기 위해 해당 값을 true 로 해줘야한다.
         nest_scrollview.isFillViewport = true
+
+        main_viewpager.offscreenPageLimit = 0
 
         main_viewpager.adapter = ViewPagerAdapter(supportFragmentManager).apply {
             addFragment(fragmentCalendar, getString(R.string.menu_tide_calendar))

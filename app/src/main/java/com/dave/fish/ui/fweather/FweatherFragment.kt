@@ -14,6 +14,8 @@ import com.dave.fish.common.firebase.FireEventProvider
 import com.dave.fish.ui.main.ViewPagerAdapter
 import com.dave.fish.ui.web.WebFragment
 import com.dave.fish.util.DLog
+import com.dave.fish.util.PreferenceKeys
+import com.dave.fish.util.getDefaultSharedPreferences
 import kotlinx.android.synthetic.main.fragment_tip.view.*
 import org.joda.time.DateTime
 
@@ -66,9 +68,11 @@ class FweatherFragment : Fragment() {
      */
 
     private fun initFragments() {
+        DLog.w("jsoup data list --> ${mContext.getDefaultSharedPreferences().getString(PreferenceKeys.KEY_F_WEATHER_JSOUP_LIST, null)}")
+
         fragmentHeight = FragmentProvider.instanceFragment(
                 JapanWeatherFragment.newInstance(),
-                getHeightUrls()
+                mContext.getDefaultSharedPreferences().getString(PreferenceKeys.KEY_F_WEATHER_JSOUP_LIST, null)
         )
         fragmentRain = FragmentProvider.instanceFragment(
                 JapanWeatherFragment.newInstance(),

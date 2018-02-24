@@ -108,6 +108,24 @@
         </android.support.constraint.ConstraintLayout>
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="다음 업데이트 예정내용"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/update_content"
+            android:textSize="14sp" />
+
+        <TextView
             android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

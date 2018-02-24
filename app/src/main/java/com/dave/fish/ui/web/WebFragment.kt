@@ -1,9 +1,7 @@
 package com.dave.fish.ui.web
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.graphics.Bitmap
-import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.KeyEvent
@@ -11,23 +9,42 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
-import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.FrameLayout
 import android.widget.ProgressBar
 import com.dave.fish.R
 import com.dave.fish.common.Constants
 import com.dave.fish.ui.main.MainActivity
-import com.dave.fish.util.DLog
 import kotlinx.android.synthetic.main.fragment_web.*
+import kotlinx.android.synthetic.main.fragment_web.view.*
 
 /**
  * Created by soul on 2017. 12. 3..
  */
 class WebFragment : Fragment() {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-            inflater.inflate(R.layout.fragment_web, container, false)
+    private lateinit var mFrameLayout: FrameLayout
+
+    private lateinit var mWebView: TouchWebView
+
+    private lateinit var mProgressBar: ProgressBar
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?{
+        val rootView = inflater.inflate(R.layout.fragment_web, container, false)
+
+        mFrameLayout = rootView.web_container
+
+        mWebView = TouchWebView(rootView.context)
+
+        mProgressBar = rootView.webview_progressbar
+
+        rootView.web_container.addView(mWebView)
+
+        return rootView
+    }
+
 
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -40,14 +57,19 @@ class WebFragment : Fragment() {
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun initWebView() {
-        with(webview_weather) {
+        with(mWebView) {
             settings.javaScriptEnabled = true
+            settings.allowFileAccess = true
+            settings.setAppCacheEnabled(true)
+            settings.cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
+
             isFocusable = true
             isFocusableInTouchMode = true
-            webViewClient = CustomWebViewClient(webview_progressbar)
+
+            webViewClient = CustomWebViewClient(mProgressBar)
             webChromeClient = object: WebChromeClient(){
                 override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                    webview_progressbar?.progress = newProgress
+                    mProgressBar.progress = newProgress
                 }
             }
             loadUrl(arguments?.getString(Constants.BUNDLE_FRAGMENT_URL))
@@ -69,7 +91,7 @@ class WebFragment : Fragment() {
 
     private fun refreshWebView() {
         fab_reload.setOnClickListener {
-            webview_weather.reload()
+            mWebView.reload()
         }
     }
 
@@ -87,11 +109,17 @@ class WebFragment : Fragment() {
     }
 
     private fun backPressed() {
-        if (webview_weather.canGoBack()) {
-            webview_weather.goBack()
+        if (mWebView.canGoBack()) {
+            mWebView.goBack()
         } else {
             (activity as MainActivity).onBackPressed()
         }
+    }
+
+    override fun onDestroy() {
+        mFrameLayout.removeAllViews()
+        mWebView.destroy()
+        super.onDestroy()
     }
 
     companion object {

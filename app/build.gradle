@@ -13,15 +13,15 @@ android {
         applicationId "com.dave.fish"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        multiDexEnabled = true
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.2"
+        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -34,7 +34,6 @@ android {
 dependencies {
     implementation "com.android.support:appcompat-v7:$supportLibVersion"
     implementation "com.android.support:design:$supportLibVersion"
-    implementation "com.android.support:support-vector-drawable:$supportLibVersion"
     implementation "com.android.support.constraint:constraint-layout:1.0.2"
 
     implementation "org.jsoup:jsoup:1.11.2"
@@ -72,10 +71,9 @@ dependencies {
 
     // Anko
     implementation "org.jetbrains.anko:anko-commons:$ankoVersion"
-    implementation "org.jetbrains.anko:anko-sdk25:$ankoVersion" // sdk15, sdk19, sdk21, sdk23 are also available
+    implementation "org.jetbrains.anko:anko-sdk25:$ankoVersion"
+    // sdk15, sdk19, sdk21, sdk23 are also available
     implementation "org.jetbrains.anko:anko-appcompat-v7:$ankoVersion"
-    implementation "org.jetbrains.anko:anko-sdk25-coroutines:$ankoVersion"
-    implementation "org.jetbrains.anko:anko-appcompat-v7-coroutines:$ankoVersion"
 
     // Realm RecyclerView
     implementation "io.realm:android-adapters:$realmRecyclerViewVersion"
@@ -86,8 +84,10 @@ dependencies {
     }
     implementation "com.google.firebase:firebase-core:$firebaseVersion"
     implementation "com.google.firebase:firebase-crash:$firebaseVersion"
-    implementation "com.google.firebase:firebase-ads:$firebaseVersion"
     implementation "com.google.firebase:firebase-firestore:$firebaseVersion"
+    implementation "com.google.firebase:firebase-ads:$firebaseVersion"
+
+    implementation 'com.android.support:multidex:1.0.2'
 
     // Test
     testImplementation "junit:junit:$junitVersion"
@@ -96,7 +96,6 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
 
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
-    androidTestCompile 'junit:junit:4.12'
 }
 
 androidExtensions {

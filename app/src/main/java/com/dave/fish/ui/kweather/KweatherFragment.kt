@@ -56,7 +56,6 @@ class KweatherFragment : Fragment() {
                 FireEventProvider.trackEvent(FireEventProvider.K_WEATHER_ARRAY[position])
             }
         })
-
         view.tabs_tip.setupWithViewPager(view.tip_viewpager)
     }
 

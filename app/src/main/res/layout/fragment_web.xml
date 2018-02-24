@@ -11,11 +11,17 @@
         android:layout_height="4dp"
         android:max="100" />
 
-    <com.dave.fish.ui.web.TouchWebView
-        android:id="@+id/webview_weather"
+    <FrameLayout
+        android:id="@+id/web_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/webview_progressbar" />
+        android:layout_below="@+id/webview_progressbar"/>
+
+    <!--<com.dave.fish.ui.web.TouchWebView-->
+        <!--android:id="@+id/webview_weather"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_below="@+id/webview_progressbar" />-->
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_reload"

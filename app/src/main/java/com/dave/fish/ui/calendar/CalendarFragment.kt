@@ -32,6 +32,7 @@ import kotlinx.android.synthetic.main.view_item_add_calendar.view.*
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import java.util.*
+import kotlin.math.max
 
 
 /**
@@ -78,6 +79,7 @@ class CalendarFragment : Fragment() {
         initMonthView()
     }
 
+    // TODO 이 데이터를 API화 하여 한달 단위로 관리 필요함.
     private fun refreshCalendar() {
         if (isCurrentDate(mDate)) {
             monthView.setCurrentDay(getCalendarForState())
@@ -90,8 +92,15 @@ class CalendarFragment : Fragment() {
         postId?.let {
             val minDayOfMonth = getDateForState().dayOfMonth().withMinimumValue()
             val maxDayOfMonth = getDateForState().dayOfMonth().withMaximumValue()
-            val currentDayOfMonth = getDateForState().dayOfMonth()
+            var currentDayOfMonth = getDateForState().dayOfMonth()
             val tideMonthList = mRealmController.findTideMonth(postId, getDateForState())
+
+            // 마지막 날짜 계산해서 날짜보다 작으면 - 해줘서 싱크를 맞춘다.
+            if((maxDayOfMonth.dayOfMonth - currentDayOfMonth.dateTime.dayOfMonth) < 7 ){
+                currentDayOfMonth = maxDayOfMonth.minusDays(6).dayOfMonth()
+            }
+
+            DLog.w("currentDayOfMonth -> ${currentDayOfMonth.dateTime.dayOfMonth}")
 
             val dayOfMonthList = mutableListOf<DateTime>(
                     minDayOfMonth,
@@ -213,7 +222,7 @@ class CalendarFragment : Fragment() {
                     item.am.let {
                         val weatherIcon = getWeatherIcon(item.am)
                         if (weatherIcon != 0) {
-                            GlideApp.with(mContext)
+                            GlideApp.with(this@CalendarFragment)
                                     .load(getWeatherIcon(item.am))
                                     .into(calendarItemView.iv_tide_state)
                             calendarItemView.iv_tide_state.visibility = View.VISIBLE
@@ -226,7 +235,7 @@ class CalendarFragment : Fragment() {
                     item.am.let {
                         val weatherIcon = getWeatherIcon(item.am)
                         if (weatherIcon != 0) {
-                            GlideApp.with(mContext)
+                            GlideApp.with(this@CalendarFragment)
                                     .load(getWeatherIcon(item.am))
                                     .into(calendarItemView.iv_tide_state)
                             calendarItemView.iv_tide_state.visibility = View.VISIBLE

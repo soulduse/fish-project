@@ -43,7 +43,7 @@ class TipTideFragment : Fragment() {
 
         tips.forEachIndexed { index, s ->
             if(index % 2 == 0){
-                addViewToRoot(ViewDrawExt.drawImage(mContext, s))
+                addViewToRoot(ViewDrawExt.drawImage(this, s))
             } else { // 홀수 = 설명
                 addViewToRoot(ViewDrawExt.drawText(mContext, s))
             }

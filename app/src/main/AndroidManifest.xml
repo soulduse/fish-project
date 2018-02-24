@@ -46,6 +46,7 @@
         <activity android:name=".util.permission.PermissionResultActivity" />
 
         <service android:name=".ui.map.LocationService" />
+        <service android:name=".ui.splash.JsoupIntentService"/>
         <receiver android:name=".ui.alarm.AlarmReceiver">
             <intent-filter>
                 <action android:name="com.dave.fish.START_ALARM" />

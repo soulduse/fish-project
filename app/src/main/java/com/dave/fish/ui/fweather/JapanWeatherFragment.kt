@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import com.dave.fish.R
 import com.dave.fish.common.Constants
 import com.dave.fish.util.DLog
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_weather.view.*
 
 
@@ -36,10 +37,18 @@ class JapanWeatherFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val images = arguments?.getStringArray(Constants.BUNDLE_FRAGMENT_URLS)
-        val items: List<WeatherRepo> = images?.map { WeatherRepo(imageUrl = it, title = "") }!!.toList()
 
-        with(adapter){
+        val url = arguments?.getString(Constants.BUNDLE_FRAGMENT_URL)
+        val images = arguments?.getStringArray(Constants.BUNDLE_FRAGMENT_URLS)
+
+        var items: List<WeatherRepo> = mutableListOf()
+        if (!url.isNullOrEmpty()) {
+            items = Gson().fromJson(url, Array<WeatherRepo>::class.java).toList()
+        } else if (images != null && images.isNotEmpty()) {
+            items = images.map { WeatherRepo(imageUrl = it, title = "") }.toList()
+        }
+
+        with(adapter) {
             setItems(items)
         }
     }

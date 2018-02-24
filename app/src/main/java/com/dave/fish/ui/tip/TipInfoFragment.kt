@@ -41,7 +41,7 @@ class TipInfoFragment : Fragment() {
             mContext.resources.getString(R.string.tip_info_info),
             mContext.resources.getString(R.string.tip_info_warm),
             mContext.resources.getString(R.string.tip_info_method) -> addViewToRoot(ViewDrawExt.drawBasicView(mContext, item.data))
-            mContext.resources.getString(R.string.tip_info_detail) -> addViewToRoot(ViewDrawExt.drawDetailView(mContext, item.data))
+            mContext.resources.getString(R.string.tip_info_detail) -> addViewToRoot(ViewDrawExt.drawDetailView(this, item.data))
         }
     }
 

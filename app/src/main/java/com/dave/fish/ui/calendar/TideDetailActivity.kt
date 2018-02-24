@@ -88,12 +88,12 @@ class TideDetailActivity : AppCompatActivity(){
         }
 
         try{
-            tideWeeklyItem = mRealmController.findTideWeekly(key)
+            tideWeeklyItem = mRealmController.findTideWeekly(key)!!
             DLog.w("tideWeeklyItem --> " + tideWeeklyItem.toString())
             TideUtil.setTide(tideWeeklyItem)
 
             setWeatherInfoFromApi()
-        }catch (e : IllegalStateException){
+        }catch (e : Exception){
             Toast.makeText(applicationContext, "일시적으로 데이터를 읽어올수 없습니다. \n해당 페이지를 다시 접근후 시도해주세요.", Toast.LENGTH_LONG).show()
         }
     }

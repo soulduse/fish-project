@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.location.Location
 import android.support.design.widget.FloatingActionButton
 import com.dave.fish.common.DistanceUtil
+import com.dave.fish.common.GpsChecker
 import com.dave.fish.util.DLog
 import com.dave.fish.util.permission.PermissionCheck
 import com.google.android.gms.maps.*
@@ -105,6 +106,10 @@ class GoogleMapUtil : GoogleMap.OnMyLocationButtonClickListener,
 
             // 카메라 스위칭 : 현재위치, 타겟위치
             setOnMyLocationButtonClickListener {
+                if(!GpsChecker.isGPSProviderEnabled(mContext)){
+                    GpsChecker.alertOnGps(mContext)
+                }
+
                 isMyLocation = isMyLocation.not()
                 val cameraPosition = CameraPosition.Builder()
                         .target(LatLng(lat, lon))
