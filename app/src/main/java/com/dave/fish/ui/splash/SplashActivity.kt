@@ -36,13 +36,18 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initRealm()
-        initFWeatherData()
+        startParseWithJsoup()
         initSpinnerData()
     }
 
     private fun initRealm() {
         mRealmController = RealmProvider.instance
         mRealmController.setListener(realmListener)
+    }
+
+    private fun startParseWithJsoup() {
+        val jsoupIntent = Intent(this, JsoupIntentService::class.java)
+        startService(jsoupIntent)
     }
 
     private fun initSpinnerData() {
@@ -53,51 +58,6 @@ class SplashActivity : AppCompatActivity() {
         }
 
         moveMain()
-    }
-
-    private fun initFWeatherData() {
-        val savedFweatherDate = this.getDefaultSharedPreferences().getString(PreferenceKeys.KEY_F_WEATHER_JSOUP_SAVED_YEAR_MONTH_DAY, null)
-        val fWeatherRepos = this.getDefaultSharedPreferences().getString(PreferenceKeys.KEY_F_WEATHER_JSOUP_LIST, null)
-        if (savedFweatherDate.isNullOrEmpty() || fWeatherRepos.isNullOrEmpty() || savedFweatherDate != DateTime().toString("yyyyMMdd")) {
-            thread {
-                try {
-                    DLog.w("async start")
-                    val baseURL = "http://www.imocwx.com/"
-                    val urls = (0..24 step 2).map { "http://www.imocwx.com/cwm.php?Area=1&Time=$it" }
-                    val currentDate = DateTime()
-
-                    val weatherRepos = mutableListOf<WeatherRepo>()
-                    urls.forEach {
-                        val doc = Jsoup.connect(it).get()
-                        val title = doc.select(".content .title").text()
-                        val image = doc.select(".content img").attr("src")
-
-
-                        val firstIdx = title.indexOf("${currentDate.year}")
-                        val lastIdx = title.indexOf("(JST)") - 1
-                        var dateJP = title.slice(firstIdx..lastIdx)
-                        dateJP = dateJP
-                                .replace("年", "년")
-                                .replace("月", "월")
-                                .replace("日", "일")
-                                .replace("時", "시")
-
-                        val prefixDate = dateJP.substringBefore("(")
-                        val suffixDate = dateJP.substringAfter(")")
-
-                        weatherRepos.add(WeatherRepo(title = "$prefixDate $suffixDate", imageUrl = "$baseURL$image"))
-                    }
-
-                    this.getDefaultSharedPreferences().put(PreferenceKeys.KEY_F_WEATHER_JSOUP_LIST, Gson().toJson(weatherRepos))
-                    this.getDefaultSharedPreferences().put(PreferenceKeys.KEY_F_WEATHER_JSOUP_SAVED_YEAR_MONTH_DAY, currentDate.toString("yyyyMMdd"))
-
-                } catch (e: Exception) {
-                    longToast("네트워크 불안정으로 데이터를 받아올 수 없습니다.")
-                }
-            }
-        } else {
-            DLog.w("이미 데이터가 있어서 패스됨")
-        }
     }
 
     private fun isEmptyRealmSpinner(): Boolean = mRealmController.getSpinner().isEmpty()
