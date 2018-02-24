@@ -4,7 +4,7 @@ import android.view.ViewGroup;
 
 public abstract class DrawerItem<T extends DrawerAdapter.ViewHolder> {
 
-    public boolean isChecked;
+    boolean isChecked;
 
     public abstract T createViewHolder(ViewGroup parent);
 
@@ -15,11 +15,11 @@ public abstract class DrawerItem<T extends DrawerAdapter.ViewHolder> {
         return this;
     }
 
-    public boolean isChecked() {
+    boolean isChecked() {
         return isChecked;
     }
 
-    public boolean isSelectable() {
+    boolean isSelectable() {
         return true;
     }
 

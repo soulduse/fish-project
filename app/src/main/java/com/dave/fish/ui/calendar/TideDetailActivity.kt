@@ -88,7 +88,7 @@ class TideDetailActivity : AppCompatActivity(){
         }
 
         try{
-            tideWeeklyItem = mRealmController.findTideWeekly(key)
+            tideWeeklyItem = mRealmController.findTideWeekly(key)!!
             DLog.w("tideWeeklyItem --> " + tideWeeklyItem.toString())
             TideUtil.setTide(tideWeeklyItem)
 
