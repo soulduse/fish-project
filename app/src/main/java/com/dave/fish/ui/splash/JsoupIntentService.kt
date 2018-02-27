@@ -29,6 +29,7 @@ class JsoupIntentService: IntentService("JsoupIntentService") {
         if (savedFweatherDate.isNullOrEmpty() ||
                 fWeatherRepos.isNullOrEmpty() ||
                 savedFweatherDate != currentTime.toString("yyyyMMdd")) {
+            
             thread {
                 try {
                     DLog.w("async start")

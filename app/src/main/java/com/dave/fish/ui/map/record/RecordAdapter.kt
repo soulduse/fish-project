@@ -39,7 +39,7 @@ class RecordAdapter : RealmRecyclerViewAdapter<LocationModel, RecordAdapter.View
                 with(it){
                     if (locations != null && locations!!.isNotEmpty()) {
                         val location = locations!!.first()
-                        val address = GeoUtil.getAddress(location.latitude, location.longtitude)
+                        val address = GeoUtil.getAddress(location!!.latitude, location.longtitude)
 
                         tv_title.text = address.split(" ").filterNot { it.isEmpty() }.first()
                         tv_address.text = address

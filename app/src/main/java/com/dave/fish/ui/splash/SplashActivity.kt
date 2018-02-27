@@ -6,25 +6,16 @@ import android.support.v7.app.AppCompatActivity
 import com.dave.fish.api.ApiProvider
 import com.dave.fish.api.Network
 import com.dave.fish.api.NetworkCallback
-import com.dave.fish.db.RealmProvider
-import com.dave.fish.db.RealmListener
 import com.dave.fish.api.model.GisModel
 import com.dave.fish.common.Constants
+import com.dave.fish.db.RealmListener
+import com.dave.fish.db.RealmProvider
 import com.dave.fish.db.model.SelectItemModel
-import com.dave.fish.ui.fweather.WeatherRepo
 import com.dave.fish.ui.main.MainActivity
 import com.dave.fish.util.DLog
-import com.dave.fish.util.PreferenceKeys
-import com.dave.fish.util.getDefaultSharedPreferences
-import com.dave.fish.util.put
-import com.google.gson.Gson
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay
-import org.jetbrains.anko.longToast
-import org.joda.time.DateTime
-import org.jsoup.Jsoup
 import java.util.concurrent.TimeUnit
-import kotlin.concurrent.thread
 
 /**
  * Created by soul on 2017. 11. 10..
