@@ -8,10 +8,10 @@ import com.dave.fish.util.PreferenceKeys
 import com.dave.fish.util.getDefaultSharedPreferences
 import com.dave.fish.util.put
 import com.google.gson.Gson
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.longToast
 import org.joda.time.DateTime
 import org.jsoup.Jsoup
-import kotlin.concurrent.thread
 
 /**
  * Created by soul on 2018. 2. 23..
@@ -29,7 +29,8 @@ class JsoupIntentService: IntentService("JsoupIntentService") {
         if (savedFweatherDate.isNullOrEmpty() ||
                 fWeatherRepos.isNullOrEmpty() ||
                 savedFweatherDate != currentTime.toString("yyyyMMdd")) {
-            thread {
+
+            doAsync {
                 try {
                     DLog.w("async start")
                     val baseURL = "http://www.imocwx.com/"
@@ -58,10 +59,11 @@ class JsoupIntentService: IntentService("JsoupIntentService") {
                         weatherRepos.add(WeatherRepo(title = "$prefixDate $suffixDate", imageUrl = "$baseURL$image"))
                     }
 
-                    this.getDefaultSharedPreferences().put(PreferenceKeys.KEY_F_WEATHER_JSOUP_LIST, Gson().toJson(weatherRepos))
-                    this.getDefaultSharedPreferences().put(PreferenceKeys.KEY_F_WEATHER_JSOUP_SAVED_YEAR_MONTH_DAY, currentDate.toString("yyyyMMdd"))
+                    getDefaultSharedPreferences().put(PreferenceKeys.KEY_F_WEATHER_JSOUP_LIST, Gson().toJson(weatherRepos))
+                    getDefaultSharedPreferences().put(PreferenceKeys.KEY_F_WEATHER_JSOUP_SAVED_YEAR_MONTH_DAY, currentDate.toString("yyyyMMdd"))
 
                 } catch (e: Exception) {
+                    DLog.w("error --> $e")
                     longToast("네트워크 불안정으로 데이터를 받아올 수 없습니다.")
                 }
             }

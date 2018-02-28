@@ -1,5 +1,6 @@
 package com.dave.fish.ui.alarm
 
+import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -15,6 +16,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import com.dave.fish.R
 import com.dave.fish.common.Constants
+import com.dave.fish.ui.main.MainActivity
 import com.dave.fish.util.DLog
 import com.dave.fish.util.PreferenceKeys
 import com.dave.fish.util.getDefaultSharedPreferences
